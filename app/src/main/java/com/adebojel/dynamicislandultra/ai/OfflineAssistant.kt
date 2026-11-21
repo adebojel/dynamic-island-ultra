@@ -9,6 +9,9 @@ data class OfflineAssistantReply(
 )
 
 sealed interface OfflineAction {
+    data object RunDiagnostics : OfflineAction
+    data object OpenYoutubeBrowser : OfflineAction
+    data object OpenUpdateCenter : OfflineAction
     data object ShowBattery : OfflineAction
     data object OpenWifiSettings : OfflineAction
     data object OpenBluetoothSettings : OfflineAction
@@ -34,6 +37,12 @@ class OfflineAssistant {
         if (query.isBlank()) return OfflineAssistantReply("Ketik perintah atau pilih salah satu alat offline.")
 
         return when {
+            hasAny(query, "diagnostik", "diagnostic", "periksa sistem", "cek kesehatan", "status aplikasi", "cek aplikasi") ->
+                OfflineAssistantReply("Menjalankan pemeriksaan lokal fitur dan izin perangkat.", OfflineAction.RunDiagnostics)
+            hasAny(query, "youtube", "buka video", "browser video") ->
+                OfflineAssistantReply("Membuka browser YouTube yang dibatasi ke layanan YouTube.", OfflineAction.OpenYoutubeBrowser)
+            hasAny(query, "update", "pembaruan", "versi terbaru") ->
+                OfflineAssistantReply("Membuka pemeriksa pembaruan resmi GitHub.", OfflineAction.OpenUpdateCenter)
             hasAny(query, "baterai", "battery", "daya") ->
                 OfflineAssistantReply(
                     batteryPercent?.let { "Baterai perangkat saat ini $it%." }
