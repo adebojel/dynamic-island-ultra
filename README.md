@@ -2,160 +2,142 @@
 
 <div align="center">
 
-<img src="assets/dynamic-island-offline-hero.svg" alt="Dynamic Island Ultra — offline glass interface" width="100%"/>
+<img src="assets/dynamic-island-offline-hero.svg" alt="Dynamic Island Ultra — floating RGB glass interface" width="100%"/>
 
-**Offline-first floating island · Assistive launcher · Local toolbox**
+**Dynamic Island · Floating Assistive Hub · Built-in Offline Assistant · YouTube Browser · GitHub Updater**
 
 [![Build](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml/badge.svg)](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/adebojel/dynamic-island-ultra?label=release)](https://github.com/adebojel/dynamic-island-ultra/releases)
-[![Android](https://img.shields.io/badge/Android-8%2B-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
-[![Offline](https://img.shields.io/badge/Network-Not%20requested-42DFA5)](#offline-only-privacy)
+[![Android](https://img.shields.io/badge/Android-8%2B%20(API%2026)-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
+[![Network](https://img.shields.io/badge/Network-Feature%20Scoped-42DFA5)](docs/NETWORK_AND_UPDATES.md)
 
-[**Download APK v0.0.0**](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256) · [Releases](https://github.com/adebojel/dynamic-island-ultra/releases)
+[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases)
 
 </div>
 
 ---
 
-## Product overview
+## Overview
 
-Dynamic Island Ultra is an independent Android app combining a draggable floating island, assistive launcher, offline utility tools and an app-owned Picture-in-Picture workspace. It is inspired by common floating launcher and Dynamic Island patterns; it does not bundle proprietary source code, artwork or branding from third-party apps.
+Dynamic Island Ultra is an Android floating island and assistive launcher with local utility tools, a YouTube-only in-app browser, and a GitHub release updater. Its interface uses a dark glass/RGB design.
 
-<img src="assets/floating-hub-offline-toolbox.svg" alt="Floating shortcut categories and offline tools" width="100%"/>
+<img src="assets/floating-hub-offline-toolbox.svg" alt="Floating hub categories and tools" width="100%"/>
 
-## Download and install
+## Android compatibility
 
-**Version:** 0.0.0 engineering preview
-
-[Download installable APK](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk)
-
-[Open GitHub Release v0.0.0](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.0)
-
-[Download SHA-256 checksum](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)
-
-> Debug-signed APK for sideload testing. It is not signed with a protected production key and is not a Google Play-certified release.
+- **Minimum supported Android: Android 8.0 Oreo / API 26.**
+- Compile SDK / target SDK: API 36.
+- Android 8, 9, 10 and newer releases remain within the declared minimum compatibility range, subject to device/OEM behaviour.
+- The CI gate checks `minSdk = 26`; it must not be raised to API 34.
 
 ## Current implementation
 
 | Module | Included behaviour |
 |---|---|
 | Dynamic Island | Draggable floating pill, soft pulse and saved position |
-| Battery | Live percentage/charging indicator while overlay runs |
-| Notification bridge | Local notification preview after notification-listener access is granted |
-| Assistive hub | Five scrollable categories of Android settings/app shortcuts |
-| App collection | Queries launcher-visible apps and opens selected apps |
-| Offline notes | Saves text locally using app-private preferences |
-| Offline calculator | Parses arithmetic expressions locally |
-| Offline utility assistant | Rule-based local commands, battery status and arithmetic; not a chat service |
+| Battery | Live percentage/charging indicator while overlay is active |
+| Notification bridge | Notification previews after the user grants notification-listener access |
+| Assistive hub | Categorized Android settings and app shortcuts |
+| App collection | Lists launcher-visible apps and launches selected apps |
+| Local notes | Saves notes in app-private storage |
+| Local calculator | Parses arithmetic expressions locally |
+| Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
+| App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
-| Boot handling | Best-effort restore subject to Android/OEM restrictions |
+| YouTube browser | In-app WebView limited to YouTube navigation and required playback resources |
+| GitHub update center | Checks the latest project release, downloads the APK and SHA-256 file, verifies the hash, then opens Android's installer |
 
-## Floating bubble categories
+## Network access policy
 
-1. **Quick connectivity:** Wi-Fi panel, internet settings panel, Bluetooth settings, sound settings.
-2. **Communication:** dialer, app notification settings, notification-listener settings.
-3. **Media and capture:** default music app, camera app, browser app.
-4. **Productivity:** calculator, calendar, clock/alarms, five-minute timer, Android file picker.
-5. **Device and accessibility:** display, battery, accessibility, application, app-info and system settings.
-6. **My floating apps:** installed app collection, PiP workspace, offline notes, offline calculator.
-7. **Offline intelligence:** local utility assistant.
+Android's `INTERNET` permission applies to the whole app package; Android does not offer a permission that can be granted only to one Kotlin class. Therefore the restriction is enforced architecturally and by CI:
 
-Shortcut entries open Android settings or installed apps. They are not independent floating app windows.
+1. Network code exists only in `browser/YoutubeBrowserActivity.kt` and `update/AppUpdateActivity.kt`.
+2. The YouTube browser restricts top-level navigation to HTTPS YouTube domains and uses a limited subresource host allowlist. File/content access and cleartext traffic are disabled; SSL errors are rejected.
+3. The update client contacts only the public GitHub release API and release assets for this repository. It verifies SHA-256 before installation.
+4. The `ai/` module is checked by CI for URLs, sockets, HTTP clients and network SDKs. The assistant and local features continue to operate offline.
+5. No `ACCESS_NETWORK_STATE`, analytics, ads, cloud sync or telemetry SDK is included.
 
-## Offline-only privacy
+See [Network and Update Design](docs/NETWORK_AND_UPDATES.md).
 
-- No `android.permission.INTERNET` or `ACCESS_NETWORK_STATE` permission.
-- No online model endpoint, API key, analytics, ads, telemetry, remote configuration or cloud sync.
-- Notes and assistant processing remain on-device.
-- CI rejects common network permissions and network SDK dependencies.
-- The assistant is a deterministic local command engine, not a generative LLM.
+## Built-in AI and offline operation
 
-A future generative offline model must be imported as a local model file and reviewed for license, quantization, RAM, CPU/GPU support and storage use. Model files can exceed the 400 MiB budget on their own; they are not downloaded automatically or bundled by default.
+The APK includes a deterministic local decision engine. It interprets supported commands, launches approved app/system surfaces, evaluates arithmetic and runs read-only diagnostics. It needs no model import, account, API key or internet.
 
-## PiP and multi-window boundaries
+**Technical distinction:** this engine is not a general-purpose generative LLM. A generative on-device model needs model weights plus an inference runtime. Official LiteRT-LM Android guidance describes model files from hundreds of MB to multiple GB and stores the model as a device file rather than APK assets. That would exceed or consume most of the current 400 MiB APK budget and would not run reliably on every Android 8+ device. We do not falsely label the built-in decision engine as a generative model.
 
-Android PiP applies to activities designed and declared for PiP. This app provides PiP for its own workspace; it cannot force arbitrary third-party apps into PiP or bypass Android's window limits. See the [Android PiP guide](https://developer.android.com/develop/ui/views/picture-in-picture).
+## GitHub updates without uninstalling
 
-The installed-app collection uses a limited launcher query rather than `QUERY_ALL_PACKAGES`. Apps without a visible launcher activity may not appear.
+The app's GitHub Update Center checks the latest release, compares its version code, downloads the APK and checksum, and verifies SHA-256 before passing it to Android's package installer.
 
-## Permissions
+Every successful signed build from `main` uses the GitHub Actions run number as a monotonically increasing `versionCode`, and generates a release tag such as `v0.0.39`, `v0.0.40`, and so on. No future release should reuse the fixed `v0.0.0` tag.
 
-The app uses overlay permission, notification posting/access (user-granted), foreground service and boot-completed permissions. It does not request SMS, call logs, contacts, microphone capture, broad storage or unrestricted package visibility.
+For Android to accept an update without uninstalling, all of these must remain true:
+- Same application ID: `com.adebojel.dynamicislandultra`.
+- Same release signing certificate (or a valid key-rotation lineage).
+- New version code greater than or equal to the installed version.
+- The user accepts Android's package-installer confirmation when shown.
 
-Special permissions are granted by the Android Settings UI; an ordinary app cannot grant privileged access silently.
+### One-time GitHub signing setup
 
-## Compatibility and pinned build toolchain
+The stable private signing key must never be committed to this public repository. Add these repository **Actions secrets**:
 
-- Minimum Android: 8.0 / API 26.
-- Compile/target SDK: API 36 (stable).
-- JDK: 17.
-- Android Gradle Plugin: 9.3.1.
-- Kotlin: 2.4.21.
-- Gradle: 9.7.
-- Compose BOM: 2026.07.00 (stable release before API 37 requirement).
-- Activity Compose: 1.13.0.
+- `RELEASE_KEYSTORE_BASE64` — base64 content of the private JKS/PKCS12 keystore.
+- `RELEASE_STORE_PASSWORD` — keystore password.
+- `RELEASE_KEY_ALIAS` — key alias.
+- `RELEASE_KEY_PASSWORD` — key password.
 
-Build locally:
+Without all four secrets, CI builds a debug preview artifact only and deliberately does not publish it as an update-compatible release. Keep a secure offline backup of the keystore: if the private key is lost, Android will reject future updates signed with a different key.
+
+The pre-existing `v0.0.0` asset was built before stable signing was configured. Moving from that legacy debug signature to a new stable key may require a one-time reinstall. After the stable key is configured and the user installs its first signed release, future releases can update in place and retain app data.
+
+## PiP and Android boundaries
+
+- PiP applies only to activities that declare and implement PiP support. This app cannot force other apps into PiP.
+- The installed-app collection uses a narrow launcher query; apps without launcher activities may not be listed.
+- A regular app cannot silently grant privileged access, force-stop immunity, arbitrary mobile-data/Wi-Fi toggles, or unrestricted control over other apps.
+- Background restore remains subject to Android and device-maker restrictions.
+
+## Permissions and privacy
+
+The app requests overlay access, notification access/permission and install-from-this-source authorization only when their features need them. It does not request SMS, contacts, call logs, microphone capture, broad storage, broad package visibility or unrestricted network-state access.
+
+YouTube page data and cookies are handled by Android WebView when the user opens the browser. GitHub update requests reveal ordinary connection metadata to GitHub. The offline assistant does not transmit commands or diagnostics.
+
+## Build and release
+
+Toolchain:
+- JDK 17
+- Android Gradle Plugin 9.3.1
+- Gradle 9.9.1
+- Compile SDK 36
+- Compose BOM 2026.09.00
+
+Local debug build:
 
 ```bash
 gradle --no-daemon testDebugUnitTest assembleDebug
 ```
 
-APK output:
+A push to `main` runs the tests and build. With stable signing secrets configured, CI publishes `app-release.apk`, `app-release.apk.sha256`, and `release-info.json` under a new versioned release. Without the signing secrets it uploads a debug-preview artifact but does not overwrite the latest update channel.
 
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
+APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
-## CI and APK size guard
+## Source and roadmap
 
-Every push to `main` runs:
-1. Offline manifest/dependency policy checks.
-2. Unit tests for assistant command parsing and arithmetic.
-3. Android debug APK compilation.
-4. APK size enforcement against a 400 MiB ceiling.
-5. SHA-256 generation.
-6. Workflow artifact upload and update of GitHub Release `v0.0.0`.
+- [Feature catalog](docs/FEATURE_CATALOG.md)
+- [Feature roadmap](docs/FEATURE_ROADMAP.md)
+- [Open-source research and license review](docs/OPEN_SOURCE_RESEARCH.md)
+- [Network and update design](docs/NETWORK_AND_UPDATES.md)
 
-## Known limitations
+## Validation status
 
-- The assistant is not a general-purpose generative language model.
-- PiP works for PiP-enabled activities; third-party apps must independently support it.
-- Arbitrary floating windows for other apps cannot be guaranteed by Android.
-- Boot restore is best-effort. Force-stop, background-start restrictions and OEM battery managers may stop the app.
-- Media-session cards, richer call cards, user-defined theme editor, gesture builder, screen recording, offline speech and local generative LLM remain planned.
-- Debug APK is not production-signed or Play Store certified.
-- Runtime behaviour still needs physical-device smoke tests across Android/OEM versions.
-
-## Source structure
-
-```text
-app/src/main/java/com/adebojel/dynamicislandultra/
-  MainActivity.kt
-  ai/OfflineAssistant.kt
-  ai/OfflineAssistantActivity.kt
-  boot/BootReceiver.kt
-  floating/FloatingAppRepository.kt
-  floating/InstalledAppsActivity.kt
-  floating/LocalToolActivities.kt
-  notifications/IslandNotificationListener.kt
-  overlay/FloatingIslandService.kt
-  system/UtilityIntents.kt
-```
-
-## Open-source research and licensing
-
-See [OPEN_SOURCE_RESEARCH.md](docs/OPEN_SOURCE_RESEARCH.md), [FEATURE_CATALOG.md](docs/FEATURE_CATALOG.md), and [FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md). Third-party source is not incorporated until exact license, NOTICE, security, dependency and runtime footprint are reviewed.
-
-## Android background and distribution
-
-No application can be made immune to Android force-stop, crashes, system restrictions or OEM battery managers. Google Play approval cannot be guaranteed; a production release needs compliant disclosures, appropriate special-use service declarations and a protected signing key.
+CI tests and APK assembly are necessary but do not replace physical-device testing. The next verification gate is smoke-testing overlay lifecycle, notification access, YouTube playback, package-installer handoff, data retention across a signed update, Android 8/9/10 and current Android OEM variants.
 
 ---
 
 <div align="center">
 
-**Offline-first · User-controlled · Modular Android utility**
+**Offline-first core · Explicit network use · User-controlled Android integration**
 
 [Repository](https://github.com/adebojel/dynamic-island-ultra) · [Issues](https://github.com/adebojel/dynamic-island-ultra/issues)
 
