@@ -27,6 +27,11 @@ import android.animation.ValueAnimator
 import androidx.core.app.NotificationCompat
 import com.adebojel.dynamicislandultra.R
 import com.adebojel.dynamicislandultra.system.UtilityIntents
+import com.adebojel.dynamicislandultra.ai.OfflineAssistantActivity
+import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
+import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
+import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
+import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import kotlin.math.abs
 
 class FloatingIslandService : Service() {
@@ -190,6 +195,15 @@ class FloatingIslandService : Service() {
             "This app's settings" to "app_info",
             "System settings" to "system_settings"
         ))
+        addSection(content, "06  MY FLOATING APPS", listOf(
+            "Installed app collection" to "installed_apps",
+            "Floating workspace (PiP)" to "workspace",
+            "Offline notes" to "notes",
+            "Offline calculator" to "local_calculator"
+        ))
+        addSection(content, "07  OFFLINE INTELLIGENCE", listOf(
+            "Offline utility assistant" to "offline_assistant"
+        ))
 
         val scroll = ScrollView(this).apply {
             isFillViewport = false
@@ -244,11 +258,19 @@ class FloatingIslandService : Service() {
                 )
                 contentDescription = name
                 setOnClickListener {
-                    val intent = UtilityIntents.create(key, packageName)
+                    val internalIntent = when (key) {
+                        "installed_apps" -> Intent(this@FloatingIslandService, InstalledAppsActivity::class.java)
+                        "workspace" -> Intent(this@FloatingIslandService, FloatingWorkspaceActivity::class.java)
+                        "notes" -> Intent(this@FloatingIslandService, OfflineNotesActivity::class.java)
+                        "local_calculator" -> Intent(this@FloatingIslandService, OfflineCalculatorActivity::class.java)
+                        "offline_assistant" -> Intent(this@FloatingIslandService, OfflineAssistantActivity::class.java)
+                        else -> null
+                    }
+                    val intent = internalIntent ?: UtilityIntents.create(key, packageName)
                     if (intent == null) {
                         Toast.makeText(this@FloatingIslandService, "Tool unavailable", Toast.LENGTH_SHORT).show()
                     } else {
-                        runCatching { startActivity(intent) }.onFailure {
+                        runCatching { startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.onFailure {
                             Toast.makeText(
                                 this@FloatingIslandService,
                                 "$name is not available on this device",
