@@ -20,7 +20,7 @@ import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
-import com.adebojel.dynamicislandultra.browser.YoutubeBrowserActivity
+import com.adebojel.dynamicislandultra.browser.DuckDuckGoBrowserActivity
 import com.adebojel.dynamicislandultra.update.AppUpdateActivity
 import com.adebojel.dynamicislandultra.system.UtilityIntents
 
@@ -45,14 +45,14 @@ class OfflineAssistantActivity : ComponentActivity() {
                             }
                         }
                     }
-                    OutlinedTextField(input, { input = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Perintah offline") })
+                    OutlinedTextField(input, { input = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Perintah lokal / offline") })
                     Button(
                         onClick = {
                             val reply = engine.respond(input)
                             history = history + "Anda: $input" + "Ultra: ${reply.text}"
                             input = ""
                             when (reply.action) {
-                                OfflineAction.OpenYoutubeBrowser -> startActivity(Intent(this@OfflineAssistantActivity, YoutubeBrowserActivity::class.java))
+                                OfflineAction.OpenBrowser -> startActivity(Intent(this@OfflineAssistantActivity, DuckDuckGoBrowserActivity::class.java))
                                 OfflineAction.OpenUpdateCenter -> startActivity(Intent(this@OfflineAssistantActivity, AppUpdateActivity::class.java))
                                 OfflineAction.RunDiagnostics -> history = history + "Ultra: ${LocalDiagnostics.createReport(this@OfflineAssistantActivity)}"
                                 OfflineAction.OpenInstalledApps -> startActivity(Intent(this@OfflineAssistantActivity, InstalledAppsActivity::class.java))
