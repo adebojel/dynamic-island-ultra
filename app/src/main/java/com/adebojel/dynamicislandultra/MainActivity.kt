@@ -1,7 +1,6 @@
 package com.adebojel.dynamicislandultra
 
 import android.Manifest
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -59,42 +57,56 @@ class MainActivity : ComponentActivity() {
                     onStop = { stopIsland() },
                     onOverlay = { openOverlaySettings() },
                     onNotifications = { openNotificationSettings() },
-                    onBattery = { requestBatteryExemption() },
-                    onPermission = { requestNotificationPermission() },
-                    overlayGranted = { Settings.canDrawOverlays(this) }
+                    onBattery = { openBatterySettings() },
+                    onPermission = { requestNotificationPermission() }
                 )
             }
         }
     }
 
     private fun startIsland() {
-        getSharedPreferences("island", Context.MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
+        getSharedPreferences("island", Context.MODE_PRIVATE)
+            .edit().putBoolean("enabled", true).apply()
         if (!Settings.canDrawOverlays(this)) {
             openOverlaySettings()
             return
         }
-        ContextCompat.startForegroundService(this, Intent(this, FloatingIslandService::class.java))
+        ContextCompat.startForegroundService(
+            this,
+            Intent(this, FloatingIslandService::class.java)
+        )
     }
 
-    private fun stopIsland() {\n        getSharedPreferences("island", Context.MODE_PRIVATE).edit().putBoolean("enabled", false).apply()\n        stopService(Intent(this, FloatingIslandService::class.java).setAction(FloatingIslandService.ACTION_STOP))\n    }\n\n    private fun openOverlaySettings() {
-        startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
+    private fun stopIsland() {
+        getSharedPreferences("island", Context.MODE_PRIVATE)
+            .edit().putBoolean("enabled", false).apply()
+        stopService(
+            Intent(this, FloatingIslandService::class.java)
+                .setAction(FloatingIslandService.ACTION_STOP)
+        )
+    }
+
+    private fun openOverlaySettings() {
+        startActivity(
+            Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+        )
     }
 
     private fun openNotificationSettings() {
-        startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
+        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
     }
 
-    private fun requestBatteryExemption() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))
-            runCatching { startActivity(intent) }.onFailure {
-                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-            }
-        }
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        if (Build.VERSION.SDK_INT >= 33) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 }
 
@@ -105,13 +117,13 @@ private fun Dashboard(
     onOverlay: () -> Unit,
     onNotifications: () -> Unit,
     onBattery: () -> Unit,
-    onPermission: () -> Unit,
-    overlayGranted: () -> Boolean
+    onPermission: () -> Unit
 ) {
-    var running by remember { mutableStateOf(false) }
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(
-            Brush.verticalGradient(listOf(Color(0xFF101A31), Night, Color(0xFF090D18)))
+            Brush.verticalGradient(
+                listOf(Color(0xFF101A31), Night, Color(0xFF090D18))
+            )
         ),
         contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -134,12 +146,19 @@ private fun Dashboard(
                 ).padding(20.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Box(
-                        Modifier.width(190.dp).height(42.dp).background(Color.Black, RoundedCornerShape(30.dp)),
+                        Modifier.width(190.dp).height(42.dp)
+                            .background(Color.Black, RoundedCornerShape(30.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
                             Box(Modifier.size(8.dp).background(Cyan, RoundedCornerShape(50)))
                             Text("ISLAND READY", color = Color.White, fontSize = 10.sp, letterSpacing = 1.sp)
                             Box(Modifier.size(7.dp).background(Violet, RoundedCornerShape(50)))
@@ -152,45 +171,107 @@ private fun Dashboard(
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Button(onClick = { onStart() }, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Default.Bolt, null); Spacer(Modifier.width(6.dp)); Text("Start Island")
+                Button(onClick = onStart, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Default.Bolt, null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Start Island")
                 }
-                OutlinedButton(onClick = { onStop() }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = onStop, modifier = Modifier.weight(1f)) {
                     Text("Stop")
                 }
             }
         }
         item { Text("PERMISSION CENTER", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
-            PermissionCard("Display over other apps", "Required for the floating island and bubble", "Open settings", onOverlay)
+            PermissionCard(
+                "Display over other apps",
+                "Required for the floating island and bubble",
+                "Open settings",
+                onOverlay
+            )
         }
         item {
-            PermissionCard("Notification access", "Read selected notification previews for the island", "Grant access", onNotifications)
+            PermissionCard(
+                "Notification access",
+                "Read selected notification previews for the island",
+                "Grant access",
+                onNotifications
+            )
         }
         item {
-            PermissionCard("Notifications", "Allow the app to show its foreground-service status", "Allow", onPermission)
+            PermissionCard(
+                "Notifications",
+                "Allow the app to show its foreground-service status",
+                "Allow",
+                onPermission
+            )
         }
         item {
-            PermissionCard("Battery settings", "Optional: request exemption from some background limits", "Review", onBattery)
+            PermissionCard(
+                "Battery settings",
+                "Review device background restrictions; availability varies by manufacturer",
+                "Review",
+                onBattery
+            )
         }
         item { Text("FEATURE CATEGORIES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
-        item { FeatureCard(Icons.Default.Notifications, "Smart notifications", "Notification previews and app-aware activity cards", "Foundation") }
-        item { FeatureCard(Icons.Default.Widgets, "Assistive floating bubble", "Quick access to categorized floating tools", "Included") }
-        item { FeatureCard(Icons.Default.Bluetooth, "System shortcuts", "Open Android system panels where direct toggles are restricted", "Android-safe") }
-        item { FeatureCard(Icons.Default.Tune, "Personalization", "Theme, size, placement and interaction settings", "Roadmap") }
+        item {
+            FeatureCard(
+                Icons.Default.Notifications,
+                "Smart notifications",
+                "Notification previews and app-aware activity cards",
+                "Foundation"
+            )
+        }
+        item {
+            FeatureCard(
+                Icons.Default.Widgets,
+                "Assistive floating bubble",
+                "Quick access to categorized floating tools",
+                "Included"
+            )
+        }
+        item {
+            FeatureCard(
+                Icons.Default.Bluetooth,
+                "System shortcuts",
+                "Open Android system panels where direct toggles are restricted",
+                "Android-safe"
+            )
+        }
+        item {
+            FeatureCard(
+                Icons.Default.Tune,
+                "Personalization",
+                "Theme, size, placement and interaction settings",
+                "Roadmap"
+            )
+        }
         item {
             Text(
                 "Permissions are requested only when needed. Android does not allow ordinary apps to silently grant SMS, storage, Wi-Fi, mobile-data, or privileged system access.",
-                color = Color(0xFF9BA8C1), fontSize = 11.sp
+                color = Color(0xFF9BA8C1),
+                fontSize = 11.sp
             )
         }
     }
 }
 
 @Composable
-private fun PermissionCard(title: String, description: String, action: String, onClick: () -> Unit) {
-    Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(18.dp)) {
-        Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+private fun PermissionCard(
+    title: String,
+    description: String,
+    action: String,
+    onClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Panel),
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Column(Modifier.weight(1f)) {
                 Text(title, color = Color.White)
                 Text(description, color = Color(0xFF9BA8C1), fontSize = 11.sp)
@@ -201,9 +282,20 @@ private fun PermissionCard(title: String, description: String, action: String, o
 }
 
 @Composable
-private fun FeatureCard(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, detail: String, status: String) {
-    Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(18.dp)) {
-        Row(Modifier.fillMaxWidth().padding(15.dp), verticalAlignment = Alignment.CenterVertically) {
+private fun FeatureCard(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    detail: String,
+    status: String
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Panel),
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(icon, null, tint = Cyan, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
