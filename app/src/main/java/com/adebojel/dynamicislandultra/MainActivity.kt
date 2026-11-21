@@ -24,7 +24,7 @@ import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.PictureInPictureAlt
-import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -264,7 +264,7 @@ private fun Dashboard(
         }
         item { Text("INTERNET & ONLINE FEATURES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
-            FeatureCard(Icons.Default.PlayCircle, "DuckDuckGo Browser", "Browser bawaan DuckDuckGo, pencarian privat, semua situs HTTPS dan mode Desktop/Mobile", "Internet", onBrowser)
+            FeatureCard(Icons.Default.Language, "DuckDuckGo Browser", "Browser bawaan DuckDuckGo, pencarian privat, semua situs HTTPS dan mode Desktop/Mobile", "Internet", onBrowser)
         }
         item {
             FeatureCard(Icons.Default.SystemUpdate, "GitHub update center", "Check latest release, verify SHA-256 and hand off installation to Android", "Internet", onUpdate)
