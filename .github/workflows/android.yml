@@ -64,6 +64,7 @@ jobs:
           grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
           grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
           grep -q 'billing:9.1.0' app/build.gradle.kts
+          grep -q 'fragment-ktx:1.9.1' app/build.gradle.kts
           grep -q 'ca-app-pub-9305273212801233~4511201352' app/src/main/AndroidManifest.xml
           grep -q 'android:name=".ads.AdCenterActivity"' app/src/main/AndroidManifest.xml
           if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|HttpURLConnection|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then

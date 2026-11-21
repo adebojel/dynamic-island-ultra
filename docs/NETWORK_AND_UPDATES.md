@@ -78,3 +78,14 @@ CI uses the monotonically increasing GitHub Actions run number as `versionCode` 
 Without those secrets CI builds a debug preview but does not publish it as an update-compatible release. The signing key must be backed up securely and must never be committed to the repository. Moving from the earlier debug-signed preview to the first stable-signed release may require a one-time reinstall; future releases using the same key can update in place and preserve app data.
 
 The app cannot silently install APKs or bypass Android's package installer/user-consent controls.
+
+
+## Public policy website
+
+- Privacy: https://adebojel.github.io/dynamic-island-ultra/privacy.html
+- Terms: https://adebojel.github.io/dynamic-island-ultra/terms.html
+- Ads: https://adebojel.github.io/dynamic-island-ultra/ads.html
+- Premium: https://adebojel.github.io/dynamic-island-ultra/premium.html
+- Support: https://adebojel.github.io/dynamic-island-ultra/support.html
+
+Review the site whenever app permissions, SDKs, data processing, subscriptions or ad placements change. If requested by GitHub, enable Pages with GitHub Actions as the deployment source.

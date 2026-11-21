@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
     implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.fragment:fragment-ktx:1.9.1")
     implementation("com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.7.0")
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("com.android.billingclient:billing:9.1.0")

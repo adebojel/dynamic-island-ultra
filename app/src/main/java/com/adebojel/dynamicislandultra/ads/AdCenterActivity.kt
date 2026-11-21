@@ -343,7 +343,7 @@ private fun AdCenterScreen(activity: Activity, onClose: () -> Unit) {
                     color = Color(0xFFB7C2D5),
                     fontSize = 11.sp
                 )
-                if (showNative && adsReady) NativeAdSlot(enabled = true)
+                if (showNative && adsReady && !premiumUnlocked)
             }
 
             item {
@@ -396,6 +396,19 @@ private fun AdCenterScreen(activity: Activity, onClose: () -> Unit) {
             }
 
             item {
+                Card(colors = CardDefaults.cardColors(containerColor = AdPanel), shape = RoundedCornerShape(18.dp)) {
+                    Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("INFORMASI & KEBIJAKAN", color = Color.White, fontWeight = FontWeight.Bold)
+                        TextButton(onClick = { openPolicyPage(activity, "privacy.html") }) { Text("Kebijakan Privasi") }
+                        TextButton(onClick = { openPolicyPage(activity, "terms.html") }) { Text("Syarat & Ketentuan") }
+                        TextButton(onClick = { openPolicyPage(activity, "ads.html") }) { Text("Pengungkapan Iklan") }
+                        TextButton(onClick = { openPolicyPage(activity, "premium.html") }) { Text("Informasi Premium & Harga") }
+                        TextButton(onClick = { openPolicyPage(activity, "support.html") }) { Text("Bantuan & Dukungan") }
+                    }
+                }
+            }
+
+            item {
                 Text(status, color = Color(0xFFB7C2D5), fontSize = 12.sp)
                 Text(
                     "Tidak ada iklan dari floating island, asisten, mikrofon, notifikasi, browser, permission center, atau kontrol sistem. Durasi video mengikuti materi iklan AdMob dan tidak dapat dijamin maksimal 30 detik.",
@@ -405,7 +418,7 @@ private fun AdCenterScreen(activity: Activity, onClose: () -> Unit) {
             }
         }
 
-        if (showBanner && adsReady) {
+        if (showBanner && adsReady && !premiumUnlocked) {
             AdBannerSlot(
                 modifier = Modifier.fillMaxWidth().background(Color(0xFF0C1322)).padding(vertical = 4.dp),
                 enabled = true
@@ -716,4 +729,9 @@ private fun createNativeAdView(context: Context, ad: NativeAd): NativeAdView {
     nativeView.callToActionView = cta
     nativeView.registerNativeAd(ad, media)
     return nativeView
+}
+
+private fun openPolicyPage(activity: Activity, page: String) {
+    val url = "https://adebojel.github.io/dynamic-island-ultra/$page"
+    runCatching { activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }

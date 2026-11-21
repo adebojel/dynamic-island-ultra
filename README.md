@@ -11,7 +11,7 @@
 [![Android](https://img.shields.io/badge/Android-8%2B%20(API%2026)-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
 [![Network](https://img.shields.io/badge/Network-Internet%20Enabled-42DFA5)](docs/NETWORK_AND_UPDATES.md)
 
-[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases)
+[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases) · [Official website](https://adebojel.github.io/dynamic-island-ultra/)
 
 </div>
 
@@ -125,6 +125,7 @@ Toolchain:
 - JDK 17
 - Android Gradle Plugin 9.3.1
 - Gradle 9.9.1
+- AndroidX Fragment 1.9.1
 - Compile SDK 36
 - Compose BOM 2026.06.00 (Compose 1.11.x line, compatible with compile SDK 36)
 
@@ -137,6 +138,18 @@ gradle --no-daemon testDebugUnitTest assembleDebug
 A push to `main` runs the tests and build. CI checks the AdMob/UMP/Billing dependency and manifest configuration. With stable signing secrets configured, CI builds the release APK, verifies its APK signature with `apksigner`, calculates SHA-256, and publishes `app-release.apk`, `app-release.apk.sha256`, and `release-info.json` under a new versioned release. Debug builds use Google's official test ad units only; release builds use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
 
 APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
+
+## Official website and policies
+
+The official website is deployed from the `site/` directory using GitHub Pages: https://adebojel.github.io/dynamic-island-ultra/
+
+- [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
+- [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
+- [Ads Disclosure](https://adebojel.github.io/dynamic-island-ultra/ads.html)
+- [Premium information](https://adebojel.github.io/dynamic-island-ultra/premium.html)
+- [Help and Support](https://adebojel.github.io/dynamic-island-ultra/support.html)
+
+Review these documents whenever permissions, SDKs, data processing, subscriptions or ad placements change. Never send signing keys, passwords, OTPs or tokens to support.
 
 ## Source and roadmap
 
