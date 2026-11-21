@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.PictureInPictureAlt
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,6 +41,8 @@ import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
+import com.adebojel.dynamicislandultra.browser.YoutubeBrowserActivity
+import com.adebojel.dynamicislandultra.update.AppUpdateActivity
 
 private val Night = Color(0xFF080B14)
 private val Panel = Color(0xFF121A2B)
@@ -73,7 +77,9 @@ class MainActivity : ComponentActivity() {
                     onAssistant = { openLocal(OfflineAssistantActivity::class.java) },
                     onNotes = { openLocal(OfflineNotesActivity::class.java) },
                     onCalculator = { openLocal(OfflineCalculatorActivity::class.java) },
-                    onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) }
+                    onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) },
+                    onYoutubeBrowser = { openLocal(YoutubeBrowserActivity::class.java) },
+                    onUpdate = { openLocal(AppUpdateActivity::class.java) }
                 )
             }
         }
@@ -141,7 +147,9 @@ private fun Dashboard(
     onAssistant: () -> Unit,
     onNotes: () -> Unit,
     onCalculator: () -> Unit,
-    onWorkspace: () -> Unit
+    onWorkspace: () -> Unit,
+    onYoutubeBrowser: () -> Unit,
+    onUpdate: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(
@@ -253,6 +261,13 @@ private fun Dashboard(
         }
         item {
             FeatureCard(Icons.Default.Tune, "Offline notes", "Notes stored on this device only", "Local", onNotes)
+        }
+        item { Text("NETWORK FEATURES • EXPLICIT USE ONLY", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item {
+            FeatureCard(Icons.Default.PlayCircle, "YouTube browser", "In-app browser limited to YouTube and required playback resources", "Internet", onYoutubeBrowser)
+        }
+        item {
+            FeatureCard(Icons.Default.SystemUpdate, "GitHub update center", "Check latest release, verify SHA-256 and hand off installation to Android", "Internet", onUpdate)
         }
         item { Text("FEATURE CATEGORIES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
