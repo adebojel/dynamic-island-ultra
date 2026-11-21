@@ -3,129 +3,165 @@ package com.adebojel.dynamicislandultra.browser
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.net.Uri
-import android.net.http.SslError
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.net.http.SslError
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import java.io.ByteArrayInputStream
 import java.net.URLEncoder
 
 /**
- * A deliberately narrow in-app browser. Main-frame navigation is restricted
- * to YouTube; only YouTube playback and Google static/API resource domains are
- * allowed for subresources. It is not a general-purpose browser.
+ * General HTTPS browser with DuckDuckGo as its default home/search engine.
+ * Desktop mode is implemented by switching WebView's User-Agent and viewport
+ * settings. All local notes and assistant functions remain completely offline.
  */
-class YoutubeBrowserActivity : ComponentActivity() {
+class DuckDuckGoBrowserActivity : ComponentActivity() {
     private var browser: WebView? = null
+    private lateinit var address: EditText
+    private lateinit var modeButton: Button
+    private lateinit var progress: ProgressBar
+    private var desktopMode = false
+    private var mobileUserAgent = ""
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        desktopMode = getSharedPreferences(PREFS, MODE_PRIVATE)
+            .getBoolean(KEY_DESKTOP_MODE, false)
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.rgb(8, 11, 20))
-            setPadding(12, 12, 12, 8)
+            setPadding(10, 10, 10, 8)
         }
-        val title = TextView(this).apply {
-            text = "YOUTUBE BROWSER"
+
+        val heading = TextView(this).apply {
+            text = "DUCKDUCKGO • PRIVATE SEARCH"
             setTextColor(Color.rgb(67, 232, 255))
-            textSize = 15f
+            textSize = 14f
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(4, 4, 4, 10)
+            setPadding(4, 3, 4, 8)
         }
-        val searchRow = LinearLayout(this).apply {
+
+        val addressRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        val query = EditText(this).apply {
-            hint = "Cari video atau tempel tautan YouTube"
+        address = EditText(this).apply {
+            hint = "Cari di DuckDuckGo atau masukkan alamat HTTPS"
             setTextColor(Color.WHITE)
             setHintTextColor(Color.LTGRAY)
+            textSize = 13f
             singleLine = true
             setBackgroundColor(Color.rgb(24, 36, 58))
             setPadding(12, 4, 12, 4)
+            imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_GO
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_GO) {
+                    navigateFromAddress()
+                    true
+                } else false
+            }
         }
-        val search = Button(this).apply { text = "Cari" }
-        searchRow.addView(query, LinearLayout.LayoutParams(0, 52, 1f))
-        searchRow.addView(search, LinearLayout.LayoutParams(
+        val goButton = Button(this).apply {
+            text = "Go"
+            setOnClickListener { navigateFromAddress() }
+        }
+        addressRow.addView(address, LinearLayout.LayoutParams(0, 52, 1f))
+        addressRow.addView(goButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, 52
         ))
 
-        val navRow = LinearLayout(this).apply {
+        val controls = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
         }
-        fun navButton(label: String, action: () -> Unit) {
-            navRow.addView(Button(this).apply {
+        fun addControl(label: String, action: () -> Unit) {
+            controls.addView(Button(this).apply {
                 text = label
+                textSize = 10f
+                setPadding(3, 0, 3, 0)
                 setOnClickListener { action() }
-            }, LinearLayout.LayoutParams(0, 48, 1f))
+            }, LinearLayout.LayoutParams(0, 44, 1f))
+        }
+
+        progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 100
+            progress = 0
+            visibility = ProgressBar.GONE
         }
 
         val web = WebView(this)
         browser = web
-        web.setBackgroundColor(Color.rgb(8, 11, 20))
+        mobileUserAgent = web.settings.userAgentString
+        web.setBackgroundColor(Color.WHITE)
         web.settings.apply {
-            javaScriptEnabled = true // Required by YouTube's own player.
+            javaScriptEnabled = true
             domStorageEnabled = true
+            databaseEnabled = true
             mediaPlaybackRequiresUserGesture = true
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             allowFileAccess = false
             allowContentAccess = false
             javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(false)
-            @Suppress("DEPRECATION")
-            allowFileAccessFromFileURLs = false
-            @Suppress("DEPRECATION")
-            allowUniversalAccessFromFileURLs = false
-            if (Build.VERSION.SDK_INT >= 26) safeBrowsingEnabled = true
+            builtInZoomControls = true
+            displayZoomControls = false
+            supportZoom = true
+            if (android.os.Build.VERSION.SDK_INT >= 26) safeBrowsingEnabled = true
         }
-        web.webChromeClient = WebChromeClient()
+        applyBrowserMode(web)
+
+        web.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView, newProgress: Int) {
+                progress.progress = newProgress
+                progress.visibility = if (newProgress in 1..99) ProgressBar.VISIBLE else ProgressBar.GONE
+            }
+
+            override fun onReceivedTitle(view: WebView, pageTitle: String?) {
+                if (!pageTitle.isNullOrBlank()) heading.text = pageTitle.take(72)
+            }
+        }
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView,
                 request: WebResourceRequest
             ): Boolean {
-                val uri = request.url
-                if (isAllowedTopLevel(uri)) return false
+                val scheme = request.url.scheme?.lowercase()
+                if (scheme == "https") return false
+                if (scheme == "http") {
+                    val upgraded = request.url.buildUpon().scheme("https").build()
+                    view.loadUrl(upgraded.toString())
+                    return true
+                }
                 Toast.makeText(
-                    this@YoutubeBrowserActivity,
-                    "Browser ini dibatasi untuk YouTube.",
+                    this@DuckDuckGoBrowserActivity,
+                    "Browser hanya membuka alamat web HTTP/HTTPS.",
                     Toast.LENGTH_SHORT
                 ).show()
                 return true
             }
 
-            override fun shouldInterceptRequest(
-                view: WebView,
-                request: WebResourceRequest
-            ): WebResourceResponse? {
-                val uri = request.url
-                if (uri.scheme == "data" || uri.scheme == "blob" || uri.scheme == "about") {
-                    return null
-                }
-                val allowed = if (request.isForMainFrame) {
-                    isAllowedTopLevel(uri)
-                } else {
-                    isAllowedResource(uri)
-                }
-                return if (allowed) null else blockedResponse()
+            override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
+                address.setText(url.orEmpty())
+                progress.visibility = ProgressBar.VISIBLE
+                progress.progress = 0
+            }
+
+            override fun onPageFinished(view: WebView, url: String?) {
+                if (!url.isNullOrBlank()) address.setText(url)
             }
 
             override fun onReceivedSslError(
@@ -133,45 +169,88 @@ class YoutubeBrowserActivity : ComponentActivity() {
                 handler: SslErrorHandler,
                 error: SslError
             ) {
+                // Never bypass TLS certificate failures.
                 handler.cancel()
             }
         }
 
-        navButton("Kembali") { if (web.canGoBack()) web.goBack() }
-        navButton("Maju") { if (web.canGoForward()) web.goForward() }
-        navButton("Muat ulang") { web.reload() }
-        navButton("Beranda") { web.loadUrl(YOUTUBE_HOME) }
-
-        search.setOnClickListener {
-            val value = query.text.toString().trim()
-            if (value.isEmpty()) {
-                web.loadUrl(YOUTUBE_HOME)
-            } else {
-                val direct = Uri.parse(value)
-                val destination = if (isAllowedTopLevel(direct)) {
-                    direct.toString()
-                } else {
-                    "https://www.youtube.com/results?search_query=" +
-                        URLEncoder.encode(value, Charsets.UTF_8.name())
-                }
-                web.loadUrl(destination)
-            }
+        addControl("Back") { if (web.canGoBack()) web.goBack() }
+        addControl("Next") { if (web.canGoForward()) web.goForward() }
+        addControl("Reload") { web.reload() }
+        addControl("Home") { web.loadUrl(DUCKDUCKGO_HOME) }
+        modeButton = Button(this).apply {
+            setOnClickListener { toggleDesktopMode(web) }
         }
+        controls.addView(modeButton, LinearLayout.LayoutParams(0, 44, 1.2f))
+        updateModeLabel()
 
-        root.addView(title)
-        root.addView(searchRow)
-        root.addView(navRow)
+        root.addView(heading)
+        root.addView(addressRow)
+        root.addView(controls)
+        root.addView(progress, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 3
+        ))
         root.addView(web, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
         ))
         setContentView(root)
-        web.loadUrl(YOUTUBE_HOME)
 
+        web.loadUrl(DUCKDUCKGO_HOME)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (web.canGoBack()) web.goBack() else finish()
             }
         })
+    }
+
+    private fun navigateFromAddress() {
+        val input = address.text.toString().trim()
+        if (input.isEmpty()) {
+            browser?.loadUrl(DUCKDUCKGO_HOME)
+            return
+        }
+        val explicit = Uri.parse(input)
+        val hasWebScheme = explicit.scheme.equals("https", true) ||
+            explicit.scheme.equals("http", true)
+        val looksLikeHost = input.contains('.') && !input.contains(' ') &&
+            !input.startsWith("javascript:", true) &&
+            !input.startsWith("file:", true)
+        val target = when {
+            hasWebScheme && explicit.scheme.equals("https", true) -> input
+            hasWebScheme && explicit.scheme.equals("http", true) ->
+                explicit.buildUpon().scheme("https").build().toString()
+            looksLikeHost -> "https://$input"
+            else -> DUCKDUCKGO_SEARCH + URLEncoder.encode(input, Charsets.UTF_8.name())
+        }
+        browser?.loadUrl(target)
+        address.clearFocus()
+    }
+
+    private fun toggleDesktopMode(web: WebView) {
+        desktopMode = !desktopMode
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+            .putBoolean(KEY_DESKTOP_MODE, desktopMode).apply()
+        applyBrowserMode(web)
+        updateModeLabel()
+        web.reload()
+    }
+
+    private fun applyBrowserMode(web: WebView) {
+        web.settings.apply {
+            if (desktopMode) {
+                userAgentString = DESKTOP_USER_AGENT
+                useWideViewPort = true
+                loadWithOverviewMode = true
+            } else {
+                userAgentString = mobileUserAgent
+                useWideViewPort = true
+                loadWithOverviewMode = false
+            }
+        }
+    }
+
+    private fun updateModeLabel() {
+        modeButton.text = if (desktopMode) "Desktop ✓" else "Mobile"
     }
 
     override fun onDestroy() {
@@ -187,37 +266,12 @@ class YoutubeBrowserActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun isAllowedTopLevel(uri: Uri): Boolean =
-        uri.scheme == "https" && isYouTubeHost(uri.host.orEmpty())
-
-    private fun isYouTubeHost(hostValue: String): Boolean {
-        val host = hostValue.lowercase()
-        return host == "youtube.com" || host.endsWith(".youtube.com") ||
-            host == "youtube-nocookie.com" || host.endsWith(".youtube-nocookie.com")
-    }
-
-    private fun isAllowedResource(uri: Uri): Boolean {
-        if (uri.scheme != "https") return false
-        val host = uri.host?.lowercase() ?: return false
-        val suffixes = listOf(
-            "youtube.com", "youtube-nocookie.com", "ytimg.com",
-            "googlevideo.com", "googleapis.com", "gstatic.com",
-            "googleusercontent.com", "google.com", "doubleclick.net",
-            "googlesyndication.com", "googleadservices.com"
-        )
-        return suffixes.any { host == it || host.endsWith(".$it") }
-    }
-
-    private fun blockedResponse() = WebResourceResponse(
-        "text/plain",
-        "UTF-8",
-        403,
-        "Blocked by YouTube-only browser policy",
-        mapOf("Cache-Control" to "no-store"),
-        ByteArrayInputStream(ByteArray(0))
-    )
-
     companion object {
-        private const val YOUTUBE_HOME = "https://www.youtube.com/"
+        private const val PREFS = "browser_settings"
+        private const val KEY_DESKTOP_MODE = "desktop_mode"
+        private const val DUCKDUCKGO_HOME = "https://duckduckgo.com/"
+        private const val DUCKDUCKGO_SEARCH = "https://duckduckgo.com/?q="
+        private const val DESKTOP_USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     }
 }
