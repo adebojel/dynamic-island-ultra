@@ -32,8 +32,8 @@ jobs:
         with:
           packages: ''
 
-      - name: Install Android API 37 platform and build tools
-        run: sdkmanager --channel=1 "platforms;android-37" "build-tools;37.0.0"
+      - name: Install stable Android API 36 platform and build tools
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Install Gradle 9.7
         uses: gradle/actions/setup-gradle@v4
