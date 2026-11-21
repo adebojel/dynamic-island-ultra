@@ -43,12 +43,14 @@ This inventory records feature concepts and implementation candidates. It is not
 - [Foreground services](https://developer.android.com/develop/background-work/services/foreground-services): overlay and foreground service lifecycle remain subject to Android background-start and user-visible requirements.
 - [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM): local inference runtime. Model files remain separate and require their own storage/RAM/license checks.
 
-## Offline-only policy
+## Network-enabled application policy
 
-- No INTERNET or ACCESS_NETWORK_STATE permission.
-- No remote model endpoint, API key, telemetry SDK, analytics, advertising, remote config or cloud sync.
-- Notes and the rule-based utility assistant process data locally.
-- Future generative models must be imported as local files and checked for license, quantization, RAM, CPU/GPU support and storage limits before use.
+- The app declares INTERNET and ACCESS_NETWORK_STATE so network-capable modules can function and future AdMob integration can be added.
+- DuckDuckGo is the default browser/search engine; it supports general HTTPS browsing and Desktop/Mobile website modes.
+- GitHub Update Center retrieves versioned APK releases and validates SHA-256 before opening Android's package installer.
+- The built-in decision assistant, notes, calculator and diagnostics remain local-only. They do not invoke online models, send prompts, or transmit local diagnostic results.
+- AdMob is not installed yet: a real App ID, ad-unit IDs, Google Mobile Ads SDK, UMP consent flow and privacy disclosures are needed before serving advertisements.
+- Future generative on-device models must be assessed for model license, quantization, RAM, CPU/GPU support, Android 8+ compatibility and APK/storage budget.
 
 ## Component intake checklist
 
@@ -61,26 +63,34 @@ This inventory records feature concepts and implementation candidates. It is not
 7. Add unit/instrumentation tests and document module privacy.
 
 
-## November 2026 network, update and embedded-assistant review
+## November 2026 network, browser, update and embedded-assistant review
 
-### Network access and browser isolation
-- Android requires the normal `INTERNET` permission to open network sockets; this is an app-package permission, not a permission that can be assigned to one source file. Feature boundaries therefore need to be enforced in architecture, allowlisted WebView navigation, secure HTTPS-only networking and CI scans. The app does not request `ACCESS_NETWORK_STATE`.
-- The YouTube browser uses HTTPS, restricts top-level navigation to YouTube, permits only the player/resource host families documented in source, denies file/content URL access, disables mixed content and cancels SSL certificate errors.
-- The updater is a separate module which queries only the repository's latest release, validates asset hosts, checks SHA-256 and gives the package to Android's installer.
+### Browser and network permissions
+- Android's INTERNET and ACCESS_NETWORK_STATE are normal install-time permissions that permit app networking. They apply to the package as a whole, not to an individual Kotlin class.
+- DuckDuckGo is used as the default home/search engine. The in-app WebView is a general HTTPS browser with Back/Forward/Reload/Home and desktop/mobile modes controlled by User-Agent and viewport settings.
+- Cleartext HTTP remains disabled, file/content URL access is disabled, mixed content is blocked, Safe Browsing is enabled on supported API levels, and TLS certificate errors are cancelled.
+- CI retains a source-level network isolation gate for the `ai/` package so built-in AI processing stays local even though other app modules can use the internet.
+
+### AdMob preparation
+- INTERNET and ACCESS_NETWORK_STATE are in the manifest. The SDK is not yet included because the publisher App ID and ad-unit IDs have not been supplied.
+- Google's current AdMob guidance uses Google Mobile Ads SDK plus the UMP privacy SDK. Consent information must be refreshed at app launch, applicable forms presented, and `canRequestAds()` checked before requesting ad inventory.
+- Ad requests must use test IDs/devices during development and avoid covering key controls or interfering with accessibility.
 
 ### In-place update requirements
-Android checks package identity, signing identity and version code before accepting an update. Therefore a public-repository workflow must keep the release keystore private and stable, and generate an increasing version code. A new debug keystore on each CI runner is not a valid production update strategy. This project uses GitHub Actions secrets for signing, with a debug-preview artifact only when those secrets are absent.
+Android checks package identity, signing identity and version code before accepting an update. The release keystore must remain stable and private, and each build must increase versionCode. This project uses GitHub Actions run numbers to create `v0.0.N` versions. Without the stable signing secrets CI generates a debug preview only and does not publish an incompatible APK as an update release.
 
 ### Embedded AI reality check
-- The implemented AI module is a local deterministic command/decision engine with diagnostics. It is fully packaged as application source, has no model file, no external inference endpoint and no need to import a model.
-- A true generative offline LLM requires model weights plus a runtime. Google's LiteRT-LM Android integration expects a model file on device and its current Android guidance describes model sizes from hundreds of MB to multiple GB; some demos report multi-gigabyte models and high resident memory. Embedding such a model in the app would collide with the 400 MiB budget and cannot be assumed to run on every Android 8+ phone.
-- Decision: keep the shipped assistant honest and lightweight. Do not describe it as a generative chatbot or claim it can autonomously repair OS services. Extend its local diagnostics and safe tool routing without network access.
+- The current in-APK assistant is a local deterministic decision engine with arithmetic, action routing and diagnostics. It has no model file, imported model, external inference endpoint or API key.
+- A true generative offline LLM needs model weights plus a compatible inference runtime. Google's LiteRT-LM Android integration requires local model assets and broad hardware/RAM evaluation; model sizes can be hundreds of MB to multiple GB. Do not claim the current local decision engine is a generative chatbot or autonomous OS repair agent.
 
 ### Verified primary references
 - Android network permission and secure transport: https://developer.android.com/develop/connectivity/network-ops/connecting
+- Android WebView User-Agent/viewport: https://developer.android.com/reference/android/webkit/WebSettings
 - Android WebView Safe Browsing: https://developer.android.com/develop/ui/views/layout/webapps/managing-webview
 - WebView SSL-error handling: https://developer.android.com/reference/android/webkit/WebViewClient
 - Android app update signing/version rules: https://developer.android.com/google/play/app-updates
 - Android unknown-source installer permission: https://developer.android.com/reference/android/content/pm/PackageManager#canRequestPackageInstalls()
-- Compose BOM stable coordinate example (2026.09.00): https://developer.android.com/develop/ui/compose/bom
-- LiteRT-LM Android implementation and model storage: https://github.com/google-ai-edge/litert-samples/tree/main/skills/android/litert-lm
+- Compose BOM stable coordinate (2026.09.00): https://developer.android.com/develop/ui/compose/bom
+- AdMob Android quick start: https://developers.google.com/admob/android/quick-start
+- UMP Android consent flow: https://developers.google.com/admob/android/privacy
+- LiteRT-LM Android implementation: https://github.com/google-ai-edge/LiteRT-LM
