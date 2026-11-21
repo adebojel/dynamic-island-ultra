@@ -19,9 +19,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import androidx.core.app.NotificationCompat
 import com.adebojel.dynamicislandultra.R
+import com.adebojel.dynamicislandultra.system.UtilityIntents
 import kotlin.math.abs
 
 class FloatingIslandService : Service() {
@@ -31,10 +36,29 @@ class FloatingIslandService : Service() {
     private lateinit var bubbleParams: WindowManager.LayoutParams
     private var expanded = false
     private var latestText = "DYNAMIC ISLAND"
+    private var batteryText = ""
+    private var pulseAnimator: ObjectAnimator? = null
+
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            latestText = intent?.getStringExtra("preview")?.take(70) ?: latestText
-            bubble?.text = "●  " + latestText
+            latestText = intent?.getStringExtra("preview")?.take(54) ?: latestText
+            updateBubbleText()
+        }
+    }
+
+    private val batteryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action != Intent.ACTION_BATTERY_CHANGED) return
+            val level = intent.getIntExtra("level", -1)
+            val scale = intent.getIntExtra("scale", 100).coerceAtLeast(1)
+            val status = intent.getIntExtra("status", -1)
+            if (level >= 0) {
+                val percent = (level * 100 / scale).coerceIn(0, 100)
+                val charging = status == android.os.BatteryManager.BATTERY_STATUS_CHARGING ||
+                    status == android.os.BatteryManager.BATTERY_STATUS_FULL
+                batteryText = (if (charging) "⚡ " else "🔋 ") + percent + "%"
+                updateBubbleText()
+            }
         }
     }
 
@@ -43,43 +67,74 @@ class FloatingIslandService : Service() {
         createChannel()
         startForeground(4100, buildNotification())
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        val filter = IntentFilter(ACTION_NOTIFICATION_PREVIEW)
-        if (Build.VERSION.SDK_INT >= 33) registerReceiver(notificationReceiver, filter, RECEIVER_NOT_EXPORTED)
-        else @Suppress("DEPRECATION") registerReceiver(notificationReceiver, filter)
-        showBubble()
+        registerAppReceiver(notificationReceiver, IntentFilter(ACTION_NOTIFICATION_PREVIEW))
+        registerAppReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+
+    private fun registerAppReceiver(receiver: BroadcastReceiver, filter: IntentFilter) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(receiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(receiver, filter)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            getSharedPreferences("island", MODE_PRIVATE).edit()
+                .putBoolean("enabled", false).apply()
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (!android.provider.Settings.canDrawOverlays(this)) {
             stopSelf()
             return START_NOT_STICKY
         }
+        showBubble()
         return START_STICKY
     }
 
     private fun showBubble() {
         if (bubble != null) return
+        val prefs = getSharedPreferences("island", MODE_PRIVATE)
         bubbleParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            if (Build.VERSION.SDK_INT >= 26) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            y = (28 * resources.displayMetrics.density).toInt()
+            x = prefs.getInt("bubble_x", 0)
+            y = prefs.getInt("bubble_y", (28 * resources.displayMetrics.density).toInt())
         }
+
         bubble = TextView(this).apply {
             text = "●  DYNAMIC ISLAND"
             setTextColor(Color.WHITE)
             textSize = 11f
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(24, 14, 24, 14)
+            setPadding(22, 13, 22, 13)
             background = rounded(Color.rgb(10, 13, 24), Color.rgb(67, 232, 255), 48f, 2)
+            contentDescription = "Dynamic Island floating control. Tap to open tools; drag to move."
             setOnClickListener { togglePanel() }
             setOnTouchListener(DragTouchListener())
         }
         windowManager.addView(bubble, bubbleParams)
+        updateBubbleText()
+        pulseAnimator = ObjectAnimator.ofFloat(bubble, View.ALPHA, 0.86f, 1f).apply {
+            duration = 1450
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
+    }
+
+    private fun updateBubbleText() {
+        val status = if (batteryText.isNotBlank()) "$batteryText  •  " else ""
+        bubble?.text = "●  $status${latestText.take(38)}"
     }
 
     private fun togglePanel() {
@@ -89,61 +144,123 @@ class FloatingIslandService : Service() {
             expanded = false
             return
         }
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 18, 20, 18)
-            background = rounded(Color.rgb(15, 20, 36), Color.rgb(145, 86, 255), 26f, 2)
+            setPadding(18, 16, 18, 14)
+            background = rounded(Color.rgb(12, 17, 31), Color.rgb(67, 208, 255), 27f, 2)
         }
-        val heading = label("DYNAMIC ISLAND ULTRA", 15f, true)
-        root.addView(heading)
-        root.addView(label("ASSISTIVE CONTROL CENTER", 9f, false))
-        addSection(root, "QUICK TOOLS", listOf(
-            "Wi-Fi settings" to android.provider.Settings.Panel.ACTION_WIFI,
-            "Bluetooth settings" to android.provider.Settings.ACTION_BLUETOOTH_SETTINGS,
-            "Internet settings" to android.provider.Settings.Panel.ACTION_INTERNET_CONNECTIVITY,
-            "Sound settings" to android.provider.Settings.ACTION_SOUND_SETTINGS
+        root.addView(label("DYNAMIC ISLAND ULTRA", 16f, true))
+        root.addView(label("ASSISTIVE CONTROL CENTER", 9f, false).apply {
+            setTextColor(Color.rgb(153, 172, 206))
+            setPadding(0, 3, 0, 10)
+        })
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        addSection(content, "01  QUICK CONNECTIVITY", listOf(
+            "Wi-Fi panel" to "wifi",
+            "Internet connectivity" to "internet",
+            "Bluetooth settings" to "bluetooth",
+            "Sound & volume" to "sound"
         ))
-        addSection(root, "DEVICE & UTILITIES", listOf(
-            "Display settings" to android.provider.Settings.ACTION_DISPLAY_SETTINGS,
-            "Battery settings" to android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS,
-            "Accessibility settings" to android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS,
-            "App settings" to android.provider.Settings.ACTION_APPLICATION_SETTINGS
+        addSection(content, "02  COMMUNICATION", listOf(
+            "Phone dialer" to "dialer",
+            "App notifications" to "app_notifications",
+            "Notification access" to "notification_access"
         ))
-        val close = label("CLOSE", 12f, true).apply {
+        addSection(content, "03  MEDIA & CAPTURE", listOf(
+            "Music player" to "music",
+            "Camera" to "camera",
+            "Web browser" to "browser"
+        ))
+        addSection(content, "04  PRODUCTIVITY", listOf(
+            "Calculator" to "calculator",
+            "Calendar" to "calendar",
+            "Clock & alarms" to "clock",
+            "Start 5-minute timer" to "timer",
+            "System file picker" to "files"
+        ))
+        addSection(content, "05  DEVICE & ACCESSIBILITY", listOf(
+            "Display settings" to "display",
+            "Battery settings" to "battery",
+            "Accessibility settings" to "accessibility",
+            "Application settings" to "apps",
+            "This app's settings" to "app_info",
+            "System settings" to "system_settings"
+        ))
+
+        val scroll = ScrollView(this).apply {
+            isFillViewport = false
+            addView(content)
+        }
+        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
+
+        val close = label("CLOSE PANEL  ×", 11f, true).apply {
             gravity = Gravity.CENTER
-            setPadding(12, 18, 12, 8)
+            setPadding(10, 15, 10, 2)
+            setTextColor(Color.rgb(67, 232, 255))
             setOnClickListener { togglePanel() }
         }
         root.addView(close)
+
+        val metrics = resources.displayMetrics
+        val width = minOf((metrics.widthPixels * .91f).toInt(), (440 * metrics.density).toInt())
+        val height = (metrics.heightPixels * .76f).toInt()
         val params = WindowManager.LayoutParams(
-            (resources.displayMetrics.widthPixels * .88f).toInt(),
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            width,
+            height,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            y = (85 * resources.displayMetrics.density).toInt()
+            y = (82 * metrics.density).toInt()
         }
         panel = root
         windowManager.addView(root, params)
         expanded = true
     }
 
-    private fun addSection(root: LinearLayout, title: String, actions: List<Pair<String, String>>) {
-        root.addView(label(title, 10f, true).apply { setPadding(0, 18, 0, 8) })
-        actions.forEach { (name, action) ->
-            val item = label("›  $name", 13f, false).apply {
-                setPadding(12, 12, 12, 12)
-                background = rounded(Color.rgb(28, 36, 56), Color.rgb(54, 70, 100), 14f, 1)
+    private fun addSection(
+        root: LinearLayout,
+        title: String,
+        actions: List<Pair<String, String>>
+    ) {
+        root.addView(label(title, 9f, true).apply {
+            setTextColor(Color.rgb(88, 220, 255))
+            setPadding(0, 16, 0, 7)
+        })
+        actions.forEach { (name, key) ->
+            val item = label("›   $name", 13f, false).apply {
+                setPadding(13, 12, 12, 12)
+                background = rounded(
+                    Color.rgb(24, 32, 51),
+                    Color.rgb(48, 69, 103),
+                    14f,
+                    1
+                )
+                contentDescription = name
                 setOnClickListener {
-                    runCatching {
-                        val i = Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(i)
+                    val intent = UtilityIntents.create(key, packageName)
+                    if (intent == null) {
+                        Toast.makeText(this@FloatingIslandService, "Tool unavailable", Toast.LENGTH_SHORT).show()
+                    } else {
+                        runCatching { startActivity(intent) }.onFailure {
+                            Toast.makeText(
+                                this@FloatingIslandService,
+                                "$name is not available on this device",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }
-            root.addView(item, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = 7 })
+            root.addView(item, LinearLayout.LayoutParams(-1, -2).apply {
+                bottomMargin = (6 * resources.displayMetrics.density).toInt()
+            })
         }
     }
 
@@ -154,11 +271,12 @@ class FloatingIslandService : Service() {
         if (bold) typeface = Typeface.DEFAULT_BOLD
     }
 
-    private fun rounded(color: Int, stroke: Int, radius: Float, width: Int) = GradientDrawable().apply {
-        setColor(color)
-        cornerRadius = radius * resources.displayMetrics.density
-        setStroke(width, stroke)
-    }
+    private fun rounded(color: Int, stroke: Int, radius: Float, width: Int) =
+        GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = radius * resources.displayMetrics.density
+            setStroke(width, stroke)
+        }
 
     private inner class DragTouchListener : View.OnTouchListener {
         private var downX = 0f
@@ -166,11 +284,14 @@ class FloatingIslandService : Service() {
         private var startX = 0
         private var startY = 0
         private var dragged = false
-        override fun onTouch(v: View, event: MotionEvent): Boolean {
+
+        override fun onTouch(view: View, event: MotionEvent): Boolean {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    downX = event.rawX; downY = event.rawY
-                    startX = bubbleParams.x; startY = bubbleParams.y
+                    downX = event.rawX
+                    downY = event.rawY
+                    startX = bubbleParams.x
+                    startY = bubbleParams.y
                     dragged = false
                     return true
                 }
@@ -184,7 +305,14 @@ class FloatingIslandService : Service() {
                     return true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (!dragged) v.performClick()
+                    if (dragged) {
+                        getSharedPreferences("island", MODE_PRIVATE).edit()
+                            .putInt("bubble_x", bubbleParams.x)
+                            .putInt("bubble_y", bubbleParams.y)
+                            .apply()
+                    } else {
+                        view.performClick()
+                    }
                     return true
                 }
             }
@@ -194,7 +322,11 @@ class FloatingIslandService : Service() {
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
-            val channel = NotificationChannel("island_service", "Dynamic Island", NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(
+                "island_service",
+                "Dynamic Island",
+                NotificationManager.IMPORTANCE_LOW
+            )
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }
@@ -210,16 +342,21 @@ class FloatingIslandService : Service() {
 
     override fun onDestroy() {
         runCatching { unregisterReceiver(notificationReceiver) }
+        runCatching { unregisterReceiver(batteryReceiver) }
+        pulseAnimator?.cancel()
+        pulseAnimator = null
         bubble?.let { runCatching { windowManager.removeView(it) } }
         panel?.let { runCatching { windowManager.removeView(it) } }
-        bubble = null; panel = null
+        bubble = null
+        panel = null
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val ACTION_NOTIFICATION_PREVIEW = "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"
+        const val ACTION_NOTIFICATION_PREVIEW =
+            "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"
         const val ACTION_STOP = "com.adebojel.dynamicislandultra.STOP_ISLAND"
     }
 }
