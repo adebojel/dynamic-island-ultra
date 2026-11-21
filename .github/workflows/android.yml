@@ -1,4 +1,4 @@
-name: Android CI and APK Release
+name: Android CI and Offline APK Release
 
 on:
   push:
@@ -14,9 +14,9 @@ concurrency:
 
 jobs:
   build:
-    name: Build installable APK
+    name: Test and build offline APK
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -32,26 +32,30 @@ jobs:
         with:
           packages: ''
 
-      - name: Install Android platform and build tools
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android API 37 platform and build tools
+        run: sdkmanager "platforms;android-37" "build-tools;36.0.0"
 
-      - name: Install Gradle
+      - name: Install Gradle 9.7
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: '9.7'
 
-      - name: Enforce no network permission and no network SDK dependencies
+      - name: Enforce offline-only manifest and dependency policy
         shell: bash
         run: |
           if grep -RInE 'android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|okhttp|retrofit|ktor-client|firebase|play-services' app/src app/build.gradle.kts; then
             echo "::error::Unexpected network permission or network SDK dependency found."
             exit 1
           fi
+          echo "No network permissions or network SDK dependencies detected."
+
+      - name: Run offline assistant unit tests
+        run: gradle --no-daemon --stacktrace testDebugUnitTest
 
       - name: Build debug APK
         run: gradle --no-daemon --stacktrace assembleDebug
 
-      - name: Verify APK and enforce 400 MiB budget
+      - name: Verify APK and enforce 400 MiB project budget
         shell: bash
         run: |
           APK="app/build/outputs/apk/debug/app-debug.apk"
@@ -70,10 +74,11 @@ jobs:
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dynamic-island-ultra-v0.0.0-apk
+          name: dynamic-island-ultra-v0.0.0-offline-apk
           path: |
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/debug/app-debug.apk.sha256
+            app/build/reports/tests/testDebugUnitTest/
           if-no-files-found: error
           retention-days: 30
 
@@ -82,13 +87,15 @@ jobs:
         with:
           tag_name: v0.0.0
           target_commitish: main
-          name: Dynamic Island Ultra v0.0.0
+          name: Dynamic Island Ultra v0.0.0 — Offline Preview
           body: |
-            Initial installable engineering preview for Dynamic Island Ultra.
+            Offline-only engineering preview.
 
-            Includes a draggable, pulsing floating island, battery status, notification preview bridge, and categorized Android shortcut menu.
+            Includes the draggable floating island, local installed-app launcher, offline notes/calculator/utility assistant, and an app-owned PiP workspace.
 
-            This APK is debug-signed for sideload testing. It is not a production-key-signed Play Store release.
+            Android PiP applies only to activities that support it; this app cannot force third-party apps to use PiP.
+
+            This APK is debug-signed for sideload testing, not a production Play Store release.
           files: |
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/debug/app-debug.apk.sha256

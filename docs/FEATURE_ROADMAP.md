@@ -1,39 +1,31 @@
 # Dynamic Island Ultra — Feature Roadmap
 
-This roadmap distinguishes implemented behavior from product goals. “Included” means present in source and compiled by CI; device-specific runtime behavior still needs hands-on testing.
+This roadmap separates source implementation from behaviour not yet physically validated.
 
-## Implemented baseline — v0.0.0
-- Kotlin / Jetpack Compose Android application scaffold (min SDK 26, target SDK 35).
-- Dark cyan/violet dashboard and custom adaptive launcher icon.
-- User-started foreground service for the overlay.
-- Draggable Dynamic Island / assistive bubble with a soft pulse animation.
-- Bubble X/Y position saved in local preferences.
-- Battery percentage and charging marker delivered by the system battery broadcast.
-- Notification listener bridge that forwards a short notification preview locally to the bubble after the user grants notification access.
-- Scrollable floating shortcut hub with five categories: connectivity, communication, media/capture, productivity, and device/accessibility.
-- Twenty-one shortcut actions that open Android settings panels or installed apps where available.
-- Boot receiver for previously enabled overlay, best-effort within Android background-start restrictions.
-- GitHub Actions debug APK build, 400 MiB size guard, SHA-256 generation, workflow artifact, and v0.0.0 release asset.
+## Current source baseline
+- Kotlin / Compose dashboard and custom RGB/glass launcher illustration.
+- Draggable floating island service with pulse, saved position, battery indicator and notification-preview bridge.
+- Seven floating menu sections with Android settings/app shortcuts and local utility activities.
+- Launcher-visible installed-app collection (limited package visibility).
+- Local notes, calculator and deterministic offline command assistant.
+- App-owned PiP workspace activity.
+- Offline manifest/dependency policy guard, local assistant unit tests, APK size guard and SHA-256 release.
 
-## Planned feature modules
-- Dynamic Island state machine: collapsed, expanded, transient, pinned, and dismissible activity cards.
-- Media session integration: current track, artwork, progress, elapsed/total time, play/pause/next/previous.
-- Call activity cards through supported Android call/telecom surfaces and user-granted roles where applicable.
-- Rich battery / charging activity card, low-battery notifications, charging states.
-- Notification grouping, app allowlist, privacy filters, per-app controls, supported inline actions.
-- Real floating mini-windows: notes, calculator, browser, document viewer, media player, and user-selected widgets.
-- Assistive-touch actions only where Android APIs and explicit user consent permit them.
-- Gesture map, edge docking, configurable hit areas, haptics, drag/resize behavior.
-- Theme editor, RGB/gradient/glass effects, reduced-motion mode, accessibility labels and TalkBack traversal.
-- Optional speech and AI modules with explicit opt-in, local processing where feasible, and offline alternatives.
-- Local data settings, export/import, and module-level controls.
+## Next modules
+1. Physical-device lifecycle, permission and OEM test matrix.
+2. Notification filters, allowlist and privacy controls.
+3. MediaSession metadata/artwork/playback controls.
+4. Supported incoming/ongoing call activity cards.
+5. Additional internal floating tools: image/document preview, timers, QR/barcode and sensor kit.
+6. Window positioning/resizing for app-owned internal tools; edge docking and gestures.
+7. TalkBack, contrast, larger text and keyboard navigation.
+8. Offline speech recognition and text-to-speech models when compatible with device storage and RAM.
+9. Generative on-device LLM integration only as a user-imported local model with license, quantization, memory, CPU/GPU and 400 MiB storage review.
 
 ## Engineering gates
-A module is not marked complete until it has:
-1. A documented permission and privacy rationale.
-2. API-level and OEM compatibility notes.
-3. Unit or instrumentation tests where practical.
-4. Lifecycle cleanup and memory-leak review.
-5. Battery and performance measurements.
-6. A successful CI build.
-7. Manual smoke testing on representative physical devices before a production release.
+- Unit/instrumentation tests for business logic and UI flows.
+- Manifest/dependency audit proving no Internet permission or network SDKs.
+- APK/model size and runtime RAM budgets.
+- Lifecycle cleanup, memory, battery and crash review.
+- Android API/OEM compatibility checks and manual physical-device smoke tests.
+- Production signing key held outside repository.

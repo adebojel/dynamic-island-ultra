@@ -1,195 +1,161 @@
+# Dynamic Island Ultra
+
 <div align="center">
 
-<img src="assets/dynamic-island-banner.svg" alt="Dynamic Island Ultra" width="100%"/>
+<img src="assets/dynamic-island-offline-hero.svg" alt="Dynamic Island Ultra — offline glass interface" width="100%"/>
 
-# DYNAMIC ISLAND ULTRA
-
-### Smart Interaction · Floating Assistive Bubble · Android
-
-**An Android overlay prototype with a draggable, animated island, live battery indicator, notification previews, and a categorized assistive shortcut hub.**
+**Offline-first floating island · Assistive launcher · Local toolbox**
 
 [![Build](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml/badge.svg)](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/adebojel/dynamic-island-ultra?label=release)](https://github.com/adebojel/dynamic-island-ultra/releases)
-[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![Android](https://img.shields.io/badge/Android-8%2B-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
+[![Offline](https://img.shields.io/badge/Network-Not%20requested-42DFA5)](#offline-only-privacy)
 
-[**Download APK**](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)
-· [Releases](https://github.com/adebojel/dynamic-island-ultra/releases)
-· [Report an issue](https://github.com/adebojel/dynamic-island-ultra/issues)
+[**Download APK v0.0.0**](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256) · [Releases](https://github.com/adebojel/dynamic-island-ultra/releases)
 
 </div>
 
 ---
 
-## ✨ Product vision
+## Product overview
 
-Dynamic Island Ultra is an independent Android project inspired by common dynamic-island, floating-assistive-touch, and quick-tool experiences. It is being built as one modular app—not as a binary copy of third-party applications.
+Dynamic Island Ultra is an independent Android app combining a draggable floating island, assistive launcher, offline utility tools and an app-owned Picture-in-Picture workspace. It is inspired by common floating launcher and Dynamic Island patterns; it does not bundle proprietary source code, artwork or branding from third-party apps.
 
-The long-term product plan includes a configurable dynamic island, notification and media activity cards, a categorized assistive bubble, system shortcuts, visual effects, gesture controls, accessibility-aware interactions, and optional AI capabilities.
+<img src="assets/floating-hub-offline-toolbox.svg" alt="Floating shortcut categories and offline tools" width="100%"/>
 
-## 📦 Download
+## Download and install
 
-<div align="center">
+**Version:** 0.0.0 engineering preview
 
-### Version 0.0.0 · Installable engineering preview
+[Download installable APK](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk)
 
-[![Download APK](https://img.shields.io/badge/Download-Android%20APK-43E8FF?style=for-the-badge&logo=android&logoColor=101522)](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk)
+[Open GitHub Release v0.0.0](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.0)
 
-**[Open GitHub Release v0.0.0](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.0)** · **[Download checksum](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)**
+[Download SHA-256 checksum](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)
 
-</div>
+> Debug-signed APK for sideload testing. It is not signed with a protected production key and is not a Google Play-certified release.
 
-> The first APK is a debug-signed preview produced by GitHub Actions. It can be installed by sideloading after allowing installation from the source you use. It is not a Play Store-certified or production-key-signed build. Android may show an installation warning for apps installed outside Google Play.
+## Current implementation
 
-## 🚀 Current build scope
-
-| Capability | v0.0.0 status |
+| Module | Included behaviour |
 |---|---|
-| Modern dark dashboard with cyan/violet styling | Included |
-| Custom adaptive launcher icon | Included |
-| Floating island overlay | Included |
-| Draggable assistive bubble | Included |
-| Five categorized groups with 21 Android shortcut intents | Included |
-| Wi-Fi, Internet, Bluetooth, sound and device settings panels | Included |
-| Calculator, calendar, clock/timer, camera, music, browser and file picker shortcuts | Included |
-| Animated bubble pulse and remembered drag position | Included |
-| Live battery percentage / charging marker while overlay is active | Included |
-| Notification-listener integration | Foundation included; user must grant access |
-| Notification preview broadcast to island | Foundation included |
-| Boot receiver for user-enabled overlay | Foundation included; Android/OEM limits apply |
-| Media session cards and playback controls | Planned |
-| Incoming/ongoing call activity UI | Planned |
-| Expanded battery and charging activity cards | Planned |
-| Custom theme editor and RGB effects | Planned |
-| Gesture customization and haptics | Planned |
-| AI assistant and offline speech models | Planned |
-| Floating mini-app windows | Planned |
-| Advanced utility toolbox | Planned |
+| Dynamic Island | Draggable floating pill, soft pulse and saved position |
+| Battery | Live percentage/charging indicator while overlay runs |
+| Notification bridge | Local notification preview after notification-listener access is granted |
+| Assistive hub | Five scrollable categories of Android settings/app shortcuts |
+| App collection | Queries launcher-visible apps and opens selected apps |
+| Offline notes | Saves text locally using app-private preferences |
+| Offline calculator | Parses arithmetic expressions locally |
+| Offline utility assistant | Rule-based local commands, battery status and arithmetic; not a chat service |
+| PiP workspace | Android-managed PiP for this app's own workspace activity |
+| Boot handling | Best-effort restore subject to Android/OEM restrictions |
 
-This is an installable engineering preview, not a finished Full Experience product. Shortcut entries open Android settings or installed apps; they are not yet independent floating mini-app windows. Media-session controls, live call cards, rich battery activity cards, theme editing, advanced gestures, and AI remain roadmap work.
+## Floating bubble categories
 
-## 🧭 Floating bubble categories
+1. **Quick connectivity:** Wi-Fi panel, internet settings panel, Bluetooth settings, sound settings.
+2. **Communication:** dialer, app notification settings, notification-listener settings.
+3. **Media and capture:** default music app, camera app, browser app.
+4. **Productivity:** calculator, calendar, clock/alarms, five-minute timer, Android file picker.
+5. **Device and accessibility:** display, battery, accessibility, application, app-info and system settings.
+6. **My floating apps:** installed app collection, PiP workspace, offline notes, offline calculator.
+7. **Offline intelligence:** local utility assistant.
 
-The assistive panel currently contains five scrollable categories:
+Shortcut entries open Android settings or installed apps. They are not independent floating app windows.
 
-- **Quick connectivity:** Wi-Fi panel, internet connectivity, Bluetooth settings, sound and volume.
-- **Communication:** phone dialer, app notification settings, notification access.
-- **Media & capture:** default music player, camera, web browser.
-- **Productivity:** calculator, calendar, clock and alarms, five-minute timer, Android system file picker.
-- **Device & accessibility:** display, battery, accessibility, application settings, this app's settings, Android system settings.
+## Offline-only privacy
 
-Unavailable intents are reported to the user instead of crashing the floating panel.
+- No `android.permission.INTERNET` or `ACCESS_NETWORK_STATE` permission.
+- No online model endpoint, API key, analytics, ads, telemetry, remote configuration or cloud sync.
+- Notes and assistant processing remain on-device.
+- CI rejects common network permissions and network SDK dependencies.
+- The assistant is a deterministic local command engine, not a generative LLM.
 
-Android intentionally routes several controls through system settings panels. An ordinary third-party app cannot silently toggle every protected system setting.
+A future generative offline model must be imported as a local model file and reviewed for license, quantization, RAM, CPU/GPU support and storage use. Model files can exceed the 400 MiB budget on their own; they are not downloaded automatically or bundled by default.
 
-## 🔐 Permissions and privacy
+## PiP and multi-window boundaries
 
-Permissions are requested only when a feature needs them. The app does not silently grant itself privileged access.
+Android PiP applies to activities designed and declared for PiP. This app provides PiP for its own workspace; it cannot force arbitrary third-party apps into PiP or bypass Android's window limits. See the [Android PiP guide](https://developer.android.com/develop/ui/views/picture-in-picture).
 
-| Permission / access | Why it is used |
-|---|---|
-| Display over other apps | Render the floating island and assistive bubble |
-| Notification access | Read notification previews selected by the user |
-| Post notifications | Show the foreground-service notification on Android 13+ |
-| Boot completed | Restore a previously enabled experience after reboot, where Android allows it |
+The installed-app collection uses a limited launcher query rather than `QUERY_ALL_PACKAGES`. Apps without a visible launcher activity may not appear.
 
-SMS, contacts, call-log, broad storage, microphone capture, and accessibility-control permissions are **not** requested by this initial build. The camera shortcut opens the device's camera app; it does not capture images in the background. They must not be added without a concrete feature, a clear disclosure, and a valid Android/Google Play policy basis.
+## Permissions
 
-Notification content can contain sensitive information. Enable notification access only if you are comfortable allowing this app to read notification previews. The initial implementation processes previews locally and does not upload them.
+The app uses overlay permission, notification posting/access (user-granted), foreground service and boot-completed permissions. It does not request SMS, call logs, contacts, microphone capture, broad storage or unrestricted package visibility.
 
-## 📱 Compatibility
+Special permissions are granted by the Android Settings UI; an ordinary app cannot grant privileged access silently.
 
-- Minimum Android version: Android 8.0 (API 26).
-- Target SDK: Android 15 (API 35).
-- Built with Kotlin, Jetpack Compose, AndroidX, and Gradle.
-- Overlay appearance and background behavior can vary by device manufacturer and Android version.
+## Compatibility and pinned build toolchain
 
-## 🛠️ Build from source
+- Minimum Android: 8.0 / API 26.
+- Compile/target SDK: API 37.
+- JDK: 17.
+- Android Gradle Plugin: 9.3.1.
+- Kotlin: 2.4.21.
+- Gradle: 9.7.
+- Compose BOM: 2026.11.01.
+- Activity Compose: 1.13.0.
 
-Requirements:
-- JDK 17
-- Android SDK Platform 35
-- Gradle 8.9 (the GitHub Actions workflow installs it)
-
-Build a debug APK:
+Build locally:
 
 ```bash
-gradle --no-daemon assembleDebug
+gradle --no-daemon testDebugUnitTest assembleDebug
 ```
 
 APK output:
 
-```
+```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## 🤖 GitHub Actions
+## CI and APK size guard
 
-Every push to `main` runs the Android build workflow. The workflow:
-1. Checks out the main branch.
-2. Installs JDK 17, Android SDK, and Gradle.
-3. Builds the debug APK.
-4. Enforces the 400 MiB APK size ceiling and generates a SHA-256 checksum.
-5. Uploads the APK and checksum as workflow artifacts.
-6. Publishes or updates both assets in the `v0.0.0` GitHub Release.
+Every push to `main` runs:
+1. Offline manifest/dependency policy checks.
+2. Unit tests for assistant command parsing and arithmetic.
+3. Android debug APK compilation.
+4. APK size enforcement against a 400 MiB ceiling.
+5. SHA-256 generation.
+6. Workflow artifact upload and update of GitHub Release `v0.0.0`.
 
-The release workflow uses the repository's `GITHUB_TOKEN`; no personal access token is stored in source code.
+## Known limitations
 
-## 🧱 Architecture
+- The assistant is not a general-purpose generative language model.
+- PiP works for PiP-enabled activities; third-party apps must independently support it.
+- Arbitrary floating windows for other apps cannot be guaranteed by Android.
+- Boot restore is best-effort. Force-stop, background-start restrictions and OEM battery managers may stop the app.
+- Media-session cards, richer call cards, user-defined theme editor, gesture builder, screen recording, offline speech and local generative LLM remain planned.
+- Debug APK is not production-signed or Play Store certified.
+- Runtime behaviour still needs physical-device smoke tests across Android/OEM versions.
+
+## Source structure
 
 ```text
-app/
- └── src/main/
-     ├── java/com/adebojel/dynamicislandultra/
-     │   ├── MainActivity.kt
-     │   ├── overlay/
-     │   │   └── FloatingIslandService.kt
-     │   ├── notifications/
-     │   │   └── IslandNotificationListener.kt
-     │   ├── system/
-     │   │   └── UtilityIntents.kt
-     │   └── boot/
-     │       └── BootReceiver.kt
-     └── res/
-         ├── drawable/
-         ├── mipmap-anydpi-v26/
-         └── values/
+app/src/main/java/com/adebojel/dynamicislandultra/
+  MainActivity.kt
+  ai/OfflineAssistant.kt
+  ai/OfflineAssistantActivity.kt
+  boot/BootReceiver.kt
+  floating/FloatingAppRepository.kt
+  floating/InstalledAppsActivity.kt
+  floating/LocalToolActivities.kt
+  notifications/IslandNotificationListener.kt
+  overlay/FloatingIslandService.kt
+  system/UtilityIntents.kt
 ```
 
-The code is intentionally separated by responsibility so that media, calls, battery events, gesture handling, themes, and AI can be added as independent components.
+## Open-source research and licensing
 
-## ⚖️ Open-source intake policy
+See [OPEN_SOURCE_RESEARCH.md](docs/OPEN_SOURCE_RESEARCH.md), [FEATURE_CATALOG.md](docs/FEATURE_CATALOG.md), and [FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md). Third-party source is not incorporated until exact license, NOTICE, security, dependency and runtime footprint are reviewed.
 
-External code, assets, models, and libraries are not copied blindly. Each candidate must be checked for:
-- License compatibility and attribution requirements.
-- Security, maintenance activity, and dependency health.
-- Android API and target-SDK compatibility.
-- Runtime footprint, battery impact, and accessibility.
-- Duplicate functionality and integration test coverage.
+## Android background and distribution
 
-Third-party trademarks, proprietary artwork, and source code are not bundled unless their license explicitly permits the intended use.
-
-## 🛡️ Android background and Play policy notes
-
-No Android application can be guaranteed to be immune to force-stop, OEM task killers, battery controls, crashes, or operating-system restrictions. Users remain in control of special access. Reboot restoration is best-effort and subject to Android background-start restrictions and manufacturer behavior.
-
-Google Play approval cannot be guaranteed by code. Any Play Store release must pass current policy review, prominently disclose sensitive access, request only necessary permissions, and use a properly protected production signing key.
-
-## 🗺️ Roadmap
-
-1. Stabilize overlay lifecycle, permission onboarding, and reboot behavior.
-2. Add media-session activity cards, album artwork, and playback actions.
-3. Add incoming/ongoing call-state and richer battery/charging activity cards.
-4. Expand the assistive bubble with categorized, configurable utilities.
-5. Add configurable gestures, haptics, themes, edge docking, and richer visual effects.
-6. Add optional AI/voice features with explicit privacy controls.
-7. Add floating note/calculator/browser mini-windows, automated tests, device-matrix testing, and production signing.
+No application can be made immune to Android force-stop, crashes, system restrictions or OEM battery managers. Google Play approval cannot be guaranteed; a production release needs compliant disclosures, appropriate special-use service declarations and a protected signing key.
 
 ---
 
 <div align="center">
 
-**Built for Android · Designed to be modular · Privacy-conscious by default**
+**Offline-first · User-controlled · Modular Android utility**
 
 [Repository](https://github.com/adebojel/dynamic-island-ultra) · [Issues](https://github.com/adebojel/dynamic-island-ultra/issues)
 

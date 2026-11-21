@@ -1,50 +1,51 @@
-# Dynamic Island Ultra — v0.0.0 Feature Catalog
+# Dynamic Island Ultra — Feature Catalog
 
-## Present in the current source
+## Present in current source (physical-device validation still required)
 
-### Application shell
-- Android native app built with Kotlin and Jetpack Compose.
-- Dark navy dashboard with cyan/violet accents and launcher branding.
-- User-guided permission center with links to Android's overlay, notification-listener, notification, and battery settings surfaces.
+### Dynamic Island and assistive overlay
+- User-started foreground overlay service.
+- Draggable floating pill, pulse animation and persisted X/Y position.
+- Live battery percentage/charging state while service is active.
+- Locally forwarded notification preview after notification access is granted.
+- Scrollable floating shortcut hub.
 
-### Dynamic Island and assistive bubble
-- Foreground overlay service started by explicit user action.
-- Floating pill with a draggable touch target.
-- Gentle pulse animation while the service is active.
-- Bubble X/Y position saved in local preferences.
-- Battery percentage and charging marker delivered by the system battery broadcast.
-- Notification title/text preview forwarded locally after notification access is granted.
-- Expanded, scrollable shortcut hub sized to the device screen.
+### Android shortcuts
 
-### Floating shortcut categories
 | Category | Shortcuts |
 |---|---|
-| Quick connectivity | Wi-Fi panel, Internet connectivity, Bluetooth settings, Sound & volume |
-| Communication | Phone dialer, App notifications, Notification access |
-| Media & capture | Default music app, Camera app, Web browser |
-| Productivity | Calculator app, Calendar app, Clock & alarms, 5-minute timer, Android system file picker |
-| Device & accessibility | Display settings, Battery settings, Accessibility settings, Application settings, App info, System settings |
+| Quick connectivity | Wi-Fi panel, internet panel, Bluetooth settings, sound settings |
+| Communication | Phone dialer, app notification settings, notification listener settings |
+| Media/capture | Default music, camera, browser apps |
+| Productivity | Calculator, calendar, clock/alarms, five-minute timer, Android file picker |
+| Device/accessibility | Display, battery, accessibility, app settings, app info, system settings |
 
-These entries open Android-owned settings panels or compatible installed apps. They are launch shortcuts, not custom floating mini-app windows.
+Shortcuts open Android settings or existing installed apps; they are not privileged system toggles.
 
-### Lifecycle and delivery
-- Ongoing notification for the active foreground service.
-- Explicit Stop control.
-- Best-effort restoration after boot when the user previously enabled the bubble and overlay special access remains granted.
-- GitHub Actions build on the main branch.
-- Debug APK and SHA-256 checksum in the v0.0.0 Release.
-- CI size ceiling of 400 MiB for the APK.
+### Offline tools
+- **Installed app collection:** queries launcher-visible activities using a limited manifest query; launches selected app.
+- **Offline notes:** saves one local note in app-private preferences.
+- **Offline calculator:** parses basic arithmetic, parentheses and unary signs locally.
+- **Offline utility assistant:** deterministic Indonesian/English keyword routing, arithmetic and system battery status. This is not a generative LLM.
+- **PiP workspace:** Android-managed PiP for an app-owned workspace that launches internal notes and calculator activities.
+
+### Offline privacy / build
+- No INTERNET or ACCESS_NETWORK_STATE manifest permissions.
+- No online AI, analytics, ads, telemetry, cloud sync or remote configuration SDK.
+- CI checks network permissions/dependencies, tests local logic, builds APK, enforces 400 MiB APK ceiling and generates SHA-256.
+
+## Platform boundaries
+- Third-party apps cannot be forced into PiP by this app.
+- Installed app list is limited to launcher-visible activities; no QUERY_ALL_PACKAGES permission.
+- Boot restoration remains best-effort and subject to Android/OEM restrictions.
 
 ## Not yet implemented
-- Real floating mini-app windows (notes, calculator, browser, PDF/document viewer).
-- MediaSession metadata, artwork, seek bar and playback controls inside the island.
-- Incoming/ongoing call card and call actions.
-- Rich download/live-progress and screen-recording status cards.
-- Editable themes, RGB editor, transparent style controls, resize/edge docking and user-defined gestures.
-- Virtual Home/Back/Recents, lock screen and screenshot shortcuts requiring role/accessibility APIs.
-- Sensor toolbox, document scanner, QR/barcode generator, audio recorder and screen recorder.
-- Speech recognition, text-to-speech, AI assistant, and offline model support.
-- Automated UI/instrumentation suite and physical-device compatibility matrix.
+- Generative local LLM runtime and separately imported local model.
+- Offline speech recognition and TTS models.
+- Multiple independent floating app windows and floating document/browser widgets.
+- MediaSession artwork/progress/playback controls and call activity cards.
+- Screen capture/recording, QR/barcode scanner, document scanner and hardware sensor suite.
+- User theme editor, RGB picker, gestures, edge docking, haptics.
+- Automated UI/device instrumentation and physical-device OEM matrix.
 
 ## Permission policy
-Only request a permission when the related feature is implemented and the user understands why it is needed. The current app does not request SMS, contacts, call log, broad storage, microphone, or broad package visibility. Android settings and app shortcuts are used instead of bypassing protected system controls.
+Request permissions only when the feature is implemented and its use is disclosed. No SMS, contacts, call log, microphone capture, broad storage, broad package visibility or network permissions are requested.
