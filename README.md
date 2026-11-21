@@ -87,12 +87,12 @@ Special permissions are granted by the Android Settings UI; an ordinary app cann
 ## Compatibility and pinned build toolchain
 
 - Minimum Android: 8.0 / API 26.
-- Compile/target SDK: API 37.
+- Compile/target SDK: API 36 (stable).
 - JDK: 17.
 - Android Gradle Plugin: 9.3.1.
 - Kotlin: 2.4.21.
 - Gradle: 9.7.
-- Compose BOM: 2026.11.01.
+- Compose BOM: 2026.07.00 (stable release before API 37 requirement).
 - Activity Compose: 1.13.0.
 
 Build locally:
