@@ -64,7 +64,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             setTextColor(Color.WHITE)
             setHintTextColor(Color.LTGRAY)
             textSize = 13f
-            singleLine = true
+            setSingleLine(true)
             setBackgroundColor(Color.rgb(24, 36, 58))
             setPadding(12, 4, 12, 4)
             imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_GO
@@ -119,7 +119,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             setSupportMultipleWindows(false)
             builtInZoomControls = true
             displayZoomControls = false
-            supportZoom = true
+            setSupportZoom(true)
             if (android.os.Build.VERSION.SDK_INT >= 26) safeBrowsingEnabled = true
         }
         applyBrowserMode(web)
