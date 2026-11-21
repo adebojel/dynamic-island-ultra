@@ -32,7 +32,7 @@ The built-in assistant and local tools work without internet, imported model fil
 - Minimum Android: 8.0 Oreo / API 26.
 - Compile/target SDK: 36.
 - Release `versionCode` comes from the monotonically increasing GitHub Actions run number.
-- Each signed main build publishes a unique release tag `v0.0.N`.
+- Each signed main build increments the patch release tag from the latest successful `v0.0.N` (v0.0.0 → v0.0.1 → v0.0.2).
 - Stable release signing secrets are required for update-compatible GitHub assets.
 - APK checksum and release metadata accompany signed releases.
 
