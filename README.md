@@ -9,7 +9,7 @@
 [![Build](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml/badge.svg)](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/adebojel/dynamic-island-ultra?label=release)](https://github.com/adebojel/dynamic-island-ultra/releases)
 [![Android](https://img.shields.io/badge/Android-8%2B%20(API%2026)-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
-[![Network](https://img.shields.io/badge/Network-Feature%20Scoped-42DFA5)](docs/NETWORK_AND_UPDATES.md)
+[![Network](https://img.shields.io/badge/Network-Internet%20Enabled-42DFA5)](docs/NETWORK_AND_UPDATES.md)
 
 [**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases)
 
@@ -101,9 +101,9 @@ The pre-existing `v0.0.0` asset was built before stable signing was configured. 
 
 ## Permissions and privacy
 
-The app requests overlay access, notification access/permission and install-from-this-source authorization only when their features need them. It does not request SMS, contacts, call logs, microphone capture, broad storage, broad package visibility or unrestricted network-state access.
+The app requests overlay access, notification access/permission and install-from-this-source authorization only when their features need them. It does not request SMS, contacts, call logs, microphone capture, broad storage or broad package visibility. INTERNET and ACCESS_NETWORK_STATE are normal install-time network permissions.
 
-YouTube page data and cookies are handled by Android WebView when the user opens the browser. GitHub update requests reveal ordinary connection metadata to GitHub. The offline assistant does not transmit commands or diagnostics.
+DuckDuckGo searches and visited sites are handled by WebView and the selected website providers. GitHub update requests reveal ordinary connection metadata to GitHub. The offline assistant does not transmit commands or diagnostics.
 
 ## Build and release
 
@@ -133,13 +133,13 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 ## Validation status
 
-CI tests and APK assembly are necessary but do not replace physical-device testing. The next verification gate is smoke-testing overlay lifecycle, notification access, YouTube playback, package-installer handoff, data retention across a signed update, Android 8/9/10 and current Android OEM variants.
+CI tests and APK assembly are necessary but do not replace physical-device testing. The next verification gate is smoke-testing overlay lifecycle, notification access, DuckDuckGo search/navigation and website playback, package-installer handoff, data retention across a signed update, Android 8/9/10 and current Android OEM variants.
 
 ---
 
 <div align="center">
 
-**Offline-first core · Explicit network use · User-controlled Android integration**
+**Offline AI core · Full network capability · User-controlled Android integration**
 
 [Repository](https://github.com/adebojel/dynamic-island-ultra) · [Issues](https://github.com/adebojel/dynamic-island-ultra/issues)
 
