@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="660" viewBox="0 0 1400 660" role="img" aria-labelledby="t d">
+<title id="t">Dynamic Island Ultra — Offline Glass Interface</title><desc id="d">A futuristic dark glass floating island and mobile application dashboard.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#070D19"/><stop offset=".55" stop-color="#101B32"/><stop offset="1" stop-color="#22113A"/></linearGradient>
+ <linearGradient id="rgb" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#32DFFF"/><stop offset=".52" stop-color="#7A83FF"/><stop offset="1" stop-color="#D36AFF"/></linearGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFFFFF" stop-opacity=".17"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".035"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#43E8FF" stop-opacity=".32"/><stop offset="1" stop-color="#43E8FF" stop-opacity="0"/></radialGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="44"/></filter><filter id="shadow"><feGaussianBlur stdDeviation="17"/></filter>
+</defs>
+<rect width="1400" height="660" rx="34" fill="url(#bg)"/>
+<circle cx="170" cy="90" r="260" fill="url(#glow)" filter="url(#blur)"/><circle cx="1240" cy="560" r="280" fill="#B54AFF" opacity=".19" filter="url(#blur)"/>
+<g stroke="#B6D8FF" stroke-opacity=".10"><path d="M0 130H1400M0 260H1400M0 390H1400M0 520H1400"/><path d="M140 0V660M280 0V660M420 0V660M560 0V660M700 0V660M840 0V660M980 0V660M1120 0V660M1260 0V660"/></g>
+<rect x="415" y="64" width="570" height="146" rx="73" fill="#000" opacity=".55" filter="url(#shadow)"/>
+<rect x="415" y="52" width="570" height="146" rx="73" fill="#0A1020" stroke="url(#rgb)" stroke-width="3"/>
+<rect x="430" y="67" width="540" height="116" rx="58" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity=".18"/>
+<circle cx="478" cy="125" r="20" fill="#43E8FF" opacity=".17"/><circle cx="478" cy="125" r="9" fill="#43E8FF"/>
+<text x="520" y="117" fill="#F8FCFF" font-family="Inter,Arial" font-size="25" font-weight="700" letter-spacing="3">ISLAND ACTIVE</text>
+<text x="520" y="151" fill="#AFC4E5" font-family="Inter,Arial" font-size="16" letter-spacing="2">OFFLINE · PRIVATE · LOCAL</text>
+<text x="700" y="330" text-anchor="middle" fill="#FFFFFF" font-family="Inter,Arial" font-size="68" font-weight="800" letter-spacing="5">DYNAMIC ISLAND</text>
+<text x="700" y="405" text-anchor="middle" fill="url(#rgb)" font-family="Inter,Arial" font-size="68" font-weight="800" letter-spacing="11">ULTRA</text>
+<text x="700" y="452" text-anchor="middle" fill="#B8C8E4" font-family="Inter,Arial" font-size="19" letter-spacing="5">FLOATING ASSISTIVE CONTROL CENTER</text>
+<g transform="translate(392 510)">
+ <rect width="616" height="70" rx="24" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity=".20"/>
+ <rect x="14" y="13" width="190" height="44" rx="16" fill="#14243A" stroke="#43E8FF" stroke-opacity=".5"/>
+ <rect x="213" y="13" width="190" height="44" rx="16" fill="#1A213D" stroke="#7A83FF" stroke-opacity=".5"/>
+ <rect x="412" y="13" width="190" height="44" rx="16" fill="#281B42" stroke="#D36AFF" stroke-opacity=".5"/>
+ <text x="109" y="41" text-anchor="middle" fill="#EAFBFF" font-family="Inter,Arial" font-size="14">LOCAL TOOLS</text>
+ <text x="308" y="41" text-anchor="middle" fill="#F0EEFF" font-family="Inter,Arial" font-size="14">NO NETWORK</text>
+ <text x="507" y="41" text-anchor="middle" fill="#F9EFFF" font-family="Inter,Arial" font-size="14">GLASS UI</text>
+</g>
+</svg>
