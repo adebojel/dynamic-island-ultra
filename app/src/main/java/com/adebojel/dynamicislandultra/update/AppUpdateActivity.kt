@@ -56,7 +56,7 @@ class AppUpdateActivity : ComponentActivity() {
             setOnClickListener { checkForUpdate() }
         }
         val note = TextView(this).apply {
-            text = "AI dan fitur lokal tidak mengirim data ke internet. Koneksi di layar ini hanya digunakan untuk memeriksa rilis GitHub, mengunduh APK dan memverifikasi SHA-256. Android tetap meminta persetujuan instalasi."
+            text = "Aplikasi memiliki akses internet untuk browser, pembaruan, dan modul online yang ditambahkan kemudian. Perintah AI lokal, kalkulator, catatan dan diagnostik tetap berjalan di perangkat. Android tetap meminta persetujuan instalasi pembaruan."
             textSize = 12f
             setTextColor(android.graphics.Color.LTGRAY)
             setPadding(0, 24, 0, 0)
