@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Dashboard(
                     onStart = { startIsland() },
-                    onStop = { stopService(Intent(this, FloatingIslandService::class.java)) },
+                    onStop = { stopIsland() },
                     onOverlay = { openOverlaySettings() },
                     onNotifications = { openNotificationSettings() },
                     onBattery = { requestBatteryExemption() },
@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
         ContextCompat.startForegroundService(this, Intent(this, FloatingIslandService::class.java))
     }
 
-    private fun openOverlaySettings() {
+    private fun stopIsland() {\n        getSharedPreferences("island", Context.MODE_PRIVATE).edit().putBoolean("enabled", false).apply()\n        stopService(Intent(this, FloatingIslandService::class.java).setAction(FloatingIslandService.ACTION_STOP))\n    }\n\n    private fun openOverlaySettings() {
         startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
     }
 
@@ -152,10 +152,10 @@ private fun Dashboard(
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Button(onClick = { onStart(); running = true }, modifier = Modifier.weight(1f)) {
+                Button(onClick = { onStart() }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Default.Bolt, null); Spacer(Modifier.width(6.dp)); Text("Start Island")
                 }
-                OutlinedButton(onClick = { onStop(); running = false }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = { onStop() }, modifier = Modifier.weight(1f)) {
                     Text("Stop")
                 }
             }
