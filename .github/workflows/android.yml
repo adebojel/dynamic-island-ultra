@@ -1,4 +1,4 @@
-name: Android CI and GitHub APK Release
+name: Android CI and Versioned APK Release
 
 on:
   push:
@@ -43,30 +43,20 @@ jobs:
         with:
           gradle-version: '9.9.1'
 
-      - name: Enforce Android 8+ and scoped network policy
+      - name: Enforce Android 8+ and offline-AI architecture policy
         shell: bash
         run: |
           set -euo pipefail
           grep -q 'minSdk = 26' app/build.gradle.kts
           grep -q 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
-          if grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml; then
-            echo "::error::ACCESS_NETWORK_STATE is not needed and must not be requested."
+          if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|HttpURLConnection|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
+            echo "::error::The built-in AI module must remain local-only and must not contain network clients or endpoints."
             exit 1
           fi
-          if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
-            echo "::error::The built-in assistant must not contain network clients or endpoints."
-            exit 1
-          fi
-          NETWORK_APIS="$(grep -RIlE 'java\.net\.(URL|HttpURLConnection|Socket)|okhttp|retrofit|ktor' app/src/main/java || true)"
-          for source in $NETWORK_APIS; do
-            case "$source" in
-              app/src/main/java/com/adebojel/dynamicislandultra/browser/YoutubeBrowserActivity.kt|app/src/main/java/com/adebojel/dynamicislandultra/update/AppUpdateActivity.kt) ;;
-              *) echo "::error::Network client outside approved feature module: $source"; exit 1 ;;
-            esac
-          done
-          echo "Android 8+ floor and restricted network architecture checks passed."
+          echo "Android 8+ support and local-AI isolation checks passed. Internet is available to app features; AI stays offline by design."
 
       - name: Run offline assistant and local policy tests
         run: gradle --no-daemon --stacktrace testDebugUnitTest -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
@@ -170,9 +160,9 @@ jobs:
             Automatically versioned Android release.
 
             - Android minimum: 8.0 Oreo / API 26.
-            - Internet access is limited in app code to the YouTube browser and this GitHub update flow.
+            - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
             - The built-in assistant and local tools remain offline.
-            - SHA-256 checksum and release-info.json are attached.
+            - SHA-256 checksum and release-info.json are attached.\n            - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.\n            - Network permissions are prepared for future Google Mobile Ads integration; ad SDK and consent messaging require separate IDs and setup.
             - Install/update is handed to Android's package installer; user confirmation may be required.
             - This APK is self-signed with the project's stable release key, not Google Play certified.
           files: |
