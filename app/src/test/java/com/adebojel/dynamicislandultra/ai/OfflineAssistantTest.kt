@@ -36,6 +36,21 @@ class OfflineAssistantTest {
     }
 
     @Test
+    fun browserCommandRoutesToDefaultBrowserWithoutNetworkInference() {
+        assertEquals(OfflineAction.OpenBrowser, assistant.respond("Buka DuckDuckGo").action)
+    }
+
+    @Test
+    fun updateCommandRoutesToGitHubUpdateCenter() {
+        assertEquals(OfflineAction.OpenUpdateCenter, assistant.respond("cek update").action)
+    }
+
+    @Test
+    fun diagnosticsAreRunLocally() {
+        assertEquals(OfflineAction.RunDiagnostics, assistant.respond("cek kesehatan aplikasi").action)
+    }
+
+    @Test
     fun unknownCommandDoesNotCreateExternalAction() {
         assertNull(assistant.respond("buatkan lagu").action)
     }
