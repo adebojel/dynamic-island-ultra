@@ -59,3 +59,28 @@ This inventory records feature concepts and implementation candidates. It is not
 5. Measure APK/model storage, peak RAM, latency, battery and accessibility.
 6. Verify offline operation with network disabled.
 7. Add unit/instrumentation tests and document module privacy.
+
+
+## November 2026 network, update and embedded-assistant review
+
+### Network access and browser isolation
+- Android requires the normal `INTERNET` permission to open network sockets; this is an app-package permission, not a permission that can be assigned to one source file. Feature boundaries therefore need to be enforced in architecture, allowlisted WebView navigation, secure HTTPS-only networking and CI scans. The app does not request `ACCESS_NETWORK_STATE`.
+- The YouTube browser uses HTTPS, restricts top-level navigation to YouTube, permits only the player/resource host families documented in source, denies file/content URL access, disables mixed content and cancels SSL certificate errors.
+- The updater is a separate module which queries only the repository's latest release, validates asset hosts, checks SHA-256 and gives the package to Android's installer.
+
+### In-place update requirements
+Android checks package identity, signing identity and version code before accepting an update. Therefore a public-repository workflow must keep the release keystore private and stable, and generate an increasing version code. A new debug keystore on each CI runner is not a valid production update strategy. This project uses GitHub Actions secrets for signing, with a debug-preview artifact only when those secrets are absent.
+
+### Embedded AI reality check
+- The implemented AI module is a local deterministic command/decision engine with diagnostics. It is fully packaged as application source, has no model file, no external inference endpoint and no need to import a model.
+- A true generative offline LLM requires model weights plus a runtime. Google's LiteRT-LM Android integration expects a model file on device and its current Android guidance describes model sizes from hundreds of MB to multiple GB; some demos report multi-gigabyte models and high resident memory. Embedding such a model in the app would collide with the 400 MiB budget and cannot be assumed to run on every Android 8+ phone.
+- Decision: keep the shipped assistant honest and lightweight. Do not describe it as a generative chatbot or claim it can autonomously repair OS services. Extend its local diagnostics and safe tool routing without network access.
+
+### Verified primary references
+- Android network permission and secure transport: https://developer.android.com/develop/connectivity/network-ops/connecting
+- Android WebView Safe Browsing: https://developer.android.com/develop/ui/views/layout/webapps/managing-webview
+- WebView SSL-error handling: https://developer.android.com/reference/android/webkit/WebViewClient
+- Android app update signing/version rules: https://developer.android.com/google/play/app-updates
+- Android unknown-source installer permission: https://developer.android.com/reference/android/content/pm/PackageManager#canRequestPackageInstalls()
+- Compose BOM stable coordinate example (2026.09.00): https://developer.android.com/develop/ui/compose/bom
+- LiteRT-LM Android implementation and model storage: https://github.com/google-ai-edge/litert-samples/tree/main/skills/android/litert-lm
