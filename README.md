@@ -112,7 +112,7 @@ Toolchain:
 - Android Gradle Plugin 9.3.1
 - Gradle 9.9.1
 - Compile SDK 36
-- Compose BOM 2026.09.00
+- Compose BOM 2026.06.00 (Compose 1.11.x line, compatible with compile SDK 36)
 
 Local debug build:
 
