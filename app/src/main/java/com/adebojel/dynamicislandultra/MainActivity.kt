@@ -41,7 +41,7 @@ import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
-import com.adebojel.dynamicislandultra.browser.YoutubeBrowserActivity
+import com.adebojel.dynamicislandultra.browser.DuckDuckGoBrowserActivity
 import com.adebojel.dynamicislandultra.update.AppUpdateActivity
 
 private val Night = Color(0xFF080B14)
@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     onNotes = { openLocal(OfflineNotesActivity::class.java) },
                     onCalculator = { openLocal(OfflineCalculatorActivity::class.java) },
                     onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) },
-                    onYoutubeBrowser = { openLocal(YoutubeBrowserActivity::class.java) },
+                    onBrowser = { openLocal(DuckDuckGoBrowserActivity::class.java) },
                     onUpdate = { openLocal(AppUpdateActivity::class.java) }
                 )
             }
@@ -148,7 +148,7 @@ private fun Dashboard(
     onNotes: () -> Unit,
     onCalculator: () -> Unit,
     onWorkspace: () -> Unit,
-    onYoutubeBrowser: () -> Unit,
+    onBrowser: () -> Unit,
     onUpdate: () -> Unit
 ) {
     LazyColumn(
@@ -262,9 +262,9 @@ private fun Dashboard(
         item {
             FeatureCard(Icons.Default.Tune, "Offline notes", "Notes stored on this device only", "Local", onNotes)
         }
-        item { Text("NETWORK FEATURES • EXPLICIT USE ONLY", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item { Text("INTERNET & ONLINE FEATURES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
-            FeatureCard(Icons.Default.PlayCircle, "YouTube browser", "In-app browser limited to YouTube and required playback resources", "Internet", onYoutubeBrowser)
+            FeatureCard(Icons.Default.PlayCircle, "DuckDuckGo Browser", "Browser bawaan DuckDuckGo, pencarian privat, semua situs HTTPS dan mode Desktop/Mobile", "Internet", onBrowser)
         }
         item {
             FeatureCard(Icons.Default.SystemUpdate, "GitHub update center", "Check latest release, verify SHA-256 and hand off installation to Android", "Internet", onUpdate)
