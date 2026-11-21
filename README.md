@@ -4,7 +4,7 @@
 
 <img src="assets/dynamic-island-offline-hero.svg" alt="Dynamic Island Ultra — floating RGB glass interface" width="100%"/>
 
-**Dynamic Island · Floating Assistive Hub · Built-in Offline Assistant · YouTube Browser · GitHub Updater**
+**Dynamic Island · Floating Assistive Hub · Built-in Offline Assistant · DuckDuckGo Browser · GitHub Updater**
 
 [![Build](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml/badge.svg)](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/adebojel/dynamic-island-ultra?label=release)](https://github.com/adebojel/dynamic-island-ultra/releases)
@@ -19,7 +19,7 @@
 
 ## Overview
 
-Dynamic Island Ultra is an Android floating island and assistive launcher with local utility tools, a YouTube-only in-app browser, and a GitHub release updater. Its interface uses a dark glass/RGB design.
+Dynamic Island Ultra is an Android floating island and assistive launcher with local utility tools, an in-app browser with DuckDuckGo as the default search engine and desktop/mobile modes, and a GitHub release updater. Its interface uses a dark glass/RGB design.
 
 <img src="assets/floating-hub-offline-toolbox.svg" alt="Floating hub categories and tools" width="100%"/>
 
@@ -44,18 +44,20 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
-| YouTube browser | In-app WebView limited to YouTube navigation and required playback resources |
+| DuckDuckGo browser | General HTTPS browser with DuckDuckGo default search, desktop/mobile mode, history navigation and reload |
 | GitHub update center | Checks the latest project release, downloads the APK and SHA-256 file, verifies the hash, then opens Android's installer |
 
-## Network access policy
+## Internet access and AdMob readiness
 
-Android's `INTERNET` permission applies to the whole app package; Android does not offer a permission that can be granted only to one Kotlin class. Therefore the restriction is enforced architecturally and by CI:
+The APK requests both `INTERNET` and `ACCESS_NETWORK_STATE`, so future online features can use the network without changing the platform compatibility floor. Android treats these as normal install-time permissions, not runtime popups.
 
-1. Network code exists only in `browser/YoutubeBrowserActivity.kt` and `update/AppUpdateActivity.kt`.
-2. The YouTube browser restricts top-level navigation to HTTPS YouTube domains and uses a limited subresource host allowlist. File/content access and cleartext traffic are disabled; SSL errors are rejected.
-3. The update client contacts only the public GitHub release API and release assets for this repository. It verifies SHA-256 before installation.
-4. The `ai/` module is checked by CI for URLs, sockets, HTTP clients and network SDKs. The assistant and local features continue to operate offline.
-5. No `ACCESS_NETWORK_STATE`, analytics, ads, cloud sync or telemetry SDK is included.
+- **DuckDuckGo Browser:** DuckDuckGo is the default home page and search engine. The address bar also opens other HTTPS websites. The mode control switches between mobile and desktop website layouts using the WebView User-Agent and viewport settings.
+- **GitHub Update Center:** checks the latest project release, downloads the signed APK and metadata, verifies SHA-256, then opens Android's package installer.
+- Future online modules, such as AdMob, may use internet access. The built-in AI assistant, local diagnostics, notes and calculator remain offline by architecture and CI checks.
+
+Cleartext HTTP is disabled; HTTPS is preferred. Network permission being available to the app does not mean each feature should upload user data. Modules must disclose their purpose and minimize transmitted data.
+
+**AdMob is prepared at the permission level but is not yet integrated.** Actual ads require the real AdMob App ID, ad-unit IDs, Google Mobile Ads SDK setup and a privacy/consent flow. Google's current UMP guidance requires requesting updated consent information at each app launch, showing applicable messages, and checking `canRequestAds()` before an ad request. No placeholder publisher IDs or live ads are embedded.
 
 See [Network and Update Design](docs/NETWORK_AND_UPDATES.md).
 
