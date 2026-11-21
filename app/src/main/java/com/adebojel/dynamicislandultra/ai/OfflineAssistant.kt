@@ -10,7 +10,7 @@ data class OfflineAssistantReply(
 
 sealed interface OfflineAction {
     data object RunDiagnostics : OfflineAction
-    data object OpenYoutubeBrowser : OfflineAction
+    data object OpenBrowser : OfflineAction
     data object OpenUpdateCenter : OfflineAction
     data object ShowBattery : OfflineAction
     data object OpenWifiSettings : OfflineAction
