@@ -2,37 +2,39 @@
 
 ## Current source baseline
 
-- RGB/glass dashboard and floating island with drag, pulse, saved position and battery indicator.
+- RGB/glass dashboard, draggable island, pulse, saved position and battery indicator.
 - Notification preview bridge and categorized shortcut menu.
 - Installed-app collection, private local notes, calculator and app-owned PiP workspace.
-- Built-in offline command decision engine with arithmetic, feature routing and read-only local diagnostics.
-- YouTube-only WebView and a GitHub updater that verifies SHA-256 before invoking Android's package installer.
-- Android 8+ minimum (API 26), cleartext disabled, AI package network-free by CI gate.
-- Versioned release workflow based on monotonically increasing GitHub Actions run numbers.
-- Stable release signing configured through private GitHub Actions secrets; no private signing material in source control.
+- Built-in offline command decision engine with arithmetic, feature routing and read-only diagnostics.
+- DuckDuckGo default browser with general HTTPS navigation and Desktop/Mobile mode.
+- GitHub updater verifies SHA-256 before handing an APK to Android's installer.
+- Android 8+ minimum (API 26), cleartext traffic disabled, AI source package remains offline by CI policy.
+- GitHub Actions versioning uses a monotonically increasing run number to publish `v0.0.N`.
+- Stable signing key is read from private GitHub Actions secrets; no key material belongs in source control.
+- INTERNET and ACCESS_NETWORK_STATE permissions are present for application networking and future AdMob.
 
 ## Next engineering modules
 
-1. Physical-device test matrix: Android 8/9/10, API 26–29, modern API 33–36 and OEM background restrictions.
-2. YouTube playback smoke tests on WebView versions and network allowlist refinement.
-3. Signed update regression: verify application ID, signature, monotonic version code, user-consent flow and local-data retention.
-4. Notification filters, app allowlist and privacy controls.
-5. MediaSession metadata/artwork/progress/playback controls.
-6. Supported incoming/ongoing call activity cards.
-7. More app-owned floating tools: image/document preview, QR/barcode scanner and sensor kit.
-8. Internal window positioning/resizing, edge docking, gestures, haptics and theme editor.
-9. TalkBack, larger text, high contrast and keyboard navigation.
-10. Offline speech recognition/TTS as optional device-compatible components with explicit storage/RAM testing.
+1. Physical-device matrix: Android 8/9/10, API 26–29, modern API 33–36 and OEM background restrictions.
+2. Browser smoke tests on WebView variants: DDG search, HTTPS sites, desktop/mobile User-Agent, cookies, video playback and lifecycle.
+3. Signed update regression: same application ID/signature, versionCode monotonicity, installer consent and app-data retention.
+4. AdMob setup after real App ID/ad unit IDs are supplied: Mobile Ads SDK, UMP consent update at each launch, privacy options and test-device configuration.
+5. Notification filters, allowlist and privacy controls.
+6. MediaSession metadata/artwork/progress/playback controls.
+7. Supported incoming/ongoing call activity cards.
+8. More app-owned floating tools: image/document preview, QR/barcode scanner and sensor kit.
+9. Internal window positioning/resizing, edge docking, gestures, haptics and theme editor.
+10. TalkBack, larger text, high contrast and keyboard navigation.
 
 ## AI scope
 
-The built-in local decision engine is intentionally deterministic and does not import a model or contact an AI cloud. A generative on-device LLM is a separate engineering decision: model and runtime sizes, license, Android API compatibility, RAM, CPU/GPU capability, startup latency and the 400 MiB APK budget must be proven before integrating it. No generative capability should be advertised until that is implemented and tested.
+The bundled offline decision engine does not import model weights and has no network access. It remains clearly distinguished from a generative LLM. A future on-device generative model needs license, runtime, model-size, RAM, CPU/GPU and Android 8+ compatibility review; no such capability will be advertised until genuinely implemented and measured.
 
 ## Release gates
 
 - Unit/instrumentation and UI tests.
-- CI check for Android 8/API26 floor and strict network package allowlist.
-- Repeatable signed release builds from the same stable private keystore.
-- APK hash validation, 400 MiB budget, version-code monotonicity and release asset verification.
-- Install/update tests on physical Android devices, including a same-key in-place update.
-- Lifecycle cleanup, memory, battery, crash and accessibility review.
+- CI gate for API 26 minimum and offline-AI source isolation.
+- Repeatable signed builds with a stable private key.
+- APK hash, 400 MiB size, version monotonicity and release-asset verification.
+- Physical-device tests for in-place update and retained local data.
+- Memory, lifecycle, battery, crash and accessibility review.
