@@ -162,7 +162,10 @@ jobs:
             - Android minimum: 8.0 Oreo / API 26.
             - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
             - The built-in assistant and local tools remain offline.
-            - SHA-256 checksum and release-info.json are attached.\n            - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.\n            - Network permissions are prepared for future Google Mobile Ads integration; ad SDK and consent messaging require separate IDs and setup.
+            - SHA-256 checksum and release-info.json are attached.
+            - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.
+            - App-wide network permissions are enabled; the offline assistant remains local-only.
+            - AdMob requires publisher IDs and UMP consent setup before ads are enabled.
             - Install/update is handed to Android's package installer; user confirmation may be required.
             - This APK is self-signed with the project's stable release key, not Google Play certified.
           files: |
