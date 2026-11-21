@@ -99,7 +99,7 @@ class FloatingIslandService : Service() {
         root.addView(label("ASSISTIVE CONTROL CENTER", 9f, false))
         addSection(root, "QUICK TOOLS", listOf(
             "Wi-Fi settings" to android.provider.Settings.Panel.ACTION_WIFI,
-            "Bluetooth settings" to android.provider.Settings.Panel.ACTION_BLUETOOTH,
+            "Bluetooth settings" to android.provider.Settings.ACTION_BLUETOOTH_SETTINGS,
             "Internet settings" to android.provider.Settings.Panel.ACTION_INTERNET_CONNECTIVITY,
             "Sound settings" to android.provider.Settings.ACTION_SOUND_SETTINGS
         ))
@@ -213,7 +213,6 @@ class FloatingIslandService : Service() {
         bubble?.let { runCatching { windowManager.removeView(it) } }
         panel?.let { runCatching { windowManager.removeView(it) } }
         bubble = null; panel = null
-        getSharedPreferences("island", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
         super.onDestroy()
     }
 
