@@ -6,14 +6,14 @@
 
 ### Smart Interaction · Floating Assistive Bubble · Android
 
-**A modular Android overlay experience with a dynamic pill, categorized floating shortcuts, and notification-preview foundations.**
+**An Android overlay prototype with a draggable, animated island, live battery indicator, notification previews, and a categorized assistive shortcut hub.**
 
 [![Build](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml/badge.svg)](https://github.com/adebojel/dynamic-island-ultra/actions/workflows/android.yml)
 [![Release](https://img.shields.io/github/v/release/adebojel/dynamic-island-ultra?label=release)](https://github.com/adebojel/dynamic-island-ultra/releases)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 
-[**Download APK**](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk)
+[**Download APK**](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)
 · [Releases](https://github.com/adebojel/dynamic-island-ultra/releases)
 · [Report an issue](https://github.com/adebojel/dynamic-island-ultra/issues)
 
@@ -31,11 +31,11 @@ The long-term product plan includes a configurable dynamic island, notification 
 
 <div align="center">
 
-### Version 0.0.0 · Initial installable preview
+### Version 0.0.0 · Installable engineering preview
 
 [![Download APK](https://img.shields.io/badge/Download-Android%20APK-43E8FF?style=for-the-badge&logo=android&logoColor=101522)](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk)
 
-**[Open GitHub Release v0.0.0](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.0)**
+**[Open GitHub Release v0.0.0](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.0)** · **[Download checksum](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.0/app-debug.apk.sha256)**
 
 </div>
 
@@ -49,29 +49,36 @@ The long-term product plan includes a configurable dynamic island, notification 
 | Custom adaptive launcher icon | Included |
 | Floating island overlay | Included |
 | Draggable assistive bubble | Included |
-| Categorized floating shortcuts | Foundation included |
-| Android Wi-Fi / Bluetooth / Internet settings shortcuts | Included |
+| Five categorized groups with 21 Android shortcut intents | Included |
+| Wi-Fi, Internet, Bluetooth, sound and device settings panels | Included |
+| Calculator, calendar, clock/timer, camera, music, browser and file picker shortcuts | Included |
+| Animated bubble pulse and remembered drag position | Included |
+| Live battery percentage / charging marker while overlay is active | Included |
 | Notification-listener integration | Foundation included; user must grant access |
 | Notification preview broadcast to island | Foundation included |
 | Boot receiver for user-enabled overlay | Foundation included; Android/OEM limits apply |
 | Media session cards and playback controls | Planned |
 | Incoming/ongoing call activity UI | Planned |
-| Battery and charging activity cards | Planned |
+| Expanded battery and charging activity cards | Planned |
 | Custom theme editor and RGB effects | Planned |
 | Gesture customization and haptics | Planned |
 | AI assistant and offline speech models | Planned |
 | Floating mini-app windows | Planned |
 | Advanced utility toolbox | Planned |
 
-This is an initial engineering baseline, not a claim that every item in the long-term roadmap is already implemented.
+This is an installable engineering preview, not a finished Full Experience product. Shortcut entries open Android settings or installed apps; they are not yet independent floating mini-app windows. Media-session controls, live call cards, rich battery activity cards, theme editing, advanced gestures, and AI remain roadmap work.
 
 ## 🧭 Floating bubble categories
 
-The assistive panel groups shortcuts by purpose:
+The assistive panel currently contains five scrollable categories:
 
-- **Quick tools:** Wi-Fi, Bluetooth, internet connectivity, sound settings.
-- **Device & utilities:** display, battery, accessibility, and application settings.
-- **Next modules:** media, calls, timer, calculator, notes, screen tools, and configurable user shortcuts.
+- **Quick connectivity:** Wi-Fi panel, internet connectivity, Bluetooth settings, sound and volume.
+- **Communication:** phone dialer, app notification settings, notification access.
+- **Media & capture:** default music player, camera, web browser.
+- **Productivity:** calculator, calendar, clock and alarms, five-minute timer, Android system file picker.
+- **Device & accessibility:** display, battery, accessibility, application settings, this app's settings, Android system settings.
+
+Unavailable intents are reported to the user instead of crashing the floating panel.
 
 Android intentionally routes several controls through system settings panels. An ordinary third-party app cannot silently toggle every protected system setting.
 
@@ -84,11 +91,9 @@ Permissions are requested only when a feature needs them. The app does not silen
 | Display over other apps | Render the floating island and assistive bubble |
 | Notification access | Read notification previews selected by the user |
 | Post notifications | Show the foreground-service notification on Android 13+ |
-| Ignore battery optimizations (optional) | Let the user review an Android exemption request |
 | Boot completed | Restore a previously enabled experience after reboot, where Android allows it |
-| Internet | Reserved for future opt-in online features; no account or analytics SDK is included in this baseline |
 
-SMS, contacts, call-log, broad storage, microphone, camera, and accessibility-control permissions are **not** requested by this initial build. They must not be added without a concrete feature, a clear disclosure, and a valid Android/Google Play policy basis.
+SMS, contacts, call-log, broad storage, microphone capture, and accessibility-control permissions are **not** requested by this initial build. The camera shortcut opens the device's camera app; it does not capture images in the background. They must not be added without a concrete feature, a clear disclosure, and a valid Android/Google Play policy basis.
 
 Notification content can contain sensitive information. Enable notification access only if you are comfortable allowing this app to read notification previews. The initial implementation processes previews locally and does not upload them.
 
@@ -124,8 +129,9 @@ Every push to `main` runs the Android build workflow. The workflow:
 1. Checks out the main branch.
 2. Installs JDK 17, Android SDK, and Gradle.
 3. Builds the debug APK.
-4. Uploads the APK as a workflow artifact.
-5. Publishes or updates the `v0.0.0` GitHub Release asset.
+4. Enforces the 400 MiB APK size ceiling and generates a SHA-256 checksum.
+5. Uploads the APK and checksum as workflow artifacts.
+6. Publishes or updates both assets in the `v0.0.0` GitHub Release.
 
 The release workflow uses the repository's `GITHUB_TOKEN`; no personal access token is stored in source code.
 
@@ -140,6 +146,8 @@ app/
      │   │   └── FloatingIslandService.kt
      │   ├── notifications/
      │   │   └── IslandNotificationListener.kt
+     │   ├── system/
+     │   │   └── UtilityIntents.kt
      │   └── boot/
      │       └── BootReceiver.kt
      └── res/
@@ -170,12 +178,12 @@ Google Play approval cannot be guaranteed by code. Any Play Store release must p
 ## 🗺️ Roadmap
 
 1. Stabilize overlay lifecycle, permission onboarding, and reboot behavior.
-2. Add media-session activity cards and playback actions.
-3. Add call-state and battery/charging cards.
+2. Add media-session activity cards, album artwork, and playback actions.
+3. Add incoming/ongoing call-state and richer battery/charging activity cards.
 4. Expand the assistive bubble with categorized, configurable utilities.
-5. Add gesture, haptics, themes, and visual effects.
+5. Add configurable gestures, haptics, themes, edge docking, and richer visual effects.
 6. Add optional AI/voice features with explicit privacy controls.
-7. Add automated tests, device matrix testing, and production signing.
+7. Add floating note/calculator/browser mini-windows, automated tests, device-matrix testing, and production signing.
 
 ---
 
