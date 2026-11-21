@@ -71,7 +71,7 @@ The APK includes a deterministic local decision engine. It interprets supported 
 
 The app's GitHub Update Center checks the latest release, compares its version code, downloads the APK and checksum, and verifies SHA-256 before passing it to Android's package installer.
 
-Every successful signed build from `main` uses the GitHub Actions run number as a monotonically increasing `versionCode`, and generates a release tag such as `v0.0.39`, `v0.0.40`, and so on. No future release should reuse the fixed `v0.0.0` tag.
+Every successful signed build from `main` increments the patch tag from the latest published `v0.0.N`, so the next release after `v0.0.0` is `v0.0.1`, then `v0.0.2`, and so on. The internal Android `versionCode` uses the monotonically increasing GitHub Actions run number, so cancelled or failed CI runs cannot cause Android downgrade checks.
 
 For Android to accept an update without uninstalling, all of these must remain true:
 - Same application ID: `com.adebojel.dynamicislandultra`.
