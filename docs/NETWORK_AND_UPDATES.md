@@ -1,29 +1,65 @@
-# Network policy and in-app updates
+# Network access, browser, AdMob readiness and in-app updates
 
-## Deliberate network boundaries
+## Application network permission
 
-The APK declares `INTERNET` because two explicitly user-facing features need network access:
+The Android manifest declares:
 
-1. **YouTube Browser** — an in-app WebView whose top-level navigation is restricted to HTTPS YouTube hosts. Subresources are restricted to the YouTube player and a documented allowlist of Google static/API and video CDN domains. JavaScript is enabled only because YouTube's player requires it; file/content access, mixed content and arbitrary top-level browsing are disabled.
-2. **GitHub Update Center** — reads only the latest release of `adebojel/dynamic-island-ultra`, downloads the APK and checksum from that release, and verifies SHA-256 before opening Android's package installer.
+- `android.permission.INTERNET`
+- `android.permission.ACCESS_NETWORK_STATE`
 
-The app does not request `ACCESS_NETWORK_STATE`, does not install a remote AI SDK, and does not expose a general-purpose HTTP client to assistant modules.
+Android documents both as normal install-time permissions. They do not cause a runtime permission dialog. They make network connectivity available to application modules. Cleartext HTTP remains disabled; HTTPS is preferred.
+
+The built-in AI package is still isolated from network calls by design and CI checks. Local commands, arithmetic, diagnostics, notes and calculator work without internet. Other explicitly networked modules can be added when needed, with their data use documented.
+
+## Default browser: DuckDuckGo
+
+The built-in browser opens DuckDuckGo as its home page and search engine. The address field accepts search queries or HTTPS website URLs. It includes Back, Forward, Reload, Home and a Desktop/Mobile mode switch.
+
+Desktop mode changes the WebView User-Agent and viewport layout; mobile mode restores the WebView's platform User-Agent. User-Agent switching is a site-compatibility mechanism, not a full desktop operating system. Some websites may still provide mobile-only experiences or require sign-in/cookies.
+
+Web content executes in Android WebView. File access and content-provider access are disabled, mixed content is blocked, Safe Browsing is enabled when supported, and TLS certificate errors are cancelled. Cleartext HTTP is disabled by the app network security config.
+
+## AdMob readiness (not yet integrated)
+
+Network permissions are in place for future Google Mobile Ads SDK connectivity. Actual AdMob implementation must wait for:
+
+1. The publisher's AdMob App ID and ad-unit IDs.
+2. Google Mobile Ads SDK dependency and manifest App ID metadata.
+3. Google User Messaging Platform (UMP) consent flow and a privacy-options entry point where required.
+4. Test ad units/devices during development, followed by policy-compliant production IDs.
+5. Correct privacy policy, data-safety disclosures, and placement/layout that does not obstruct core app controls.
+
+Google's current guidance requires requesting consent information at every app launch, displaying any required consent form, and checking `canRequestAds()` before requesting ads. Until the IDs and consent flow are configured, this repository does not display ads or embed fake IDs.
+
+Official setup references:
+- Android network permissions: https://developer.android.com/develop/connectivity/network-ops/connecting
+- AdMob Android SDK: https://developers.google.com/admob/android/quick-start
+- UMP privacy and consent: https://developers.google.com/admob/android/privacy
+- WebView User-Agent and viewport: https://developer.android.com/reference/android/webkit/WebSettings
 
 ## AI and local feature boundary
 
-All code under `ai/` must remain local-only. CI rejects network APIs, URLs, client SDKs and socket access from that package. The current built-in assistant is a deterministic on-device decision/command engine with arithmetic and system-intent routing; it is not a generative LLM. It can run without internet and without importing a model.
+The in-APK assistant is a deterministic on-device decision engine with command routing, calculations and read-only diagnostics. It has no HTTP client, endpoint, API key, telemetry or remote inference. CI rejects network URLs and network clients from the `ai/` source package.
 
-A genuine generative local LLM requires model weights plus a compatible runtime. Google LiteRT-LM's Android guidance describes model files in the hundreds of MB to several GB, and keeps the model as a file on device rather than inside APK assets. Embedding a model that large would conflict with the present 400 MiB APK ceiling and broad Android 8+ hardware/RAM coverage. Do not label this deterministic assistant as a general-purpose LLM.
+This built-in decision engine is not a general-purpose generative LLM. A generative offline LLM requires model weights and an inference runtime. Those files may be hundreds of MB to several GB, so they must be evaluated against the 400 MiB package budget, runtime RAM, device CPU/GPU and Android 8+ support before claiming generative AI.
 
-## Update compatibility and user consent
+## GitHub updates and signing
 
-Android accepts an in-place update only when the application ID is unchanged, the signing certificate matches (or has a valid proof-of-rotation), and the new version code is not lower than the installed one. The system package installer remains in control and may require the user to confirm the installation; this app cannot silently bypass that consent.
+The updater reads the latest release of `adebojel/dynamic-island-ultra`, reads `release-info.json`, downloads the APK plus SHA-256 asset, checks the digest and opens Android's package installer.
 
-Every successful main-branch workflow run assigns a monotonically increasing GitHub Actions run number as `versionCode` and publishes a version tag of the form `v0.0.N`. The CI release APK must be signed using a stable private keystore held in GitHub Actions secrets, never committed to this public repository:
+For a non-destructive in-place update Android requires:
+- unchanged application ID;
+- same signing certificate (or valid proof-of-rotation);
+- a version code greater than the installed version;
+- user approval in Android's installer UI when requested.
+
+CI uses the monotonically increasing GitHub Actions run number as `versionCode` and version name `0.0.N`. Signed releases are published only when a stable private keystore is configured in GitHub Actions secrets:
 
 - `RELEASE_KEYSTORE_BASE64`
 - `RELEASE_STORE_PASSWORD`
 - `RELEASE_KEY_ALIAS`
 - `RELEASE_KEY_PASSWORD`
 
-Without these secrets CI can build a debug artifact for testing, but it must not publish it as an update-compatible release. A one-time signing-key migration from an older debug-signed build may require reinstalling once; future releases signed with the stable key can update in place and preserve app data.
+Without those secrets CI builds a debug preview but does not publish it as an update-compatible release. The signing key must be backed up securely and must never be committed to the repository. Moving from the earlier debug-signed preview to the first stable-signed release may require a one-time reinstall; future releases using the same key can update in place and preserve app data.
+
+The app cannot silently install APKs or bypass Android's package installer/user-consent controls.
