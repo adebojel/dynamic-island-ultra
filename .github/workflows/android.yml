@@ -40,6 +40,14 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Enforce no network permission and no network SDK dependencies
+        shell: bash
+        run: |
+          if grep -RInE 'android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|okhttp|retrofit|ktor-client|firebase|play-services' app/src app/build.gradle.kts; then
+            echo "::error::Unexpected network permission or network SDK dependency found."
+            exit 1
+          fi
+
       - name: Build debug APK
         run: gradle --no-daemon --stacktrace assembleDebug
 
