@@ -39,8 +39,8 @@ class OfflineAssistant {
         return when {
             hasAny(query, "diagnostik", "diagnostic", "periksa sistem", "cek kesehatan", "status aplikasi", "cek aplikasi") ->
                 OfflineAssistantReply("Menjalankan pemeriksaan lokal fitur dan izin perangkat.", OfflineAction.RunDiagnostics)
-            hasAny(query, "youtube", "buka video", "browser video") ->
-                OfflineAssistantReply("Membuka browser YouTube yang dibatasi ke layanan YouTube.", OfflineAction.OpenYoutubeBrowser)
+            hasAny(query, "browser", "duckduckgo", "internet", "youtube", "buka web", "buka situs") ->
+                OfflineAssistantReply("Membuka DuckDuckGo Browser. Browser membutuhkan koneksi internet.", OfflineAction.OpenBrowser)
             hasAny(query, "update", "pembaruan", "versi terbaru") ->
                 OfflineAssistantReply("Membuka pemeriksa pembaruan resmi GitHub.", OfflineAction.OpenUpdateCenter)
             hasAny(query, "baterai", "battery", "daya") ->
