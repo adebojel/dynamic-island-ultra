@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.widget.Toast
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
+import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
 import com.adebojel.dynamicislandultra.system.UtilityIntents
 
 class OfflineAssistantActivity : ComponentActivity() {
@@ -50,14 +52,19 @@ class OfflineAssistantActivity : ComponentActivity() {
                             when (reply.action) {
                                 OfflineAction.OpenInstalledApps -> startActivity(Intent(this@OfflineAssistantActivity, InstalledAppsActivity::class.java))
                                 OfflineAction.OpenCalculator -> startActivity(Intent(this@OfflineAssistantActivity, OfflineCalculatorActivity::class.java))
-                                OfflineAction.OpenFiles -> startActivity(UtilityIntents.create("files", packageName))
-                                OfflineAction.OpenWifiSettings -> startActivity(UtilityIntents.create("wifi", packageName))
-                                OfflineAction.OpenBluetoothSettings -> startActivity(UtilityIntents.create("bluetooth", packageName))
-                                OfflineAction.OpenAccessibilitySettings -> startActivity(UtilityIntents.create("accessibility", packageName))
-                                OfflineAction.OpenTimer -> startActivity(UtilityIntents.create("timer", packageName))
-                                OfflineAction.OpenDisplaySettings -> startActivity(UtilityIntents.create("display", packageName))
-                                OfflineAction.OpenSoundSettings -> startActivity(UtilityIntents.create("sound", packageName))
-                                OfflineAction.ShowBattery, null -> Unit
+                                OfflineAction.OpenFiles -> launchUtility("files")
+                                OfflineAction.OpenWifiSettings -> launchUtility("wifi")
+                                OfflineAction.OpenBluetoothSettings -> launchUtility("bluetooth")
+                                OfflineAction.OpenAccessibilitySettings -> launchUtility("accessibility")
+                                OfflineAction.OpenTimer -> launchUtility("timer")
+                                OfflineAction.OpenDisplaySettings -> launchUtility("display")
+                                OfflineAction.OpenSoundSettings -> launchUtility("sound")
+                                OfflineAction.ShowBattery -> {
+                                    val manager = getSystemService(android.content.Context.BATTERY_SERVICE) as android.os.BatteryManager
+                                    val level = manager.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
+                                    history = history + "Ultra: Baterai perangkat ${if (level >= 0) "$level%" else "belum tersedia"}."
+                                }
+                                null -> Unit
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -70,4 +77,16 @@ class OfflineAssistantActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun launchUtility(key: String) {
+        val intent = UtilityIntents.create(key, packageName)
+        if (intent == null) {
+            Toast.makeText(this, "Fitur tidak tersedia pada perangkat ini", Toast.LENGTH_SHORT).show()
+            return
+        }
+        runCatching { startActivity(intent) }.onFailure {
+            Toast.makeText(this, "Tidak dapat membuka alat tersebut", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }
