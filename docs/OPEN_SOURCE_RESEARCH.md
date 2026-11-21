@@ -90,7 +90,7 @@ Android checks package identity, signing identity and version code before accept
 - WebView SSL-error handling: https://developer.android.com/reference/android/webkit/WebViewClient
 - Android app update signing/version rules: https://developer.android.com/google/play/app-updates
 - Android unknown-source installer permission: https://developer.android.com/reference/android/content/pm/PackageManager#canRequestPackageInstalls()
-- Compose BOM stable coordinate (2026.09.00): https://developer.android.com/develop/ui/compose/bom
+- Compose BOM stable coordinate (2026.06.00; Compose 1.11.3 compatible with compile SDK 36): https://developer.android.com/develop/ui/compose/bom
 - AdMob Android quick start: https://developers.google.com/admob/android/quick-start
 - UMP Android consent flow: https://developers.google.com/admob/android/privacy
 - LiteRT-LM Android implementation: https://github.com/google-ai-edge/LiteRT-LM
