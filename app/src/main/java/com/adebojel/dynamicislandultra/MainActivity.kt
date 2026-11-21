@@ -20,6 +20,10 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.adebojel.dynamicislandultra.overlay.FloatingIslandService
+import com.adebojel.dynamicislandultra.ai.OfflineAssistantActivity
+import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
+import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
+import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
+import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 
 private val Night = Color(0xFF080B14)
 private val Panel = Color(0xFF121A2B)
@@ -59,7 +68,12 @@ class MainActivity : ComponentActivity() {
                     onOverlay = { openOverlaySettings() },
                     onNotifications = { openNotificationSettings() },
                     onBattery = { openBatterySettings() },
-                    onPermission = { requestNotificationPermission() }
+                    onPermission = { requestNotificationPermission() },
+                    onInstalledApps = { openLocal(InstalledAppsActivity::class.java) },
+                    onAssistant = { openLocal(OfflineAssistantActivity::class.java) },
+                    onNotes = { openLocal(OfflineNotesActivity::class.java) },
+                    onCalculator = { openLocal(OfflineCalculatorActivity::class.java) },
+                    onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) }
                 )
             }
         }
@@ -109,6 +123,10 @@ class MainActivity : ComponentActivity() {
             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
+
+    private fun openLocal(type: Class<*>) {
+        startActivity(Intent(this, type))
+    }
 }
 
 @Composable
@@ -118,7 +136,12 @@ private fun Dashboard(
     onOverlay: () -> Unit,
     onNotifications: () -> Unit,
     onBattery: () -> Unit,
-    onPermission: () -> Unit
+    onPermission: () -> Unit,
+    onInstalledApps: () -> Unit,
+    onAssistant: () -> Unit,
+    onNotes: () -> Unit,
+    onCalculator: () -> Unit,
+    onWorkspace: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(
@@ -215,6 +238,22 @@ private fun Dashboard(
                 onBattery
             )
         }
+        item { Text("OFFLINE TOOLBOX", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item {
+            FeatureCard(Icons.Default.Apps, "Installed app collection", "Browse launchable apps with limited package visibility", "Offline", onInstalledApps)
+        }
+        item {
+            FeatureCard(Icons.Default.Psychology, "Offline utility assistant", "Local commands and calculations; no chat service or network", "Offline", onAssistant)
+        }
+        item {
+            FeatureCard(Icons.Default.Calculate, "Offline calculator", "Local arithmetic and expression evaluator", "Offline", onCalculator)
+        }
+        item {
+            FeatureCard(Icons.Default.PictureInPictureAlt, "Floating workspace", "PiP for this app's own workspace activity", "Android PiP", onWorkspace)
+        }
+        item {
+            FeatureCard(Icons.Default.Tune, "Offline notes", "Notes stored on this device only", "Local", onNotes)
+        }
         item { Text("FEATURE CATEGORIES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
             FeatureCard(
@@ -287,9 +326,12 @@ private fun FeatureCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
     detail: String,
-    status: String
+    status: String,
+    onClick: (() -> Unit)? = null
 ) {
     Card(
+        onClick = { onClick?.invoke() },
+        enabled = onClick != null,
         colors = CardDefaults.cardColors(containerColor = Panel),
         shape = RoundedCornerShape(18.dp)
     ) {
