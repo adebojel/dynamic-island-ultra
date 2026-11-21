@@ -220,6 +220,6 @@ class FloatingIslandService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val ACTION_NOTIFICATION_PREVIEW = "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"
+        const val ACTION_NOTIFICATION_PREVIEW = "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"\n        const val ACTION_STOP = "com.adebojel.dynamicislandultra.STOP_ISLAND"
     }
 }
