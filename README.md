@@ -134,7 +134,7 @@ Local debug build:
 gradle --no-daemon testDebugUnitTest assembleDebug
 ```
 
-A push to `main` runs the tests and build. With stable signing secrets configured, CI publishes `app-release.apk`, `app-release.apk.sha256`, and `release-info.json` under a new versioned release. Without the signing secrets it uploads a debug-preview artifact but does not overwrite the latest update channel.
+A push to `main` runs the tests and build. CI checks the AdMob/UMP/Billing dependency and manifest configuration. With stable signing secrets configured, CI builds the release APK, verifies its APK signature with `apksigner`, calculates SHA-256, and publishes `app-release.apk`, `app-release.apk.sha256`, and `release-info.json` under a new versioned release. Debug builds use Google's official test ad units only; release builds use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
 
 APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
