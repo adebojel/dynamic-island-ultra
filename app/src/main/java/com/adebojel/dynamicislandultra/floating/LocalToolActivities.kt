@@ -1,6 +1,9 @@
 package com.adebojel.dynamicislandultra.floating
 
 import android.app.Activity
+import android.app.PictureInPictureParams
+import android.util.Rational
+import android.content.res.Configuration
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -79,6 +82,11 @@ class OfflineCalculatorActivity : ComponentActivity() {
 class FloatingWorkspaceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            setPictureInPictureParams(
+                PictureInPictureParams.Builder().setAspectRatio(Rational(9, 16)).build()
+            )
+        }
         setContent {
             MaterialTheme(colorScheme = darkColorScheme(primary = ComposeColor(0xFF43E8FF))) {
                 Column(
@@ -89,9 +97,22 @@ class FloatingWorkspaceActivity : ComponentActivity() {
                     Text("Pilih alat lokal untuk dibuka sebagai aktivitas terpisah.", color = ComposeColor.White)
                     Button(onClick = { startActivity(android.content.Intent(this@FloatingWorkspaceActivity, OfflineNotesActivity::class.java)) }) { Text("Catatan") }
                     Button(onClick = { startActivity(android.content.Intent(this@FloatingWorkspaceActivity, OfflineCalculatorActivity::class.java)) }) { Text("Kalkulator") }
-                    Text("Gunakan tombol PiP Android saat aktivitas ini berada di depan untuk mengecilkan workspace.", color = ComposeColor.LightGray, fontSize = 11.sp)
+                    Button(onClick = { enterWorkspacePip() }) { Text("Minimize to PiP") }
+                    Text("PiP hanya berlaku pada workspace milik aplikasi ini, bukan memaksa aplikasi lain mendukung PiP.", color = ComposeColor.LightGray, fontSize = 11.sp)
                 }
             }
         }
+    }
+
+    private fun enterWorkspacePip() {
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            enterPictureInPictureMode(
+                PictureInPictureParams.Builder().setAspectRatio(Rational(9, 16)).build()
+            )
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
     }
 }
