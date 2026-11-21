@@ -9,7 +9,7 @@ class OfflineAssistantTest {
 
     @Test
     fun arithmeticHonoursPrecedenceAndParentheses() {
-        assertEquals("Hasil: 31", assistant.respond("3 * (4 + 5) - 2").text)
+        assertEquals("Hasil: 25", assistant.respond("3 * (4 + 5) - 2").text)
     }
 
     @Test
