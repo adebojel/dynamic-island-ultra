@@ -47,17 +47,31 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | DuckDuckGo browser | General HTTPS browser with DuckDuckGo default search, desktop/mobile mode, history navigation and reload |
 | GitHub update center | Checks the latest project release, downloads the APK and SHA-256 file, verifies the hash, then opens Android's installer |
 
-## Internet access and AdMob readiness
+## Internet access, AdMob and Premium
 
 The APK requests both `INTERNET` and `ACCESS_NETWORK_STATE`, so future online features can use the network without changing the platform compatibility floor. Android treats these as normal install-time permissions, not runtime popups.
 
 - **DuckDuckGo Browser:** DuckDuckGo is the default home page and search engine. The address bar also opens other HTTPS websites. The mode control switches between mobile and desktop website layouts using the WebView User-Agent and viewport settings.
 - **GitHub Update Center:** checks the latest project release, downloads the signed APK and metadata, verifies SHA-256, then opens Android's package installer.
-- Future online modules, such as AdMob, may use internet access. The built-in AI assistant, local diagnostics, notes and calculator remain offline by architecture and CI checks.
+- AdMob and Google Play Billing use network access only for their respective monetization flows. The built-in AI assistant, local diagnostics, notes and calculator remain offline by architecture and CI checks.
 
 Cleartext HTTP is disabled; HTTPS is preferred. Network permission being available to the app does not mean each feature should upload user data. Modules must disclose their purpose and minimize transmitted data.
 
-**AdMob is prepared at the permission level but is not yet integrated.** Actual ads require the real AdMob App ID, ad-unit IDs, Google Mobile Ads SDK setup and a privacy/consent flow. Google's current UMP guidance requires requesting updated consent information at each app launch, showing applicable messages, and checking `canRequestAds()` before an ad request. No placeholder publisher IDs or live ads are embedded.
+**AdMob is integrated using Google Mobile Ads Next-Gen SDK 1.7.0 and UMP SDK 4.0.0.** The manifest contains the publisher App ID and all four publisher ad units are configured. Debug APKs use Google's official test ad units; release APKs use production ad units. This separation is required: Google says always use test ads during development and warns that using live ads in testing may result in account suspension.
+
+UMP consent information is refreshed at app launch, applicable consent forms are shown before ad requests, and every request is gated by `canRequestAds()`. A privacy-options entry point is shown whenever UMP requires it. The publisher must still publish consent messages under AdMob → Privacy & messaging and complete AdMob app review/eligibility before expecting production ad fill.
+
+**Ad placement and frequency:** Banner and Native Advanced appear only on the dedicated Bonus & Premium screen. Native cards are clearly labelled “IKLAN”. Rewarded Ads and Rewarded Interstitial are requested only after a direct user action; Rewarded Interstitial has a disclosure dialog with “Lanjutkan” and “Lewati”. The application applies a combined cap of two video reward impressions per rolling 24 hours and a one-per-24-hour cap for Rewarded Interstitial. No ads are requested from the floating island, assistant, microphone, notifications, browser, permission centre or Android system controls. Delivered video duration is determined by the ad creative and cannot be guaranteed by the app.
+
+### Premium and feature access
+
+The core app remains free. Premium customization includes Advanced RGB Themes (Cyan, Violet, Emerald, Amber), Island Pulse FX (Soft, Normal, Fast, Off), Island Size, and Compact Panel layout. A successfully earned Rewarded Ads or Rewarded Interstitial reward grants these cosmetic options for 24 hours. These local ad rewards are not account-backed or fraud-resistant.
+
+Paid Premium uses Google Play Billing Library 9.1.0 and subscription product ID `diu_premium`. The app queries active offers and shows the localized price returned by Google Play; it does not hardcode a purchasable price or simulate a successful purchase. Before paid plans appear, the publisher must create the product and activate base plans in Play Console. The intended starting price target is Rp2,000; final localized pricing and terms are controlled by Play Console.
+
+Standard prepaid subscription durations include one week, four weeks, one, two, three, four, six, or eight months, and one year. Exact two-week, three-week, and two-year single base plans are not standard Indonesian Play Console subscription durations. Those need a separate one-time pass/secure entitlement design; this build does not display them as purchasable. Configure the intended Play base plans as prepaid if the goal is to avoid automatic renewal. Always display renewal, expiry, and cancellation terms returned by Google Play.
+
+The current paid entitlement is checked with the Play Billing client on device and acknowledged according to Play Billing requirements. Before scaling valuable rewards or allowing accounts to synchronize Premium across devices, add a trusted backend that verifies purchase tokens with the Google Play Developer API.
 
 See [Network and Update Design](docs/NETWORK_AND_UPDATES.md).
 

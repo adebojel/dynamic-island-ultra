@@ -5,8 +5,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.adebojel.dynamicislandultra.BuildConfig
 import com.google.android.libraries.ads.mobile.sdk.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
 import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
@@ -21,10 +21,9 @@ import com.google.android.ump.UserMessagingPlatform
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Centralized AdMob configuration, UMP consent gate and conservative video-ad frequency controls.
- *
- * Debug builds use Google's official test ad units. Production units are used only in release builds.
- * Video ads are never shown automatically: callers must be direct user actions.
+ * Google Mobile Ads Next-Gen + UMP orchestration.
+ * Debug uses Google's official test ad units; release uses the publisher's production IDs.
+ * Video ads are always user-initiated and subject to local frequency caps.
  */
 object AdsSdkManager {
     const val APP_ID = "ca-app-pub-9305273212801233~4511201352"
@@ -57,73 +56,61 @@ object AdsSdkManager {
     private val videoRequestInFlight = AtomicBoolean(false)
     private val callbacks = mutableListOf<(Boolean) -> Unit>()
 
-    @Volatile
-    var isInitialized: Boolean = false
+    @Volatile var isInitialized: Boolean = false
         private set
-
-    @Volatile
-    var canRequestAds: Boolean = false
+    @Volatile var canRequestAds: Boolean = false
         private set
-
-    @Volatile
-    var privacyOptionsRequired: Boolean = false
+    @Volatile var privacyOptionsRequired: Boolean = false
         private set
 
     private var consentFlowStarted = false
     private var consentFlowFinished = false
     private var sdkInitializationStarted = false
 
-    /**
-     * UMP consent is refreshed once per process launch. Ads SDK initialization happens on a
-     * worker thread only after UMP reports that ad requests may be made.
-     */
+    /** Refresh UMP status for every new app process before requesting any ad. */
     fun start(activity: Activity, onComplete: (Boolean) -> Unit = {}) {
         synchronized(this) {
             if (isInitialized) {
                 mainHandler.post { onComplete(true) }
                 return
             }
-            if (consentFlowFinished) {
-                mainHandler.post { onComplete(false) }
+            if (consentFlowStarted) {
+                if (consentFlowFinished && !canRequestAds) {
+                    mainHandler.post { onComplete(false) }
+                } else {
+                    callbacks.add(onComplete)
+                }
                 return
             }
             callbacks.add(onComplete)
-            if (consentFlowStarted) return
             consentFlowStarted = true
         }
 
-        val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
-        val requestParameters = ConsentRequestParameters.Builder().build()
-
-        consentInformation.requestConsentInfoUpdate(
+        val information = UserMessagingPlatform.getConsentInformation(activity)
+        information.requestConsentInfoUpdate(
             activity,
-            requestParameters,
+            ConsentRequestParameters.Builder().build(),
             {
-                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) {
-                    finishConsent(activity, consentInformation)
+                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { formError ->
+                    if (formError != null) Log.w(TAG, "UMP form: ${formError.message}")
+                    finishConsent(activity.applicationContext, information)
                 }
             },
-            { error ->
-                Log.w(TAG, "UMP consent update failed: ${error.message}")
-                // UMP may retain a valid prior-session consent state after a network failure.
-                finishConsent(activity, consentInformation)
+            { requestError ->
+                Log.w(TAG, "UMP update: ${requestError.message}")
+                // UMP retains its own consent state; request only if canRequestAds() confirms it.
+                finishConsent(activity.applicationContext, information)
             }
         )
     }
 
-    private fun finishConsent(activity: Activity, consentInformation: ConsentInformation) {
-        canRequestAds = consentInformation.canRequestAds()
+    private fun finishConsent(appContext: Context, information: ConsentInformation) {
+        canRequestAds = information.canRequestAds()
         privacyOptionsRequired =
-            consentInformation.privacyOptionsRequirementStatus ==
+            information.privacyOptionsRequirementStatus ==
                 ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
-
         synchronized(this) { consentFlowFinished = true }
-
-        if (canRequestAds) {
-            initializeSdk(activity.applicationContext)
-        } else {
-            notifyReady(false)
-        }
+        if (canRequestAds) initializeSdk(appContext) else notifyReady(false)
     }
 
     private fun initializeSdk(appContext: Context) {
@@ -146,11 +133,11 @@ object AdsSdkManager {
                     notifyReady(true)
                 }
             } catch (error: Exception) {
-                Log.e(TAG, "Google Mobile Ads initialization failed", error)
+                Log.e(TAG, "GMA Next-Gen initialization failed", error)
                 synchronized(this) { sdkInitializationStarted = false }
                 notifyReady(false)
             }
-        }, "admob-sdk-init").start()
+        }, "gma-nextgen-init").start()
     }
 
     private fun notifyReady(ready: Boolean) {
@@ -161,26 +148,24 @@ object AdsSdkManager {
     }
 
     fun showPrivacyOptions(activity: Activity, onComplete: (Boolean) -> Unit = {}) {
-        val consentInformation = UserMessagingPlatform.getConsentInformation(activity)
+        val information = UserMessagingPlatform.getConsentInformation(activity)
         if (
-            consentInformation.privacyOptionsRequirementStatus !=
+            information.privacyOptionsRequirementStatus !=
             ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
         ) {
-            onComplete(canRequestAds)
+            onComplete(isInitialized && information.canRequestAds())
             return
         }
 
-        UserMessagingPlatform.showPrivacyOptionsForm(activity) { error ->
-            if (error != null) Log.w(TAG, "Privacy options form failed: ${error.message}")
-            canRequestAds = consentInformation.canRequestAds()
+        UserMessagingPlatform.showPrivacyOptionsForm(activity) { formError ->
+            if (formError != null) Log.w(TAG, "UMP privacy options: ${formError.message}")
+            canRequestAds = information.canRequestAds()
             privacyOptionsRequired =
-                consentInformation.privacyOptionsRequirementStatus ==
+                information.privacyOptionsRequirementStatus ==
                     ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
             if (canRequestAds && !isInitialized) {
                 initializeSdk(activity.applicationContext)
-                // UMP's form callback is immediate; let the SDK initialization finish before
-                // the caller tries another request.
-                mainHandler.postDelayed({ onComplete(isInitialized) }, 500L)
+                mainHandler.postDelayed({ onComplete(isInitialized && canRequestAds) }, 750L)
             } else {
                 onComplete(isInitialized && canRequestAds)
             }
@@ -196,8 +181,8 @@ object AdsSdkManager {
             onStatus("Iklan belum siap atau belum diizinkan oleh pengaturan privasi.")
             return
         }
-        if (!canShowVideo(activity, format = "rewarded", formatLimit = REWARDED_LIMIT)) {
-            onStatus("Batas iklan video harian sudah tercapai. Coba lagi setelah 24 jam.")
+        if (!canShowVideo(activity, "rewarded", REWARDED_LIMIT)) {
+            onStatus("Batas iklan video 24 jam sudah tercapai. Coba lagi nanti.")
             return
         }
         if (!videoRequestInFlight.compareAndSet(false, true)) {
@@ -205,49 +190,47 @@ object AdsSdkManager {
             return
         }
 
-        val request = AdRequest.Builder(rewardedUnitId).build()
-        RewardedAd.load(request, object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<RewardedAd> {
-            override fun onAdLoaded(ad: RewardedAd) {
-                ad.adEventCallback = object : RewardedAdEventCallback {
-                    override fun onAdImpression() {
-                        recordVideoImpression(activity, "rewarded")
-                    }
+        RewardedAd.load(
+            AdRequest.Builder(rewardedUnitId).build(),
+            object : AdLoadCallback<RewardedAd> {
+                override fun onAdLoaded(ad: RewardedAd) {
+                    ad.adEventCallback = object : RewardedAdEventCallback {
+                        override fun onAdImpression() {
+                            recordVideoImpression(activity, "rewarded")
+                        }
 
-                    override fun onAdDismissedFullScreenContent() {
-                        ad.destroy()
-                        videoRequestInFlight.set(false)
-                        onStatus("Sesi iklan selesai.")
-                    }
+                        override fun onAdDismissedFullScreenContent() {
+                            videoRequestInFlight.set(false)
+                            onStatus("Sesi iklan selesai.")
+                        }
 
-                    override fun onAdFailedToShowFullScreenContent(
-                        fullScreenContentError: FullScreenContentError
-                    ) {
-                        ad.destroy()
+                        override fun onAdFailedToShowFullScreenContent(
+                            fullScreenContentError: FullScreenContentError
+                        ) {
+                            videoRequestInFlight.set(false)
+                            Log.w(TAG, "Rewarded show: ${fullScreenContentError.message}")
+                            onStatus("Iklan tidak dapat ditampilkan. Silakan coba lagi nanti.")
+                        }
+                    }
+                    try {
+                        ad.show(activity) { onRewardEarned() }
+                    } catch (error: Exception) {
                         videoRequestInFlight.set(false)
-                        onStatus("Iklan tidak dapat ditampilkan. Silakan coba lagi nanti.")
+                        Log.e(TAG, "Rewarded show failed", error)
+                        onStatus("Iklan gagal dibuka.")
                     }
                 }
-                try {
-                    ad.show(activity) {
-                        // Only grant the cosmetic reward from the SDK's earned-reward callback.
-                        onRewardEarned()
-                    }
-                } catch (error: Exception) {
-                    ad.destroy()
+
+                override fun onAdFailedToLoad(adError: LoadAdError) {
                     videoRequestInFlight.set(false)
-                    Log.e(TAG, "Rewarded ad show failed", error)
-                    onStatus("Iklan gagal dibuka.")
+                    Log.w(TAG, "Rewarded load: ${adError.message}")
+                    onStatus("Belum ada iklan yang tersedia. Fitur utama tetap bisa digunakan.")
                 }
             }
-
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                videoRequestInFlight.set(false)
-                Log.w(TAG, "Rewarded ad failed to load: ${adError.message}")
-                onStatus("Belum ada iklan yang tersedia. Tidak ada hadiah yang dipotong.")
-            }
-        })
+        )
     }
 
+    /** Caller must first show an intro with the reward details and Continue/Skip options. */
     fun showRewardedInterstitial(
         activity: Activity,
         onRewardEarned: () -> Unit,
@@ -257,14 +240,8 @@ object AdsSdkManager {
             onStatus("Iklan belum siap atau belum diizinkan oleh pengaturan privasi.")
             return
         }
-        if (
-            !canShowVideo(
-                activity,
-                format = "rewarded_interstitial",
-                formatLimit = REWARDED_INTERSTITIAL_LIMIT
-            )
-        ) {
-            onStatus("Bonus interstitial sudah digunakan hari ini. Coba lagi setelah 24 jam.")
+        if (!canShowVideo(activity, "rewarded_interstitial", REWARDED_INTERSTITIAL_LIMIT)) {
+            onStatus("Bonus interstitial sudah mencapai batas 24 jam.")
             return
         }
         if (!videoRequestInFlight.compareAndSet(false, true)) {
@@ -272,10 +249,9 @@ object AdsSdkManager {
             return
         }
 
-        val request = AdRequest.Builder(rewardedInterstitialUnitId).build()
         RewardedInterstitialAd.load(
-            request,
-            object : com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback<RewardedInterstitialAd> {
+            AdRequest.Builder(rewardedInterstitialUnitId).build(),
+            object : AdLoadCallback<RewardedInterstitialAd> {
                 override fun onAdLoaded(ad: RewardedInterstitialAd) {
                     ad.adEventCallback = object : RewardedInterstitialAdEventCallback {
                         override fun onAdImpression() {
@@ -283,7 +259,6 @@ object AdsSdkManager {
                         }
 
                         override fun onAdDismissedFullScreenContent() {
-                            ad.destroy()
                             videoRequestInFlight.set(false)
                             onStatus("Sesi iklan selesai.")
                         }
@@ -291,17 +266,14 @@ object AdsSdkManager {
                         override fun onAdFailedToShowFullScreenContent(
                             fullScreenContentError: FullScreenContentError
                         ) {
-                            ad.destroy()
                             videoRequestInFlight.set(false)
+                            Log.w(TAG, "Rewarded interstitial show: ${fullScreenContentError.message}")
                             onStatus("Iklan tidak dapat ditampilkan. Silakan coba lagi nanti.")
                         }
                     }
                     try {
-                        ad.show(activity) {
-                            onRewardEarned()
-                        }
+                        ad.show(activity) { onRewardEarned() }
                     } catch (error: Exception) {
-                        ad.destroy()
                         videoRequestInFlight.set(false)
                         Log.e(TAG, "Rewarded interstitial show failed", error)
                         onStatus("Iklan gagal dibuka.")
@@ -310,8 +282,8 @@ object AdsSdkManager {
 
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     videoRequestInFlight.set(false)
-                    Log.w(TAG, "Rewarded interstitial failed to load: ${adError.message}")
-                    onStatus("Belum ada iklan yang tersedia. Silakan gunakan aplikasi seperti biasa.")
+                    Log.w(TAG, "Rewarded interstitial load: ${adError.message}")
+                    onStatus("Belum ada iklan yang tersedia. Silakan coba lagi nanti.")
                 }
             }
         )
@@ -319,7 +291,8 @@ object AdsSdkManager {
 
     private fun canShowVideo(context: Context, format: String, formatLimit: Int): Boolean {
         val recent = recentVideoImpressions(context)
-        return recent.size < GLOBAL_VIDEO_LIMIT && recent.count { it.first == format } < formatLimit
+        return recent.size < GLOBAL_VIDEO_LIMIT &&
+            recent.count { it.first == format } < formatLimit
     }
 
     private fun recordVideoImpression(context: Context, format: String) {
@@ -328,16 +301,13 @@ object AdsSdkManager {
         recent.add(format to now)
         val encoded = recent.joinToString("|") { "${it.first}:${it.second}" }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit()
-            .putString(IMPRESSIONS_KEY, encoded)
-            .apply()
+            .edit().putString(IMPRESSIONS_KEY, encoded).apply()
     }
 
     private fun recentVideoImpressions(context: Context): List<Pair<String, Long>> {
         val now = System.currentTimeMillis()
         val stored = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getString(IMPRESSIONS_KEY, "")
-            .orEmpty()
+            .getString(IMPRESSIONS_KEY, "").orEmpty()
         return stored.split("|").mapNotNull { entry ->
             val parts = entry.split(":")
             if (parts.size != 2) return@mapNotNull null

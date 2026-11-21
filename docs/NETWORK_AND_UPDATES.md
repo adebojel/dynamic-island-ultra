@@ -19,23 +19,38 @@ Desktop mode changes the WebView User-Agent and viewport layout; mobile mode res
 
 Web content executes in Android WebView. File access and content-provider access are disabled, mixed content is blocked, Safe Browsing is enabled when supported, and TLS certificate errors are cancelled. Cleartext HTTP is disabled by the app network security config.
 
-## AdMob readiness (not yet integrated)
+## AdMob and Premium implementation
 
-Network permissions are in place for future Google Mobile Ads SDK connectivity. Actual AdMob implementation must wait for:
+This project integrates Google Mobile Ads Next-Gen SDK `1.7.0`, UMP SDK `4.0.0`, and Google Play Billing Library `9.1.0`. The manifest contains the AdMob App ID. Release builds use the publisher's four ad units; debug builds use Google's official test units. Google specifically requires test ads during development and warns that live ad testing can lead to account suspension.
 
-1. The publisher's AdMob App ID and ad-unit IDs.
-2. Google Mobile Ads SDK dependency and manifest App ID metadata.
-3. Google User Messaging Platform (UMP) consent flow and a privacy-options entry point where required.
-4. Test ad units/devices during development, followed by policy-compliant production IDs.
-5. Correct privacy policy, data-safety disclosures, and placement/layout that does not obstruct core app controls.
+| Format | Placement / trigger | In-app rule |
+|---|---|---|
+| Banner | Bottom slot, Bonus & Premium screen only | User can hide it; refresh is disabled in AdMob unit settings |
+| Native Advanced | One card labelled “IKLAN”, Bonus & Premium only | User can hide it |
+| Rewarded Ads | Explicit tap by user | Reward only on the SDK's earned-reward callback |
+| Rewarded Interstitial | Explicit tap plus disclosure dialog with Continue/Skip | At most one app impression per rolling 24 hours |
 
-Google's current guidance requires requesting consent information at every app launch, displaying any required consent form, and checking `canRequestAds()` before requesting ads. Until the IDs and consent flow are configured, this repository does not display ads or embed fake IDs.
+The app caps all rewarded-format video impressions together at two per rolling 24 hours. No ads are requested from the floating island, offline assistant, microphone, notifications, browser, permission centre, or Android system controls. The video duration depends on the creative served by AdMob and cannot be guaranteed to be under 30 seconds.
 
-Official setup references:
-- Android network permissions: https://developer.android.com/develop/connectivity/network-ops/connecting
-- AdMob Android SDK: https://developers.google.com/admob/android/quick-start
-- UMP privacy and consent: https://developers.google.com/admob/android/privacy
-- WebView User-Agent and viewport: https://developer.android.com/reference/android/webkit/WebSettings
+UMP consent information is refreshed at every app launch, applicable forms are presented, and ad requests are gated by `canRequestAds()`. The privacy-options entry point is shown when required. The publisher must still publish user messages in AdMob → Privacy & messaging and complete AdMob app review/eligibility. Having an AdMob app and ad units does not prove that production fill is approved or available.
+
+### Premium product
+
+The app queries Play subscription product ID `diu_premium`; price and available offers are fetched live from Google Play. The app does not invent prices or fake purchase success. Create the product and active base plans in Play Console before purchasable plans appear. Configure prepaid base plans to prevent automatic renewal when this is the business choice. The intended affordability target starts at Rp2,000, while actual localized prices and terms are controlled by Play Console.
+
+Standard prepaid subscription periods include 1 week, 4 weeks, 1, 2, 3, 4, 6, or 8 months, and 1 year. Exact 2-week, 3-week, and 2-year options are not standard base plan periods for Indonesia; they need a separately designed one-time pass and secure entitlement validation. These durations are not advertised as available in this build. Current cosmetic Premium features are RGB themes, Island Pulse FX, Island Size, and Compact Panel. Earned ad rewards give a 24-hour local unlock and are not account-backed.
+
+The paid subscription is queried and acknowledged on-device using Google Play Billing. A trusted backend with Google Play Developer API purchase-token verification should be added before relying on account-synced or transferable entitlements.
+
+Official references:
+- GMA Next-Gen SDK: https://developers.google.com/admob/android/next-gen/quick-start
+- UMP privacy and consent: https://developers.google.com/admob/android/next-gen/privacy
+- Banner: https://developers.google.com/ad-manager/mobile-ads-sdk/android/next-gen/banner
+- Native Advanced: https://developers.google.com/ad-manager/mobile-ads-sdk/android/next-gen/native/advanced
+- Rewarded: https://developers.google.com/ad-manager/mobile-ads-sdk/android/next-gen/rewarded
+- Rewarded Interstitial: https://developers.google.com/ad-manager/mobile-ads-sdk/android/next-gen/rewarded-interstitial
+- Google Play Billing: https://developer.android.com/google/play/billing/integrate
+- AdMob test ads: https://support.google.com/admob/answer/3342099
 
 ## AI and local feature boundary
 

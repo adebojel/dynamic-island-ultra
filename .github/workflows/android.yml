@@ -61,6 +61,11 @@ jobs:
           grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
+          grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
+          grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
+          grep -q 'billing:9.1.0' app/build.gradle.kts
+          grep -q 'ca-app-pub-9305273212801233~4511201352' app/src/main/AndroidManifest.xml
+          grep -q 'android:name=".ads.AdCenterActivity"' app/src/main/AndroidManifest.xml
           if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|HttpURLConnection|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
             echo "::error::The built-in AI module must remain local-only and must not contain network clients or endpoints."
             exit 1
@@ -104,6 +109,18 @@ jobs:
       - name: Build debug preview APK
         if: steps.signing.outputs.ready != 'true'
         run: gradle --no-daemon --stacktrace assembleDebug -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+
+      - name: Verify stable release APK signature
+        if: steps.signing.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/release/app-release.apk"
+          APKSIGNER="${ANDROID_HOME}/build-tools/36.0.0/apksigner"
+          test -x "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK" | tee "$RUNNER_TEMP/apk-signature.txt"
+          grep -q "Signer #1 certificate SHA-256 digest:" "$RUNNER_TEMP/apk-signature.txt"
+          echo "APK signature verified; certificate fingerprint is shown in the workflow log."
 
       - name: Verify APK, calculate SHA-256 and write release metadata
         id: package
@@ -174,7 +191,9 @@ jobs:
             - SHA-256 checksum and release-info.json are attached.
             - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.
             - App-wide network permissions are enabled; the offline assistant remains local-only.
-            - AdMob requires publisher IDs and UMP consent setup before ads are enabled.
+            - Google Mobile Ads Next-Gen and UMP are integrated. Debug builds use Google's official test units; signed release builds use the publisher's production IDs.
+            - Banner and Native Advanced are confined to Bonus & Premium. Rewarded formats require direct user action and grant a 24-hour cosmetic Premium unlock.
+            - Google Play Billing queries subscription product diu_premium; localized price and offers are read from Google Play.
             - Install/update is handed to Android's package installer; user confirmation may be required.
             - This APK is self-signed with the project's stable release key, not Google Play certified.
           files: |

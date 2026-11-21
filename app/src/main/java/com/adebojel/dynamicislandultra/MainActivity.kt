@@ -1,6 +1,8 @@
 package com.adebojel.dynamicislandultra
 
 import android.Manifest
+import android.app.Activity
+import android.graphics.Color as AndroidColor
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Tune
@@ -43,6 +46,10 @@ import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.browser.DuckDuckGoBrowserActivity
 import com.adebojel.dynamicislandultra.update.AppUpdateActivity
+import com.adebojel.dynamicislandultra.ads.AdCenterActivity
+import com.adebojel.dynamicislandultra.ads.AdsSdkManager
+import com.adebojel.dynamicislandultra.ads.PremiumAccess
+import com.adebojel.dynamicislandultra.ads.PremiumBillingManager
 
 private val Night = Color(0xFF080B14)
 private val Panel = Color(0xFF121A2B)
@@ -53,13 +60,27 @@ class MainActivity : ComponentActivity() {
     private val notificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
+    private val adCenterLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) recreate()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AdsSdkManager.start(this)
+        PremiumBillingManager.connect(this)
+        val premiumAccent = when (PremiumAccess.accentColor(this)) {
+            AndroidColor.rgb(179, 107, 255) -> Color(0xFFB36BFF)
+            AndroidColor.rgb(65, 220, 145) -> Color(0xFF41DC91)
+            AndroidColor.rgb(255, 200, 87) -> Color(0xFFFFC857)
+            else -> Cyan
+        }
+        val premiumActive = PremiumAccess.hasPremiumAccess(this)
         setContent {
             MaterialTheme(
                 colorScheme = darkColorScheme(
-                    primary = Cyan,
+                    primary = premiumAccent,
                     secondary = Violet,
                     background = Night,
                     surface = Panel,
@@ -79,7 +100,9 @@ class MainActivity : ComponentActivity() {
                     onCalculator = { openLocal(OfflineCalculatorActivity::class.java) },
                     onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) },
                     onBrowser = { openLocal(DuckDuckGoBrowserActivity::class.java) },
-                    onUpdate = { openLocal(AppUpdateActivity::class.java) }
+                    onUpdate = { openLocal(AppUpdateActivity::class.java) },
+                    premiumActive = premiumActive,
+                    onAdCenter = { adCenterLauncher.launch(Intent(this, AdCenterActivity::class.java)) }
                 )
             }
         }
@@ -149,7 +172,9 @@ private fun Dashboard(
     onCalculator: () -> Unit,
     onWorkspace: () -> Unit,
     onBrowser: () -> Unit,
-    onUpdate: () -> Unit
+    onUpdate: () -> Unit,
+    premiumActive: Boolean,
+    onAdCenter: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(
@@ -164,7 +189,7 @@ private fun Dashboard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("DYNAMIC ISLAND", color = Color.White, fontSize = 12.sp, letterSpacing = 3.sp)
-                    Text("ULTRA", color = Cyan, fontSize = 34.sp)
+                    Text("ULTRA", color = MaterialTheme.colorScheme.primary, fontSize = 34.sp)
                     Text("SMART INTERACTION • ANDROID", color = Color.LightGray, fontSize = 10.sp, letterSpacing = 1.5.sp)
                 }
                 Icon(Icons.Default.Bolt, null, tint = Violet, modifier = Modifier.size(42.dp))
@@ -191,7 +216,7 @@ private fun Dashboard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Box(Modifier.size(8.dp).background(Cyan, RoundedCornerShape(50)))
+                            Box(Modifier.size(8.dp).background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)))
                             Text("ISLAND READY", color = Color.White, fontSize = 10.sp, letterSpacing = 1.sp)
                             Box(Modifier.size(7.dp).background(Violet, RoundedCornerShape(50)))
                         }
@@ -213,7 +238,7 @@ private fun Dashboard(
                 }
             }
         }
-        item { Text("PERMISSION CENTER", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item { Text("PERMISSION CENTER", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
             PermissionCard(
                 "Display over other apps",
@@ -246,7 +271,7 @@ private fun Dashboard(
                 onBattery
             )
         }
-        item { Text("OFFLINE TOOLBOX", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item { Text("OFFLINE TOOLBOX", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
             FeatureCard(Icons.Default.Apps, "Installed app collection", "Browse launchable apps with limited package visibility", "Offline", onInstalledApps)
         }
@@ -262,14 +287,14 @@ private fun Dashboard(
         item {
             FeatureCard(Icons.Default.Tune, "Offline notes", "Notes stored on this device only", "Local", onNotes)
         }
-        item { Text("INTERNET & ONLINE FEATURES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item { Text("INTERNET & ONLINE FEATURES", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
             FeatureCard(Icons.Default.Language, "DuckDuckGo Browser", "Browser bawaan DuckDuckGo, pencarian privat, semua situs HTTPS dan mode Desktop/Mobile", "Internet", onBrowser)
         }
         item {
             FeatureCard(Icons.Default.SystemUpdate, "GitHub update center", "Check latest release, verify SHA-256 and hand off installation to Android", "Internet", onUpdate)
         }
-        item { Text("FEATURE CATEGORIES", color = Cyan, fontSize = 12.sp, letterSpacing = 2.sp) }
+        item { Text("FEATURE CATEGORIES", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
             FeatureCard(
                 Icons.Default.Notifications,
@@ -299,7 +324,16 @@ private fun Dashboard(
                 Icons.Default.Tune,
                 "Personalization",
                 "Theme, size, placement and interaction settings",
-                "Roadmap"
+                if (premiumActive) "Premium aktif" else "Kustomisasi dasar"
+            )
+        }
+        item {
+            FeatureCard(
+                Icons.Default.CardGiftcard,
+                "Bonus & Premium",
+                "Tema RGB, efek island, ukuran pill, dan layout panel",
+                if (premiumActive) "Aktif" else "Gratis / Premium",
+                onAdCenter
             )
         }
         item {
@@ -354,7 +388,7 @@ private fun FeatureCard(
             Modifier.fillMaxWidth().padding(15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, null, tint = Cyan, modifier = Modifier.size(28.dp))
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(title, color = Color.White)

@@ -28,6 +28,7 @@ import androidx.core.app.NotificationCompat
 import com.adebojel.dynamicislandultra.R
 import com.adebojel.dynamicislandultra.system.UtilityIntents
 import com.adebojel.dynamicislandultra.ai.OfflineAssistantActivity
+import com.adebojel.dynamicislandultra.ads.PremiumAccess
 import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
@@ -48,6 +49,12 @@ class FloatingIslandService : Service() {
         override fun onReceive(context: Context?, intent: Intent?) {
             latestText = intent?.getStringExtra("preview")?.take(54) ?: latestText
             updateBubbleText()
+        }
+    }
+
+    private val appearanceReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            applyPremiumAppearance()
         }
     }
 
@@ -74,6 +81,7 @@ class FloatingIslandService : Service() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         registerAppReceiver(notificationReceiver, IntentFilter(ACTION_NOTIFICATION_PREVIEW))
         registerAppReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        registerAppReceiver(appearanceReceiver, IntentFilter(ACTION_APPEARANCE_CHANGED))
     }
 
     private fun registerAppReceiver(receiver: BroadcastReceiver, filter: IntentFilter) {
@@ -129,17 +137,38 @@ class FloatingIslandService : Service() {
         }
         windowManager.addView(bubble, bubbleParams)
         updateBubbleText()
-        pulseAnimator = ObjectAnimator.ofFloat(bubble, View.ALPHA, 0.86f, 1f).apply {
-            duration = 1450
-            repeatMode = ValueAnimator.REVERSE
-            repeatCount = ValueAnimator.INFINITE
-            start()
-        }
+        applyPremiumAppearance()
     }
 
     private fun updateBubbleText() {
         val status = if (batteryText.isNotBlank()) "$batteryText  •  " else ""
         bubble?.text = "●  $status${latestText.take(38)}"
+    }
+
+    private fun applyPremiumAppearance() {
+        val view = bubble ?: return
+        val accent = PremiumAccess.accentColor(this)
+        val scale = PremiumAccess.islandScale(this)
+        view.background = rounded(Color.rgb(10, 13, 24), accent, 48f, 2)
+        view.textSize = 11f * scale
+        val horizontal = (22 * scale).toInt()
+        val vertical = (13 * scale).toInt()
+        view.setPadding(horizontal, vertical, horizontal, vertical)
+
+        pulseAnimator?.cancel()
+        pulseAnimator = null
+        val (lowAlpha, duration) = when (PremiumAccess.pulseStyle(this)) {
+            "off" -> return
+            "soft" -> 0.94f to 2300L
+            "fast" -> 0.76f to 900L
+            else -> 0.86f to 1450L
+        }
+        pulseAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, lowAlpha, 1f).apply {
+            this.duration = duration
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
     }
 
     private fun togglePanel() {
@@ -221,7 +250,8 @@ class FloatingIslandService : Service() {
 
         val metrics = resources.displayMetrics
         val width = minOf((metrics.widthPixels * .91f).toInt(), (440 * metrics.density).toInt())
-        val height = (metrics.heightPixels * .76f).toInt()
+        val heightFactor = if (PremiumAccess.compactPanel(this)) .64f else .76f
+        val height = (metrics.heightPixels * heightFactor).toInt()
         val params = WindowManager.LayoutParams(
             width,
             height,
@@ -365,6 +395,7 @@ class FloatingIslandService : Service() {
     override fun onDestroy() {
         runCatching { unregisterReceiver(notificationReceiver) }
         runCatching { unregisterReceiver(batteryReceiver) }
+        runCatching { unregisterReceiver(appearanceReceiver) }
         pulseAnimator?.cancel()
         pulseAnimator = null
         bubble?.let { runCatching { windowManager.removeView(it) } }
@@ -380,5 +411,6 @@ class FloatingIslandService : Service() {
         const val ACTION_NOTIFICATION_PREVIEW =
             "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"
         const val ACTION_STOP = "com.adebojel.dynamicislandultra.STOP_ISLAND"
+        const val ACTION_APPEARANCE_CHANGED = "com.adebojel.dynamicislandultra.PREMIUM_APPEARANCE_CHANGED"
     }
 }
