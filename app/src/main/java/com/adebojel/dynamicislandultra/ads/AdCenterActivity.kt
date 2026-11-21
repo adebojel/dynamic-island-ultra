@@ -343,7 +343,7 @@ private fun AdCenterScreen(activity: Activity, onClose: () -> Unit) {
                     color = Color(0xFFB7C2D5),
                     fontSize = 11.sp
                 )
-                if (showNative && adsReady && !premiumUnlocked)
+                if (showNative && adsReady && !premiumUnlocked) NativeAdSlot(enabled = true)
             }
 
             item {
