@@ -34,7 +34,7 @@ object LocalDiagnostics {
         val batteryPercent = battery.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
         val freeBytes = context.cacheDir.usableSpace
         val webViewAvailable = runCatching {
-            WebView.getCurrentWebViewPackage(context) != null
+            WebView.getCurrentWebViewPackage() != null
         }.getOrDefault(false)
         val version = context.packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
         val lines = listOf(
