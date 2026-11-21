@@ -20,6 +20,8 @@ import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
+import com.adebojel.dynamicislandultra.browser.YoutubeBrowserActivity
+import com.adebojel.dynamicislandultra.update.AppUpdateActivity
 import com.adebojel.dynamicislandultra.system.UtilityIntents
 
 class OfflineAssistantActivity : ComponentActivity() {
@@ -34,8 +36,8 @@ class OfflineAssistantActivity : ComponentActivity() {
                     Modifier.fillMaxSize().background(Color(0xFF0B1222)).padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("OFFLINE UTILITY ASSISTANT", color = Color(0xFF43E8FF), fontSize = 16.sp)
-                    Text("Bukan chat AI cloud. Asisten ini menjalankan perintah perangkat dan hitungan sederhana secara lokal.", color = Color.LightGray, fontSize = 11.sp)
+                    Text("BUILT-IN OFFLINE ASSISTANT", color = Color(0xFF43E8FF), fontSize = 16.sp)
+                    Text("Mesin keputusan lokal bawaan APK: perintah perangkat, hitungan dan pemeriksaan kesehatan fitur. Tidak memakai internet atau model impor.", color = Color.LightGray, fontSize = 11.sp)
                     LazyColumn(Modifier.weight(1f).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(history) { line ->
                             Surface(color = Color(0xFF18243A), shape = RoundedCornerShape(12.dp)) {
@@ -50,6 +52,9 @@ class OfflineAssistantActivity : ComponentActivity() {
                             history = history + "Anda: $input" + "Ultra: ${reply.text}"
                             input = ""
                             when (reply.action) {
+                                OfflineAction.OpenYoutubeBrowser -> startActivity(Intent(this@OfflineAssistantActivity, YoutubeBrowserActivity::class.java))
+                                OfflineAction.OpenUpdateCenter -> startActivity(Intent(this@OfflineAssistantActivity, AppUpdateActivity::class.java))
+                                OfflineAction.RunDiagnostics -> history = history + "Ultra: ${LocalDiagnostics.createReport(this@OfflineAssistantActivity)}"
                                 OfflineAction.OpenInstalledApps -> startActivity(Intent(this@OfflineAssistantActivity, InstalledAppsActivity::class.java))
                                 OfflineAction.OpenCalculator -> startActivity(Intent(this@OfflineAssistantActivity, OfflineCalculatorActivity::class.java))
                                 OfflineAction.OpenFiles -> launchUtility("files")
