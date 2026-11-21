@@ -1,4 +1,4 @@
-name: Android CI and Offline APK Release
+name: Android CI and GitHub APK Release
 
 on:
   push:
@@ -14,9 +14,12 @@ concurrency:
 
 jobs:
   build:
-    name: Test and build offline APK
+    name: Test and build Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: 0.0.${{ github.run_number }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -40,65 +43,142 @@ jobs:
         with:
           gradle-version: '9.9.1'
 
-      - name: Enforce offline-only manifest and dependency policy
+      - name: Enforce Android 8+ and scoped network policy
         shell: bash
         run: |
-          if grep -RInE 'android.permission.INTERNET|android.permission.ACCESS_NETWORK_STATE|okhttp|retrofit|ktor-client|firebase|play-services' app/src app/build.gradle.kts; then
-            echo "::error::Unexpected network permission or network SDK dependency found."
+          set -euo pipefail
+          grep -q 'minSdk = 26' app/build.gradle.kts
+          grep -q 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml
+          grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
+          if grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml; then
+            echo "::error::ACCESS_NETWORK_STATE is not needed and must not be requested."
             exit 1
           fi
-          echo "No network permissions or network SDK dependencies detected."
+          if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
+            echo "::error::The built-in assistant must not contain network clients or endpoints."
+            exit 1
+          fi
+          NETWORK_APIS="$(grep -RIlE 'java\.net\.(URL|HttpURLConnection|Socket)|okhttp|retrofit|ktor' app/src/main/java || true)"
+          for source in $NETWORK_APIS; do
+            case "$source" in
+              app/src/main/java/com/adebojel/dynamicislandultra/browser/YoutubeBrowserActivity.kt|app/src/main/java/com/adebojel/dynamicislandultra/update/AppUpdateActivity.kt) ;;
+              *) echo "::error::Network client outside approved feature module: $source"; exit 1 ;;
+            esac
+          done
+          echo "Android 8+ floor and restricted network architecture checks passed."
 
-      - name: Run offline assistant unit tests
-        run: gradle --no-daemon --stacktrace testDebugUnitTest
+      - name: Run offline assistant and local policy tests
+        run: gradle --no-daemon --stacktrace testDebugUnitTest -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
 
-      - name: Build debug APK
-        run: gradle --no-daemon --stacktrace assembleDebug
-
-      - name: Verify APK and enforce 400 MiB project budget
+      - name: Prepare stable release signing key
+        id: signing
         shell: bash
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          APK="app/build/outputs/apk/debug/app-debug.apk"
-          test -s "$APK"
-          SIZE_BYTES="$(stat -c%s "$APK")"
+          set -euo pipefail
+          if [[ -n "$RELEASE_KEYSTORE_BASE64" && -n "$RELEASE_STORE_PASSWORD" && -n "$RELEASE_KEY_ALIAS" && -n "$RELEASE_KEY_PASSWORD" ]]; then
+            KEY_PATH="$RUNNER_TEMP/dynamic-island-release.jks"
+            printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$KEY_PATH"
+            chmod 600 "$KEY_PATH"
+            echo "path=$KEY_PATH" >> "$GITHUB_OUTPUT"
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "Stable release signing key is configured."
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Stable signing secrets are missing. A debug preview will be built, but no update-compatible GitHub Release will be published."
+          fi
+
+      - name: Build signed release APK
+        if: steps.signing.outputs.ready == 'true'
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ steps.signing.outputs.path }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: gradle --no-daemon --stacktrace assembleRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+
+      - name: Build debug preview APK
+        if: steps.signing.outputs.ready != 'true'
+        run: gradle --no-daemon --stacktrace assembleDebug -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+
+      - name: Verify APK, calculate SHA-256 and write release metadata
+        id: package
+        shell: bash
+        env:
+          SIGNING_READY: ${{ steps.signing.outputs.ready }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          if [[ "$SIGNING_READY" == "true" ]]; then
+            SOURCE_APK="app/build/outputs/apk/release/app-release.apk"
+            APK_NAME="app-release.apk"
+          else
+            SOURCE_APK="app/build/outputs/apk/debug/app-debug.apk"
+            APK_NAME="app-debug-preview.apk"
+          fi
+          test -s "$SOURCE_APK"
+          SIZE_BYTES="$(stat -c%s "$SOURCE_APK")"
           MAX_BYTES=$((400 * 1024 * 1024))
           echo "APK size: $SIZE_BYTES bytes"
           if (( SIZE_BYTES > MAX_BYTES )); then
             echo "::error::APK exceeds the 400 MiB project budget."
             exit 1
           fi
-          sha256sum "$APK" > "$APK.sha256"
-          cat "$APK.sha256"
-          ls -lh "$APK" "$APK.sha256"
+          cp "$SOURCE_APK" "dist/$APK_NAME"
+          sha256sum "dist/$APK_NAME" > "dist/$APK_NAME.sha256"
+          if [[ "$SIGNING_READY" == "true" ]]; then
+            cat > dist/release-info.json <<EOF
+          {
+            "packageName": "com.adebojel.dynamicislandultra",
+            "versionName": "$VERSION_NAME",
+            "versionCode": $VERSION_CODE,
+            "minSdk": 26,
+            "apk": "app-release.apk",
+            "sha256Asset": "app-release.apk.sha256",
+            "commit": "$GITHUB_SHA"
+          }
+          EOF
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
+          ls -lh dist/*
 
-      - name: Upload workflow artifacts
+      - name: Upload APK and test report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dynamic-island-ultra-v0.0.0-offline-apk
+          name: dynamic-island-ultra-${{ env.VERSION_NAME }}-${{ steps.signing.outputs.ready == 'true' && 'release' || 'debug-preview' }}
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/debug/app-debug.apk.sha256
+            dist/*
             app/build/reports/tests/testDebugUnitTest/
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.0.0 GitHub Release
+      - name: Publish versioned GitHub Release
+        if: steps.package.outputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.0.0
+          tag_name: v${{ env.VERSION_NAME }}
           target_commitish: main
-          name: Dynamic Island Ultra v0.0.0 — Offline Preview
+          name: Dynamic Island Ultra v${{ env.VERSION_NAME }}
           body: |
-            Offline-only engineering preview.
+            Automatically versioned Android release.
 
-            Includes the draggable floating island, local installed-app launcher, offline notes/calculator/utility assistant, and an app-owned PiP workspace.
-
-            Android PiP applies only to activities that support it; this app cannot force third-party apps to use PiP.
-
-            This APK is debug-signed for sideload testing, not a production Play Store release.
+            - Android minimum: 8.0 Oreo / API 26.
+            - Internet access is limited in app code to the YouTube browser and this GitHub update flow.
+            - The built-in assistant and local tools remain offline.
+            - SHA-256 checksum and release-info.json are attached.
+            - Install/update is handed to Android's package installer; user confirmation may be required.
+            - This APK is self-signed with the project's stable release key, not Google Play certified.
           files: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/debug/app-debug.apk.sha256
+            dist/app-release.apk
+            dist/app-release.apk.sha256
+            dist/release-info.json
           overwrite_files: true
           make_latest: true
         env:
