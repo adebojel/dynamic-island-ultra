@@ -3,6 +3,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val buildVersionCode = providers.gradleProperty("VERSION_CODE").orNull?.toIntOrNull() ?: 1
+val buildVersionName = providers.gradleProperty("VERSION_NAME").orNull ?: "0.0.0"
+val releaseStorePath = System.getenv("RELEASE_KEYSTORE_PATH")
+val releaseStorePassword = System.getenv("RELEASE_STORE_PASSWORD")
+val releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
+val releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+val hasStableReleaseSigning = listOf(
+    releaseStorePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword
+).all { !it.isNullOrBlank() }
+
 android {
     namespace = "com.adebojel.dynamicislandultra"
     compileSdk = 36
@@ -10,8 +20,18 @@ android {
         applicationId = "com.adebojel.dynamicislandultra"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.0.0"
+        versionCode = buildVersionCode
+        versionName = buildVersionName
+    }
+    signingConfigs {
+        if (hasStableReleaseSigning) {
+            create("stableRelease") {
+                storeFile = file(requireNotNull(releaseStorePath))
+                storePassword = requireNotNull(releaseStorePassword)
+                keyAlias = requireNotNull(releaseKeyAlias)
+                keyPassword = requireNotNull(releaseKeyPassword)
+            }
+        }
     }
     buildTypes {
         debug {
@@ -19,6 +39,9 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
+            if (hasStableReleaseSigning) {
+                signingConfig = signingConfigs.getByName("stableRelease")
+            }
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -38,7 +61,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2026.07.00"))
+    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
