@@ -45,14 +45,15 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
 | DuckDuckGo browser | General HTTPS browser with DuckDuckGo default search, desktop/mobile mode, history navigation and reload |
-| GitHub update center | Checks the latest project release, downloads the APK and SHA-256 file, verifies the hash, then opens Android's installer |
+| GitHub update center (GitHub flavor only) | Checks the latest project release, downloads the signed APK and SHA-256 file, verifies the hash, then opens Android's installer |
 
 ## Internet access, AdMob and Premium
 
 The APK requests both `INTERNET` and `ACCESS_NETWORK_STATE`, so future online features can use the network without changing the platform compatibility floor. Android treats these as normal install-time permissions, not runtime popups.
 
 - **DuckDuckGo Browser:** DuckDuckGo is the default home page and search engine. The address bar also opens other HTTPS websites. The mode control switches between mobile and desktop website layouts using the WebView User-Agent and viewport settings.
-- **GitHub Update Center:** checks the latest project release, downloads the signed APK and metadata, verifies SHA-256, then opens Android's package installer.
+- **GitHub Update Center:** available only in the GitHub APK distribution flavor. It checks the latest project release, downloads the signed APK and metadata, verifies SHA-256, then opens Android's package installer.
+- **Google Play updates:** the Play distribution flavor disables the GitHub APK installer and opens the Play Store listing for app updates.
 - AdMob and Google Play Billing use network access only for their respective monetization flows. The built-in AI assistant, local diagnostics, notes and calculator remain offline by architecture and CI checks.
 
 Cleartext HTTP is disabled; HTTPS is preferred. Network permission being available to the app does not mean each feature should upload user data. Modules must disclose their purpose and minimize transmitted data.
@@ -81,9 +82,20 @@ The APK includes a deterministic local decision engine. It interprets supported 
 
 **Technical distinction:** this engine is not a general-purpose generative LLM. A generative on-device model needs model weights plus an inference runtime. Official LiteRT-LM Android guidance describes model files from hundreds of MB to multiple GB and stores the model as a device file rather than APK assets. That would exceed or consume most of the current 400 MiB APK budget and would not run reliably on every Android 8+ device. We do not falsely label the built-in decision engine as a generative model.
 
-## GitHub updates without uninstalling
+## Distribution-specific update channels
 
-The app's GitHub Update Center checks the latest release, compares its version code, downloads the APK and checksum, and verifies SHA-256 before passing it to Android's package installer.
+The project now builds two product flavors with the same production application ID and stable release signing key:
+
+| Artifact | Flavor | Update method | Installer permission |
+|---|---|---|---|
+| `app-release.apk` | `github` | GitHub Releases updater, SHA-256 verification, then Android's package installer | Declared only by `app/src/github/AndroidManifest.xml` |
+| `app-release.aab` | `play` | Updates are handed off to Google Play | `REQUEST_INSTALL_PACKAGES` is absent from the shared and Play manifests |
+
+The GitHub-only self-updater is not included as an active update path in the Play flavor. The Play dashboard's update action opens the Google Play listing; `AppUpdateActivity` also guards against running the GitHub updater when the Play flavor is used. **Do not upload the earlier v0.0.3 AAB to Play Console:** it was built before this manifest/flavor separation and still inherited the self-update permission. Upload only an AAB from a successfully verified post-separation `bundlePlayRelease` CI run.
+
+### GitHub APK updates without uninstalling
+
+The GitHub flavor's updater checks the latest release, compares its version code, downloads the APK and checksum, and verifies SHA-256 before passing it to Android's package installer.
 
 Every successful signed build from `main` increments the patch tag from the latest published `v0.0.N`, so the next release after `v0.0.0` is `v0.0.1`, then `v0.0.2`, and so on. The internal Android `versionCode` uses the monotonically increasing GitHub Actions run number, so cancelled or failed CI runs cannot cause Android downgrade checks.
 
@@ -115,7 +127,7 @@ The pre-existing `v0.0.0` asset was built before stable signing was configured. 
 
 ## Permissions and privacy
 
-The app requests overlay access, notification access/permission and install-from-this-source authorization only when their features need them. It does not request SMS, contacts, call logs, microphone capture, broad storage or broad package visibility. INTERNET and ACCESS_NETWORK_STATE are normal install-time network permissions.
+The app requests overlay access and notification access/permission only when their features need them. Install-from-this-source authorization exists only in the GitHub distribution APK, not in the Play distribution AAB. It does not request SMS, contacts, call logs, microphone capture, broad storage or broad package visibility. INTERNET and ACCESS_NETWORK_STATE are normal install-time network permissions.
 
 DuckDuckGo searches and visited sites are handled by WebView and the selected website providers. GitHub update requests reveal ordinary connection metadata to GitHub. The offline assistant does not transmit commands or diagnostics.
 
@@ -132,10 +144,10 @@ Toolchain:
 Local debug build:
 
 ```bash
-gradle --no-daemon testDebugUnitTest assembleDebug
+gradle --no-daemon testGithubDebugUnitTest testPlayDebugUnitTest assembleGithubDebug assemblePlayDebug
 ```
 
-A push to `main` runs the tests and build. CI checks the AdMob/UMP/Billing dependency and manifest configuration. With stable signing secrets configured, CI builds the release APK, verifies its APK signature with `apksigner`, calculates SHA-256, and publishes `app-release.apk`, `app-release.apk.sha256`, and `release-info.json` under a new versioned release. Debug builds use Google's official test ad units only; release builds use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
+A push to `main` runs unit tests for both distribution flavors. With stable signing secrets configured, CI builds `assembleGithubRelease` for the GitHub APK and `bundlePlayRelease` for the Play AAB. It validates that `REQUEST_INSTALL_PACKAGES` is absent from the shared manifest and present only in the GitHub flavor manifest, verifies the signed artifacts, calculates SHA-256, and publishes canonical `app-release.apk`, `app-release.aab`, checksum files, and `release-info.json`. Debug variants use Google's official test ad units only; release variants use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
 
 APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
@@ -167,7 +179,7 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.3](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.3) (**versionCode 97**, published 22 November 2026). [Android CI run #97](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44988489514) completed successfully. It passed unit tests, Android architecture/manifest gates, signed APK and AAB assembly, APK signature verification, AAB JAR signature verification, matching APK/AAB certificate fingerprint verification, SHA-256 generation, and GitHub Release asset publication.
+The latest verified signed release is [v0.0.3](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.3) (**versionCode 97**, published 22 November 2026). That release predates the GitHub/Play flavor split and its AAB must not be submitted to Play Console because it still contains the self-update permission. The flavor-separated build is now committed on `main`, but must pass its own CI run before its AAB is treated as Play-uploadable. [Android CI run #97](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44988489514) completed successfully. It passed unit tests, Android architecture/manifest gates, signed APK and AAB assembly, APK signature verification, AAB JAR signature verification, matching APK/AAB certificate fingerprint verification, SHA-256 generation, and GitHub Release asset publication.
 
 Release assets:
 - [Signed APK for direct device installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.apk)
