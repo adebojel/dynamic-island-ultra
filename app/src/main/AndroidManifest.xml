@@ -71,7 +71,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="User-enabled floating island overlay and notification controls" />
+                android:value="User-started floating island overlay and shortcuts while enabled; an ongoing notification shows service status and the in-app Stop control ends it." />
         </service>
         <service
             android:name=".notifications.IslandNotificationListener"
