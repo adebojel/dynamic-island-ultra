@@ -165,8 +165,10 @@ object AdsSdkManager {
                 information.privacyOptionsRequirementStatus ==
                     ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
             if (canRequestAds && !isInitialized) {
+                // Register before initialization so this callback is completed by notifyReady(),
+                // including when an initialization is already in flight.
+                synchronized(this) { callbacks.add(onComplete) }
                 initializeSdk(activity.applicationContext)
-                mainHandler.postDelayed({ onComplete(isInitialized && canRequestAds) }, 750L)
             } else {
                 onComplete(isInitialized && canRequestAds)
             }
