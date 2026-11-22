@@ -145,3 +145,11 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Use TalkBack to move through category headers; confirm each is focusable and announces its title and expanded/collapsed state.
 - [ ] Select an action from each applicable category and confirm the bubble panel closes before the destination opens.
 - [ ] Reopen the bubble panel after navigating back; confirm the accordion is in its documented default collapsed state.
+
+## Launcher icon and gesture cancellation checks
+
+- [ ] Confirm the icon is clipped to adaptive launcher masks (circle, squircle and rounded-square).
+- [ ] Check the icon at home-screen, app drawer and Settings app-info sizes; ensure the waveform and status lens stay visible.
+- [ ] Turn Haptic feedback off and long-press; confirm no vibration occurs.
+- [ ] Turn Haptic feedback on and long-press; confirm the configured interaction feedback works.
+- [ ] Begin dragging then trigger ACTION_CANCEL; confirm the bubble returns to its original position without a delayed tap action.

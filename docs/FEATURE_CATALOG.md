@@ -73,3 +73,10 @@ The built-in assistant and local tools work without internet, imported model fil
 - Category headers are full-width, keyboard-focusable controls with expanded/collapsed text and accessibility descriptions.
 - Opening/closing a category changes only its local panel content; it does not trigger system settings or external app automation.
 - Selecting a category action closes the overlay panel before starting the selected destination, avoiding the panel remaining above the target screen.
+
+## Launcher identity and gesture input hardening
+
+- Replaced the full-canvas foreground background with transparent layered floating-island/waveform artwork.
+- Added a dedicated launcher background color for the Android adaptive icon; regular and round definitions share it.
+- Long-press haptic feedback respects the haptic preference.
+- ACTION_CANCEL removes delayed gesture callbacks and restores a drag to its original position.

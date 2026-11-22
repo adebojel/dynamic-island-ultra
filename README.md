@@ -232,3 +232,7 @@ The floating overlay now supports configurable local gesture routing:
 - The gesture router uses a fixed allowlist. It does not execute arbitrary shell commands, change protected Android settings, or control third-party apps.
 
 These controls are implemented in the existing overlay service and persist in app-private preferences. Physical drag, haptic, accessibility, and OEM behaviour still require device validation.
+
+## Adaptive launcher icon
+
+The launcher artwork now uses a transparent adaptive foreground with a neon cyan/violet floating-island waveform and a separate dark background color. Both round and standard Android adaptive icon definitions share the same background resource, allowing launchers to apply their own icon masks.

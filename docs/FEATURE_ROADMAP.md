@@ -106,3 +106,10 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Added full-width focusable category headers with explicit accessibility descriptions and state text.
 - Category actions close the floating panel before launching their destination, preventing a stale overlay from covering the opened screen.
 - Physical TalkBack, focus, rotation, and OEM overlay tests remain in the device checklist.
+
+## Launcher identity and gesture cancellation
+
+- Rebuilt the launcher mark as a transparent adaptive foreground over a separate launcher background.
+- Fixed long-press feedback to obey the user haptic toggle.
+- Added cancellation cleanup for pending tap/long-press callbacks and restored the pre-drag coordinates on ACTION_CANCEL.
+- Release CI will verify resource compilation and both distribution variants.

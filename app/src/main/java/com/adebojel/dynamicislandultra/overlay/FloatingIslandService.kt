@@ -525,7 +525,11 @@ class FloatingIslandService : Service() {
         private val longPressTask = Runnable {
             if (!dragged && activeView != null) {
                 longPressTriggered = true
-                activeView?.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                val hapticsEnabled = getSharedPreferences("island", MODE_PRIVATE)
+                    .getBoolean("haptic_enabled", false)
+                if (hapticsEnabled) {
+                    activeView?.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                }
                 performBubbleGesture("long_press")
             }
         }
@@ -600,6 +604,14 @@ class FloatingIslandService : Service() {
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     mainHandler.removeCallbacks(longPressTask)
+                    pendingTap?.let { mainHandler.removeCallbacks(it) }
+                    pendingTap = null
+                    lastTapAt = 0L
+                    if (dragged) {
+                        bubbleParams.x = startX
+                        bubbleParams.y = startY
+                        runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
+                    }
                     activeView = null
                     return true
                 }
