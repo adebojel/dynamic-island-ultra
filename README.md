@@ -45,7 +45,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
-| DuckDuckGo browser | General HTTPS browser with DuckDuckGo default search, desktop/mobile mode, history navigation and reload |
+| DuckDuckGo browser | HTTPS navigation, Desktop/Mobile mode, local bookmarks, capped local history and DownloadManager-backed HTTPS downloads |
 | GitHub update center (GitHub flavor only) | Checks the latest project release, downloads the signed APK and SHA-256 file, verifies the hash, then opens Android's installer |
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
@@ -262,3 +262,8 @@ These tools do not require network access or additional Android permissions. Tim
 ## File Manager — scoped local storage
 
 The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Copy/move, archive management and document editing are still separate backlog items.
+
+
+### Browser library and downloads
+
+The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Multiple independent tabs, private browsing sessions, and a full bookmark/download management editor remain planned work.

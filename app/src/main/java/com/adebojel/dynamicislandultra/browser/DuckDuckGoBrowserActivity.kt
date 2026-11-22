@@ -1,10 +1,15 @@
 package com.adebojel.dynamicislandultra.browser
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.app.DownloadManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.Gravity
+import android.webkit.CookieManager
+import android.webkit.URLUtil
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -21,6 +26,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import java.net.URLEncoder
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * General HTTPS browser with DuckDuckGo as its default home/search engine.
@@ -34,6 +41,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
     private lateinit var progress: ProgressBar
     private var desktopMode = false
     private var mobileUserAgent = ""
+    private var currentPageTitle = "DuckDuckGo"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,6 +132,23 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         }
         applyBrowserMode(web)
 
+        val browserActions = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        fun addBrowserAction(label: String, action: () -> Unit) {
+            browserActions.addView(Button(this).apply {
+                text = label
+                textSize = 9f
+                setPadding(2, 0, 2, 0)
+                setOnClickListener { action() }
+            }, LinearLayout.LayoutParams(0, 42, 1f))
+        }
+        addBrowserAction("Bookmark") { saveCurrentBookmark() }
+        addBrowserAction("Bookmarks") { showSavedPages(KEY_BOOKMARKS, "Bookmarks") }
+        addBrowserAction("History") { showSavedPages(KEY_HISTORY, "Riwayat", allowClear = true) }
+        addBrowserAction("Downloads") { openDownloads() }
+
         web.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 progress.progress = newProgress
@@ -131,7 +156,10 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             }
 
             override fun onReceivedTitle(view: WebView, pageTitle: String?) {
-                if (!pageTitle.isNullOrBlank()) heading.text = pageTitle.take(72)
+                if (!pageTitle.isNullOrBlank()) {
+                    currentPageTitle = pageTitle.take(120)
+                    heading.text = currentPageTitle.take(72)
+                }
             }
         }
         web.webViewClient = object : WebViewClient() {
@@ -161,7 +189,10 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             }
 
             override fun onPageFinished(view: WebView, url: String?) {
-                if (!url.isNullOrBlank()) address.setText(url)
+                if (!url.isNullOrBlank()) {
+                    address.setText(url)
+                    recordHistory(url, currentPageTitle)
+                }
             }
 
             override fun onReceivedSslError(
@@ -172,6 +203,10 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
                 // Never bypass TLS certificate failures.
                 handler.cancel()
             }
+        }
+
+        web.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
+            enqueueDownload(url, userAgent, contentDisposition, mimeType)
         }
 
         addControl("Back") { if (web.canGoBack()) web.goBack() }
@@ -187,6 +222,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         root.addView(heading)
         root.addView(addressRow)
         root.addView(controls)
+        root.addView(browserActions)
         root.addView(progress, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 3
         ))
@@ -224,6 +260,108 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         }
         browser?.loadUrl(target)
         address.clearFocus()
+    }
+
+    private fun enqueueDownload(url: String, userAgent: String, contentDisposition: String?, mimeType: String?) {
+        if (!url.startsWith("https://", true)) {
+            Toast.makeText(this, "Unduhan hanya diizinkan dari HTTPS.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        runCatching {
+            val filename = URLUtil.guessFileName(url, contentDisposition, mimeType).take(120).ifBlank { "download" }
+            val request = DownloadManager.Request(Uri.parse(url)).apply {
+                setMimeType(mimeType)
+                addRequestHeader("User-Agent", userAgent)
+                CookieManager.getInstance().getCookie(url)?.takeIf { it.isNotBlank() }?.let {
+                    addRequestHeader("Cookie", it)
+                }
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                setAllowedOverMetered(true)
+                setAllowedOverRoaming(false)
+                setDestinationInExternalFilesDir(this@DuckDuckGoBrowserActivity, Environment.DIRECTORY_DOWNLOADS, filename)
+            }
+            val manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            manager.enqueue(request)
+            Toast.makeText(this, "Unduhan dimulai: $filename", Toast.LENGTH_LONG).show()
+        }.onFailure {
+            Toast.makeText(this, "Unduhan gagal dimulai: ${it.message ?: "kesalahan sistem"}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openDownloads() {
+        runCatching {
+            startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+        }.onFailure {
+            Toast.makeText(this, "Daftar unduhan Android tidak tersedia.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveCurrentBookmark() {
+        val url = browser?.url.orEmpty()
+        if (!url.startsWith("https://", true)) {
+            Toast.makeText(this, "Buka halaman HTTPS terlebih dahulu.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val entries = readEntries(KEY_BOOKMARKS)
+        val existing = (0 until entries.length()).firstOrNull {
+            entries.optJSONObject(it)?.optString("url") == url
+        }
+        if (existing != null) entries.remove(existing)
+        entries.put(JSONObject().apply {
+            put("url", url)
+            put("title", currentPageTitle)
+            put("timestamp", System.currentTimeMillis())
+        })
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_BOOKMARKS, entries.toString()).apply()
+        Toast.makeText(this, "Bookmark disimpan di perangkat.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun recordHistory(url: String, title: String) {
+        if (!url.startsWith("https://", true)) return
+        val entries = readEntries(KEY_HISTORY)
+        val duplicate = (0 until entries.length()).firstOrNull {
+            entries.optJSONObject(it)?.optString("url") == url
+        }
+        if (duplicate != null) entries.remove(duplicate)
+        entries.put(JSONObject().apply {
+            put("url", url)
+            put("title", title.ifBlank { url })
+            put("timestamp", System.currentTimeMillis())
+        })
+        while (entries.length() > MAX_HISTORY_ITEMS) entries.remove(0)
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_HISTORY, entries.toString()).apply()
+    }
+
+    private fun readEntries(key: String): JSONArray {
+        val raw = getSharedPreferences(PREFS, MODE_PRIVATE).getString(key, "[]")
+        return runCatching { JSONArray(raw ?: "[]") }.getOrElse { JSONArray() }
+    }
+
+    private fun showSavedPages(key: String, title: String, allowClear: Boolean = false) {
+        val entries = readEntries(key)
+        if (entries.length() == 0) {
+            Toast.makeText(this, "Belum ada data $title.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val labels = Array(entries.length()) { index ->
+            val item = entries.optJSONObject(index) ?: JSONObject()
+            "${item.optString("title", "Halaman")}\\n${item.optString("url")}"
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setItems(labels) { _, which ->
+                entries.optJSONObject(which)?.optString("url")
+                    ?.takeIf { it.startsWith("https://", true) }
+                    ?.let { browser?.loadUrl(it) }
+            }
+            .setNegativeButton("Tutup", null)
+        if (allowClear) {
+            dialog.setNeutralButton("Hapus riwayat") { _, _ ->
+                getSharedPreferences(PREFS, MODE_PRIVATE).edit().remove(key).apply()
+                Toast.makeText(this, "Riwayat dihapus.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        dialog.show()
     }
 
     private fun toggleDesktopMode(web: WebView) {
@@ -269,6 +407,9 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
     companion object {
         private const val PREFS = "browser_settings"
         private const val KEY_DESKTOP_MODE = "desktop_mode"
+        private const val KEY_BOOKMARKS = "bookmarks"
+        private const val KEY_HISTORY = "history"
+        private const val MAX_HISTORY_ITEMS = 100
         private const val DUCKDUCKGO_HOME = "https://duckduckgo.com/"
         private const val DUCKDUCKGO_SEARCH = "https://duckduckgo.com/?q="
         private const val DESKTOP_USER_AGENT =

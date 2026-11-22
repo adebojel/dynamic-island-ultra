@@ -157,3 +157,14 @@ Implemented in source on `main`:
 - Filename validation unit tests; no broad storage permission added.
 
 Still not complete for the wider Phase 1 scope: file copy/move, ZIP tools, full document editing, browser tabs/bookmarks/history/download manager, app-owned multi-window manager, global Accessibility Service controls, complete theme editor, and physical-device/OEM validation. These must not be marked done based solely on this module's CI result.
+
+
+## Phase 1 browser enhancement
+
+Implemented:
+- Local HTTPS bookmark persistence.
+- Capped 100-entry HTTPS browsing history.
+- HTTPS downloads delegated to Android DownloadManager and scoped to app-specific external Downloads storage.
+- Smoke-test checklist for persistence, download hand-off and absence of broad storage permission.
+
+Still outstanding: independent multi-tab WebView lifecycle, private browsing mode with isolated storage/cookie policy, bookmark CRUD/search, download history controls, and physical WebView/device compatibility tests.

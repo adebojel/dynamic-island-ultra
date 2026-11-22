@@ -194,3 +194,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Reopen File Manager after force-stop/relaunch and confirm the persisted selected folder remains accessible.
 - [ ] Revoke folder access from Android settings (or move/remove the test storage) and confirm the activity returns to folder selection without crashing.
 - [ ] Repeat on Android 8/API 26 and a current Android release; record OEM/provider-specific failures.
+
+
+## Browser library and download checks
+
+- [ ] Open an HTTPS website and save it as a bookmark; close/reopen the browser and open it from Bookmarks.
+- [ ] Visit several HTTPS pages; verify History shows recent unique URLs and revisiting a URL moves it to the latest position.
+- [ ] Confirm the history list is capped at 100 entries and Clear History removes local records.
+- [ ] Download a known safe HTTPS file from a site; confirm Android DownloadManager receives it and the completion notification is shown when notifications are allowed.
+- [ ] Confirm download destination is app-specific external Downloads storage and no broad storage permission is requested.
+- [ ] Confirm HTTP/HTTPS navigation and TLS error handling remain strict; certificate errors must not be bypassed.
+- [ ] Confirm non-HTTP(S) active-content URLs are rejected.
+- [ ] Test browser destruction/recreation, rotation, long downloads and WebView behaviour on Android 8/API 26 and a current Android version.

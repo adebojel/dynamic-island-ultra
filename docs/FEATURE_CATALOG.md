@@ -108,3 +108,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Create folders; open files with a compatible installed application; share files using a temporary read grant; rename items; delete with explicit confirmation.
 - No broad storage permission or full-device file scan is requested.
 - Copy/move, ZIP extraction/creation, file preview/editor integration and provider-specific capability handling beyond the supported operations are not yet implemented.
+
+
+## Browser library and download handling
+
+- Persistent bookmarks stored in app-private preferences for HTTPS pages.
+- Local browsing history capped at 100 unique HTTPS URLs; revisits move the entry to the most recent position.
+- HTTPS downloads are delegated to Android DownloadManager with cookie and user-agent headers from the active WebView session.
+- Download files are stored in the app-specific external Downloads directory; no broad storage permission is requested.
+- TLS certificate errors remain cancelled; the browser does not accept a certificate bypass.
+- Multi-tab session manager, private/incognito sessions and a full bookmark/download library editor remain unimplemented.
