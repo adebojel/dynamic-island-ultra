@@ -150,6 +150,8 @@ The official website source and policy pages are in the `site/` directory. **Ini
 - [Premium information](https://adebojel.github.io/dynamic-island-ultra/premium.html)
 - [Help and Support](https://adebojel.github.io/dynamic-island-ultra/support.html)
 
+**AdMob app-ads.txt requires the root of the developer website hostname.** This project Pages URL uses the path `/dynamic-island-ultra/`, while AdMob checks `https://adebojel.github.io/app-ads.txt`. A file stored only in this repository's `site/` folder would remain under the project path and would not satisfy that root-host lookup. Use a root-host website, custom domain, or suitable hosting such as Firebase Hosting, then publish the exact seller declaration copied from AdMob and verify the public URL before declaring this gate complete.
+
 Review these documents whenever permissions, SDKs, data processing, subscriptions or ad placements change. Never send signing keys, passwords, OTPs or tokens to support.
 
 ## Source and roadmap
