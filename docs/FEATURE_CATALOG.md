@@ -153,3 +153,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - The user chooses the file destination/source through Android's Storage Access Framework and supplies the passphrase; there is no cloud upload.
 - Restore requires successful authentication and explicit confirmation; it stops and disables the floating island before replacing the included settings.
 - Premium purchase entitlements, Android permission grants, SAF folder grants, media files and other apps' data are excluded intentionally.
+
+
+## Persistent Reminders
+
+- Create up to 30 one-time reminders, from 1 minute to 7 days, with a custom title.
+- Scheduled using `AlarmManager.setAndAllowWhileIdle`; alarms survive ordinary app process closure.
+- Pending reminders are persisted in app-private preferences and re-scheduled by the existing `BOOT_COMPLETED` receiver.
+- Reminder notifications use a dedicated channel and Android's notification permission state.
+- Timing is inexact and may be delayed by Doze/OEM policies; force-stop can suspend delivery until the app is opened again.
+- Reminder data is included in the encrypted local backup.

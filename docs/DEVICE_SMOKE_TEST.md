@@ -259,3 +259,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Attempt restore with a wrong passphrase and a modified/truncated file; confirm it is rejected and current preferences remain unchanged.
 - [ ] Confirm Premium purchases/entitlements, Android permission grants, and File Manager SAF folder grants are not restored or fabricated.
 - [ ] Test export/import using at least two document providers and on Android 8/API 26.
+
+
+## Persistent Reminder checks
+
+- [ ] Schedule a 5-minute and a custom reminder; confirm both appear in the pending list.
+- [ ] Close the app normally and confirm reminders remain scheduled.
+- [ ] Cancel one reminder and confirm its notification does not appear at the expected time.
+- [ ] Reboot the device before a future test reminder; confirm BootReceiver re-schedules it.
+- [ ] Confirm the reminder notification appears when POST_NOTIFICATIONS is granted.
+- [ ] Revoke notifications and confirm no crash; verify UI/documentation describes the notification permission requirement.
+- [ ] Test during Doze and battery optimization; record actual delay and OEM model.
+- [ ] Confirm expired reminders are removed during reboot rescheduling and notification dispatch.

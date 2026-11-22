@@ -224,3 +224,16 @@ Implemented:
 - Crypto unit tests cover round-trip encryption, wrong passwords and password length.
 
 Remaining: restore-corruption UX regression, physical-device URI-provider tests, key/password memory handling review, backup schema migration strategy and encrypted backup size/performance benchmark on Android 8 devices.
+
+
+## Phase 1 persistent reminders
+
+Implemented in source:
+- Up to 30 local one-time reminders, 1 minute to 7 days.
+- User-entered titles, cancellation and local pending-reminder list.
+- AlarmManager inexact idle-aware scheduling; persisted records survive normal process termination.
+- Existing BootReceiver re-schedules future reminders after device boot.
+- Dedicated notification channel; notification display follows Android POST_NOTIFICATIONS permission.
+- Reminders are included in encrypted local backup.
+
+Limitations: not an exact alarm; Doze and manufacturer policies can delay delivery. Force-stop may prevent scheduled receiver execution until the app is relaunched. Physical reboot, notification-permission and OEM battery tests remain required.

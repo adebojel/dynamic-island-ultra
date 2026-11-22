@@ -9,7 +9,7 @@ import org.json.JSONObject
 internal object BackupArchive {
     private const val FORMAT = "dynamic-island-ultra-backup"
     private const val VERSION = 1
-    private val STORES = listOf("island", "offline_notes", "browser_settings", "notification_privacy")
+    private val STORES = listOf("island", "offline_notes", "browser_settings", "notification_privacy", "reminders")
 
     fun create(context: Context): ByteArray {
         val stores = JSONObject()

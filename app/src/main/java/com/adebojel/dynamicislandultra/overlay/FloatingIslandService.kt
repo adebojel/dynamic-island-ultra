@@ -45,6 +45,7 @@ import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
 import com.adebojel.dynamicislandultra.floating.FileManagerActivity
 import com.adebojel.dynamicislandultra.system.DeviceControlActivity
 import com.adebojel.dynamicislandultra.backup.BackupActivity
+import com.adebojel.dynamicislandultra.reminders.ReminderActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.notifications.ActiveMediaSession
@@ -347,7 +348,8 @@ class FloatingIslandService : Service() {
             "Pomodoro 25 menit" to "smart_tools"
         ))
         addSection(content, "10  BACKUP & DATA", listOf(
-            "Encrypted backup & restore" to "backup_manager"
+            "Encrypted backup & restore" to "backup_manager",
+            "Persistent reminders" to "reminders"
         ))
 
         val scroll = ScrollView(this).apply {
@@ -518,6 +520,7 @@ class FloatingIslandService : Service() {
                         "file_manager" -> Intent(this@FloatingIslandService, FileManagerActivity::class.java)
                         "device_controls" -> Intent(this@FloatingIslandService, DeviceControlActivity::class.java)
                         "backup_manager" -> Intent(this@FloatingIslandService, BackupActivity::class.java)
+                        "reminders" -> Intent(this@FloatingIslandService, ReminderActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)

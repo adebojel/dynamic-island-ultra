@@ -48,6 +48,7 @@
         <activity android:name=".floating.FileManagerActivity" android:exported="false" />
         <activity android:name=".system.DeviceControlActivity" android:exported="false" />
         <activity android:name=".backup.BackupActivity" android:exported="false" />
+        <activity android:name=".reminders.ReminderActivity" android:exported="false" />
         <activity android:name=".floating.DocumentPreviewActivity" android:exported="false" />
         <activity android:name=".overlay.IslandInteractionSettingsActivity" android:exported="false" />
         <activity
@@ -107,6 +108,7 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <receiver android:name=".reminders.ReminderReceiver" android:enabled="true" android:exported="false" />
         <receiver
             android:name=".boot.BootReceiver"
             android:enabled="true"

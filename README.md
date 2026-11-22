@@ -50,7 +50,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
 | Image/PDF preview | Android document picker and local image/first-page PDF preview |
-| File Manager | User-selected SAF folder browsing, search, alphabetical/recent sorting, create folder, open, share, rename and delete; no broad storage permission |\n| Encrypted Backup | Password-derived AES-256-GCM encrypted export/import of selected app-local preferences, notes, browser library and notification privacy settings; excludes purchases and OS permissions |
+| File Manager | User-selected SAF folder browsing, search, alphabetical/recent sorting, create folder, open, share, rename and delete; no broad storage permission |\n| Encrypted Backup | Password-derived AES-256-GCM encrypted export/import of selected app-local preferences, notes, browser library, notification privacy and reminders; excludes purchases and OS permissions |\n| Persistent Reminders | Up to 30 local reminders scheduled with AlarmManager; survive app process closure and are re-scheduled after reboot, subject to Android Doze and notification permissions |
 | Sensor kit | Live supported sensors while the screen is foregrounded; listeners stop on pause |
 | Voice assistance | Android 12+ on-device recognition when available, explicit mic permission and device speech read-out |
 

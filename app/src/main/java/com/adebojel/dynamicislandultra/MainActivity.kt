@@ -58,6 +58,7 @@ import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
 import com.adebojel.dynamicislandultra.floating.FileManagerActivity
 import com.adebojel.dynamicislandultra.system.DeviceControlActivity
 import com.adebojel.dynamicislandultra.backup.BackupActivity
+import com.adebojel.dynamicislandultra.reminders.ReminderActivity
 import com.adebojel.dynamicislandultra.overlay.IslandInteractionSettingsActivity
 
 private val Night = Color(0xFF080B14)
@@ -106,6 +107,7 @@ class MainActivity : ComponentActivity() {
                     onFileManager = { openLocal(FileManagerActivity::class.java) },
                     onDeviceControls = { openLocal(DeviceControlActivity::class.java) },
                     onBackup = { openLocal(BackupActivity::class.java) },
+                    onReminders = { openLocal(ReminderActivity::class.java) },
                     onSensors = { openLocal(SensorKitActivity::class.java) },
                     onIslandSettings = { openLocal(IslandInteractionSettingsActivity::class.java) },
                     onBattery = { openBatterySettings() },
@@ -204,6 +206,7 @@ private fun Dashboard(
     onFileManager: () -> Unit,
     onDeviceControls: () -> Unit,
     onBackup: () -> Unit,
+    onReminders: () -> Unit,
     onSensors: () -> Unit,
     onIslandSettings: () -> Unit,
     onBattery: () -> Unit,
