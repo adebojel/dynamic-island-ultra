@@ -37,6 +37,13 @@ Each signed GitHub release should attach:
 
 Because this package has already been distributed outside Google Play, check the Android developer verification/package registration flow during app creation. If Play Console asks to prove package ownership, use the original stable signing keystore and its matching certificate. The SHA-256 fingerprint verified by CI is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. Never replace the JKS or upload the private file to the repository.
 
+## Physical-device verification
+
+- [ ] Complete the [physical-device smoke-test matrix](DEVICE_SMOKE_TEST.md) on the GitHub APK before using a production rollout.
+- [ ] Complete the Google Play flavor checks from an internal testing track after uploading the verified Play AAB.
+- [ ] Record the Android version, device, release tag, test result, and supporting screenshots/video for failures.
+- [ ] Do not mark the app release-ready based on CI alone; no physical-device smoke test has yet been confirmed.
+
 ## Play Console setup
 
 - [ ] Create the app in Play Console with exact package `com.adebojel.dynamicislandultra`.
