@@ -194,3 +194,14 @@ The built-in assistant and local tools work without internet, imported model fil
 - Export a selected file or directory tree as ZIP using the Android document destination picker.
 - ZIP traversal is limited to 32 nested levels and 5,000 entries; unsafe path separators and duplicate archive paths are rejected.
 - Recursive folder copy/move and ZIP extraction remain unimplemented.
+
+
+## File Manager copy/move and ZIP export
+
+- Copy or move one file into a destination directory explicitly selected through Android's SAF folder picker.
+- Existing destination filenames are rejected rather than silently overwritten.
+- File bytes are streamed from source to destination; an incomplete target is deleted if a copy fails.
+- A move deletes the source only after the copy stream closes successfully. If the provider denies deletion, the app reports that a copy exists and the original remains.
+- Export a selected file or directory tree to ZIP through Android's document destination picker.
+- ZIP traversal is capped at 32 folder levels and 5,000 entries; unsafe path separators and duplicate archive paths are rejected.
+- Recursive folder copy/move and ZIP extraction are not implemented.

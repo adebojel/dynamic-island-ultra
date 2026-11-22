@@ -313,3 +313,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] ZIP a nested folder tree; confirm all expected relative paths and file contents.
 - [ ] Test a deep folder tree and more than 5,000 files; confirm the operation fails safely at the documented limit.
 - [ ] Test local and cloud-backed SAF providers and record provider-specific capability failures.
+
+
+## File Manager copy/move/ZIP checks
+
+- [ ] Copy a file into another selected folder; verify identical contents and that the original remains.
+- [ ] Move a file; verify destination contents and confirm source deletion happens only after copy succeeds.
+- [ ] Attempt to copy a file into a folder with an identical filename; confirm overwrite is rejected.
+- [ ] Test read-only destination and interrupted copy; confirm failures do not leave partial target files.
+- [ ] ZIP a single file and verify the archive opens.
+- [ ] ZIP a nested folder tree and verify relative paths and contents.
+- [ ] Test the 32-level and 5,000-entry limits; confirm failures are reported safely.
+- [ ] Test at least one cloud-backed SAF provider and one local storage provider.

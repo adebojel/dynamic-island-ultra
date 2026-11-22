@@ -287,3 +287,14 @@ Implemented in source:
 - Archive traversal is limited to 32 folder levels and 5,000 entries.
 
 Remaining: recursive folder copy/move, ZIP extraction, PDF merge/split/compress/annotate, document editing and SAF provider/OEM regression tests.
+
+
+## Phase 1 File Manager transfer update
+
+Implemented in source:
+- File copy/move to a user-selected SAF folder using streaming I/O and no-overwrite behaviour.
+- Move deletes the original only after a successful copy; provider deletion failures are reported and preserve the source.
+- ZIP export of a selected file or directory tree using the Android document destination picker.
+- ZIP traversal is bounded to 32 levels and 5,000 entries.
+
+Remaining: recursive folder copy/move, ZIP extraction, PDF merge/split/compress/annotate, document editing and real provider/OEM regression tests.

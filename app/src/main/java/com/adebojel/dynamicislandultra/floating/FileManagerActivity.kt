@@ -29,6 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val FileNight = Color(0xFF0B1222)
 private val FileCyan = Color(0xFF43E8FF)
@@ -40,6 +44,9 @@ private val FilePanel = Color(0xFF17243A)
  */
 class FileManagerActivity : ComponentActivity() {
     private var selectedRoot by mutableStateOf<DocumentFile?>(null)
+    private var pendingTransfer: DocumentFile? = null
+    private var pendingMove = false
+    private var pendingZip: DocumentFile? = null
 
     private val folderPicker = registerForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
@@ -57,6 +64,27 @@ class FileManagerActivity : ComponentActivity() {
                 Toast.makeText(this, "Folder tidak dapat diakses: ${it.message ?: "izin tidak tersedia"}", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private val destinationPicker = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        val source = pendingTransfer
+        pendingTransfer = null
+        if (uri != null && source != null) {
+            runCatching {
+                contentResolver.takePersistableUriPermission(uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                val target = DocumentFile.fromTreeUri(this, uri) ?: error("Folder tujuan tidak dapat dibuka.")
+                performTransfer(source, target, pendingMove)
+            }.onFailure {
+                Toast.makeText(this, "Transfer gagal: ${it.message ?: "folder tujuan tidak tersedia"}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private val zipPicker = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        val source = pendingZip
+        pendingZip = null
+        if (uri != null && source != null) performZip(source, uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,9 +108,53 @@ class FileManagerActivity : ComponentActivity() {
                     root = selectedRoot,
                     onChooseFolder = { folderPicker.launch(savedUri) },
                     onOpenFile = ::openFile,
-                    onShareFile = ::shareFile
+                    onShareFile = ::shareFile,
+                    onTransferFile = ::requestTransfer,
+                    onZipItem = ::requestZip
                 )
             }
+        }
+    }
+
+    private fun requestTransfer(source: DocumentFile, move: Boolean) {
+        if (!source.isFile) {
+            Toast.makeText(this, "Salin/pindahkan saat ini hanya tersedia untuk file. Folder dapat diekspor sebagai ZIP.", Toast.LENGTH_LONG).show()
+            return
+        }
+        pendingTransfer = source
+        pendingMove = move
+        destinationPicker.launch(selectedRoot?.uri)
+    }
+
+    private fun performTransfer(source: DocumentFile, destination: DocumentFile, move: Boolean) {
+        lifecycleScope.launch {
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    FileManagerOperations.copyOrMove(contentResolver, source, destination, move)
+                }
+            }
+            result.onSuccess { Toast.makeText(this@FileManagerActivity, it, Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@FileManagerActivity, "Transfer gagal: ${it.message ?: "kesalahan penyimpanan"}", Toast.LENGTH_LONG).show() }
+        }
+    }
+
+    private fun requestZip(source: DocumentFile) {
+        pendingZip = source
+        val name = source.name ?: "arsip"
+        zipPicker.launch("${name.substringBeforeLast('.', name)}.zip")
+    }
+
+    private fun performZip(source: DocumentFile, destination: Uri) {
+        lifecycleScope.launch {
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    val output = contentResolver.openOutputStream(destination, "wt")
+                        ?: error("Berkas ZIP tujuan tidak dapat dibuat.")
+                    FileManagerOperations.createZip(contentResolver, source, output)
+                }
+            }
+            result.onSuccess { Toast.makeText(this@FileManagerActivity, "ZIP berhasil dibuat ($it entri).", Toast.LENGTH_LONG).show() }
+                .onFailure { Toast.makeText(this@FileManagerActivity, "ZIP gagal: ${it.message ?: "kesalahan penyimpanan"}", Toast.LENGTH_LONG).show() }
         }
     }
 
@@ -123,7 +195,9 @@ private fun FileManagerScreen(
     root: DocumentFile?,
     onChooseFolder: () -> Unit,
     onOpenFile: (DocumentFile) -> Unit,
-    onShareFile: (DocumentFile) -> Unit
+    onShareFile: (DocumentFile) -> Unit,
+    onTransferFile: (DocumentFile, Boolean) -> Unit,
+    onZipItem: (DocumentFile) -> Unit
 ) {
     val stack: SnapshotStateList<DocumentFile> = remember(root?.uri) {
         androidx.compose.runtime.mutableStateListOf<DocumentFile>().apply {
@@ -270,9 +344,14 @@ private fun FileManagerScreen(
                 )
             },
             confirmButton = {
-                Row {
-                    if (!target.isDirectory) {
-                        TextButton(onClick = { onShareFile(target); selected = null }) { Text("Bagikan") }
+                Column {
+                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        if (!target.isDirectory) {
+                            TextButton(onClick = { onShareFile(target); selected = null }) { Text("Bagikan") }
+                            TextButton(onClick = { onTransferFile(target, false); selected = null }) { Text("Salin") }
+                            TextButton(onClick = { onTransferFile(target, true); selected = null }) { Text("Pindahkan") }
+                        }
+                        TextButton(onClick = { onZipItem(target); selected = null }) { Text("ZIP") }
                     }
                     TextButton(onClick = {
                         renameTarget = target
