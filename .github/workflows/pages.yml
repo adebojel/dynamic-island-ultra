@@ -9,20 +9,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    name: Validate and upload public website
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,15 +27,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in index.html privacy.html terms.html ads.html premium.html support.html styles.css 404.html sitemap.xml robots.txt; do
+          for file in index.html privacy.html terms.html ads.html premium.html support.html styles.css 404.html sitemap.xml robots.txt app-ads.txt; do
             test -s "site/$file"
           done
+          grep -q '<b>Pembaruan:</b>' site/privacy.html
+          grep -q 'versi Google Play' site/terms.html
+          grep -q 'Versi Google Play' site/support.html
+          grep -q 'google.com, pub-9305273212801233, DIRECT, f08c47fec0942fa0' site/app-ads.txt
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload website
+      - name: Upload website artifact
+        id: upload
         uses: actions/upload-pages-artifact@v4
         with:
           path: site
+
+  deploy:
+    name: Deploy public website
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    steps:
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
