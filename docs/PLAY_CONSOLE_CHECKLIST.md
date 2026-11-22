@@ -51,6 +51,20 @@ Because this package has already been distributed outside Google Play, check the
 - [ ] Provide the live Privacy Policy URL after GitHub Pages has been successfully enabled and each page checked.
 - [ ] Complete app review and test track requirements before public rollout.
 
+## Foreground service and overlay declarations
+
+The Play flavor targets API 36 and declares `FloatingIslandService` with `android:foregroundServiceType="specialUse"`, `FOREGROUND_SERVICE_SPECIAL_USE`, and the service-level `PROPERTY_SPECIAL_USE_FGS_SUBTYPE`. The service is started from the user's **Start Island** action, displays an ongoing notification while enabled, and can be stopped from the app's **Stop** control. The `specialUse` case is subject to Play review; this checklist is preparation, not approval.
+
+- [ ] In Play Console → App content, complete the Foreground Service declaration and select the matching `specialUse` use case.
+- [ ] Describe the feature accurately: a user-enabled floating island overlay and assistive shortcut panel remain available over other apps while the user keeps the feature enabled.
+- [ ] Explain user impact: if the service is deferred or interrupted, the floating island and its shortcut panel disappear until the user starts the feature again; the app's other tools remain available.
+- [ ] Explain user control: the feature is started from the dashboard, an ongoing notification identifies the running service, and the dashboard Stop control ends it.
+- [ ] Provide a demonstration video showing the user tapping Start Island, granting the Android overlay permission if needed, using the floating island/shortcut panel, observing the foreground notification, then tapping Stop and confirming the overlay disappears.
+- [ ] Review the manifest subtype wording and Play Console description so both describe only the actual overlay/shortcut service.
+- [ ] Complete the separate special-access permission disclosure for `SYSTEM_ALERT_WINDOW` if Play Console requests it; explain that the permission is required only to draw the user-enabled floating island and that the feature remains off if permission is declined.
+
+Google requires Android 14+ apps to declare foreground-service types in the manifest and Play Console. Each type needs a description, impact if deferred/interrupted, and a video demonstrating the user steps. `specialUse` may be used only for a valid use case not covered by another standard type and remains subject to review. Official guidance: https://developer.android.com/develop/background-work/services/fgs/service-types and https://support.google.com/googleplay/android-developer/answer/13392821.
+
 ## Google AdMob
 
 The app includes the publisher App ID and four publisher production unit IDs in release builds. Debug builds use Google's official test units. Google requires test ads while developing; do not click or repeatedly test live production ads.
