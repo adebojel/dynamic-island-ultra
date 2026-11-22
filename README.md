@@ -151,7 +151,7 @@ Intended public URLs after a successful deployment (these URLs are **not live ye
 - [Premium information](https://adebojel.github.io/dynamic-island-ultra/premium.html)
 - [Help and Support](https://adebojel.github.io/dynamic-island-ultra/support.html)
 
-**AdMob app-ads.txt requires the root of the developer website hostname.** This project Pages URL uses the path `/dynamic-island-ultra/`, while AdMob checks `https://adebojel.github.io/app-ads.txt`. A file stored only in this repository's `site/` folder would remain under the project path and would not satisfy that root-host lookup. Use a root-host website, custom domain, or suitable hosting such as Firebase Hosting, then publish the exact seller declaration copied from AdMob and verify the public URL before declaring this gate complete.
+**AdMob recommends app-ads.txt to identify authorized sellers; it is a monetization integrity recommendation, not a mandatory Play Console submission item. When used, it must be published at the root of the developer website hostname.** This project Pages URL uses the path `/dynamic-island-ultra/`, while AdMob checks `https://adebojel.github.io/app-ads.txt`. A file stored only in this repository's `site/` folder would remain under the project path and would not satisfy that root-host lookup. Use a root-host website, custom domain, or suitable hosting such as Firebase Hosting, then publish the exact seller declaration copied from AdMob and verify the public URL before declaring this gate complete.
 
 Review these documents whenever permissions, SDKs, data processing, subscriptions or ad placements change. Never send signing keys, passwords, OTPs or tokens to support.
 
@@ -174,6 +174,8 @@ Release assets:
 - [AAB SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.aab.sha256)
 
 The release certificate SHA-256 is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. The AAB and direct-install APK were verified against the same certificate. This confirms the CI signing relationship; it does not by itself determine which app-signing key Google Play will use for store-distributed APKs. Follow the Play App Signing warning in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
+
+**Additional main-branch hardening committed on 22 November 2026:** UMP privacy-options completion now waits for the real SDK initialization callback instead of a fixed delay; adaptive banner requests reload on width changes without destroying and reusing the same view; and failed/disconnected BillingClient instances are closed. These source changes require the next Android CI run and physical-device smoke tests before they can be considered runtime-verified.
 
 **Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and public website deployment. The GitHub Pages workflow has not deployed because Pages has not yet been enabled for this repository. Do not submit the reserved website URLs to Play Console or AdMob until deployment succeeds and every page is checked. AdMob app verification also requires a correctly hosted `app-ads.txt` at the developer website hostname root; the current project Pages subpath does not provide that root URL. A root-domain hosting solution and a verified AdMob app-ads.txt status are still required.
 
