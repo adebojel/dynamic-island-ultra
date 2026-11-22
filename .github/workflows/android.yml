@@ -71,8 +71,13 @@ jobs:
             exit 1
           fi
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/github/AndroidManifest.xml
-          grep -q 'ENABLE_GITHUB_APK_UPDATER' app/build.gradle.kts
+          grep -q 'buildConfigField("boolean", "ENABLE_GITHUB_APK_UPDATER", "true")' app/build.gradle.kts
+          grep -q 'buildConfigField("boolean", "ENABLE_GITHUB_APK_UPDATER", "false")' app/build.gradle.kts
           grep -q 'openPlayStoreUpdates' app/src/main/java/com/adebojel/dynamicislandultra/MainActivity.kt
+          grep -q 'if (!BuildConfig.ENABLE_GITHUB_APK_UPDATER)' app/src/main/java/com/adebojel/dynamicislandultra/update/AppUpdateActivity.kt
+          grep -q 'android.permission.FOREGROUND_SERVICE_SPECIAL_USE' app/src/main/AndroidManifest.xml
+          grep -q 'android:foregroundServiceType="specialUse"' app/src/main/AndroidManifest.xml
+          grep -q 'android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE' app/src/main/AndroidManifest.xml
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
           grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
           grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
