@@ -80,6 +80,16 @@ Without those secrets CI builds a debug preview but does not publish it as an up
 The app cannot silently install APKs or bypass Android's package installer/user-consent controls.
 
 
+## Google Play Console upload bundle
+
+The release workflow produces two separately signed files:
+- `app-release.apk`: install directly on Android for physical-device smoke tests and GitHub-based updates.
+- `app-release.aab`: upload to Google Play Console. The AAB uses the same stable keystore certificate as the APK, and CI verifies the JAR signature and fingerprint before publication.
+
+For a new Google Play app, use the AAB and enroll in Play App Signing. Keep the stable JKS as the upload key and retain its encrypted backups. Google Play will manage the app-signing key used to distribute device-specific APKs. Since this package has already been distributed outside Play, review the Android developer verification/package ownership process and be prepared to prove ownership of the same certificate if Play Console requests it.
+
+The Premium subscription product ID in the app is `diu_premium`. Play Console base plans must be created and activated before the app can display any purchase offers. See `docs/PLAY_CONSOLE_CHECKLIST.md` for the staged checklist.
+
 ## Public policy website
 
 The website source and documents are stored in `site/`. **One-time activation is still required** in repository Settings → Pages → Build and deployment → Source → **GitHub Actions**. The first Pages workflow attempt failed because no Pages site had been enabled/configured for this repository. After enabling it, start the “Deploy Dynamic Island Ultra website” workflow from the Actions tab.

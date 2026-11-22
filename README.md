@@ -158,6 +158,7 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 - [Feature roadmap](docs/FEATURE_ROADMAP.md)
 - [Open-source research and license review](docs/OPEN_SOURCE_RESEARCH.md)
 - [Network and update design](docs/NETWORK_AND_UPDATES.md)
+- [Google Play Console & monetization checklist](docs/PLAY_CONSOLE_CHECKLIST.md)
 
 ## Validation status
 

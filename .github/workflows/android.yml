@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build:
-    name: Test and build Android APK
+    name: Test, sign APK/AAB and publish Android release
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -103,14 +103,14 @@ jobs:
             echo "::warning::Stable signing secrets are missing. A debug preview will be built, but no update-compatible GitHub Release will be published."
           fi
 
-      - name: Build signed release APK
+      - name: Build signed release APK and Android App Bundle
         if: steps.signing.outputs.ready == 'true'
         env:
           RELEASE_KEYSTORE_PATH: ${{ steps.signing.outputs.path }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: gradle --no-daemon --stacktrace assembleRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+        run: gradle --no-daemon --stacktrace assembleRelease bundleRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
 
       - name: Build debug preview APK
         if: steps.signing.outputs.ready != 'true'
@@ -127,6 +127,22 @@ jobs:
           "$APKSIGNER" verify --verbose --print-certs "$APK" | tee "$RUNNER_TEMP/apk-signature.txt"
           grep -q "Signer #1 certificate SHA-256 digest:" "$RUNNER_TEMP/apk-signature.txt"
           echo "APK signature verified; certificate fingerprint is shown in the workflow log."
+
+      - name: Verify signed Android App Bundle and upload-key certificate
+        if: steps.signing.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          test -s "$AAB"
+          jarsigner -verify "$AAB"
+          keytool -printcert -jarfile "$AAB" | tee "$RUNNER_TEMP/aab-certificate.txt"
+          EXPECTED_CERT="7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e"
+          if ! tr -d ': ' < "$RUNNER_TEMP/aab-certificate.txt" | grep -qi "$EXPECTED_CERT"; then
+            echo "::error::AAB upload-key certificate does not match the stable APK signing certificate."
+            exit 1
+          fi
+          echo "AAB JAR signature and stable upload-key certificate verified."
 
       - name: Verify APK, calculate SHA-256 and write release metadata
         id: package
@@ -154,6 +170,15 @@ jobs:
           cp "$SOURCE_APK" "dist/$APK_NAME"
           sha256sum "dist/$APK_NAME" > "dist/$APK_NAME.sha256"
           if [[ "$SIGNING_READY" == "true" ]]; then
+            SOURCE_AAB="app/build/outputs/bundle/release/app-release.aab"
+            test -s "$SOURCE_AAB"
+            AAB_SIZE_BYTES="$(stat -c%s "$SOURCE_AAB")"
+            if (( AAB_SIZE_BYTES > MAX_BYTES )); then
+              echo "::error::AAB exceeds the 400 MiB project budget."
+              exit 1
+            fi
+            cp "$SOURCE_AAB" dist/app-release.aab
+            sha256sum dist/app-release.aab > dist/app-release.aab.sha256
             cat > dist/release-info.json <<EOF
           {
             "packageName": "com.adebojel.dynamicislandultra",
@@ -162,6 +187,8 @@ jobs:
             "minSdk": 26,
             "apk": "app-release.apk",
             "sha256Asset": "app-release.apk.sha256",
+            "bundle": "app-release.aab",
+            "bundleSha256Asset": "app-release.aab.sha256",
             "commit": "$GITHUB_SHA"
           }
           EOF
@@ -194,7 +221,7 @@ jobs:
             - Android minimum: 8.0 Oreo / API 26.
             - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
             - The built-in assistant and local tools remain offline.
-            - SHA-256 checksum and release-info.json are attached.
+            - Signed APK and Android App Bundle (AAB), both SHA-256 checksums, and release-info.json are attached. AAB is the Play Console upload artifact.
             - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.
             - App-wide network permissions are enabled; the offline assistant remains local-only.
             - Google Mobile Ads Next-Gen and UMP are integrated. Debug builds use Google's official test units; signed release builds use the publisher's production IDs.
@@ -205,6 +232,8 @@ jobs:
           files: |
             dist/app-release.apk
             dist/app-release.apk.sha256
+            dist/app-release.aab
+            dist/app-release.aab.sha256
             dist/release-info.json
           overwrite_files: true
           make_latest: true
