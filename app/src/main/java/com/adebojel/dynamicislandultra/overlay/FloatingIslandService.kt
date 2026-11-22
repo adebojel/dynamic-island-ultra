@@ -1,6 +1,7 @@
 package com.adebojel.dynamicislandultra.overlay
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -383,14 +384,25 @@ class FloatingIslandService : Service() {
         }
     }
 
-    private fun buildNotification(): Notification =
-        NotificationCompat.Builder(this, "island_service")
+    private fun buildNotification(): Notification {
+        val stopIntent = Intent(this, FloatingIslandService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPendingIntent = PendingIntent.getForegroundService(
+            this,
+            4101,
+            stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        return NotificationCompat.Builder(this, "island_service")
             .setSmallIcon(R.drawable.ic_stat_island)
             .setContentTitle("Dynamic Island Ultra is active")
             .setContentText("Floating island and assistive bubble are running")
+            .addAction(R.drawable.ic_stat_island, "Stop", stopPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
+    }
 
     override fun onDestroy() {
         runCatching { unregisterReceiver(notificationReceiver) }
