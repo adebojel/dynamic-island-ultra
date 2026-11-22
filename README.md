@@ -11,7 +11,7 @@
 [![Android](https://img.shields.io/badge/Android-8%2B%20(API%2026)-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
 [![Network](https://img.shields.io/badge/Network-Internet%20Enabled-42DFA5)](docs/NETWORK_AND_UPDATES.md)
 
-[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases) · [Website source (deployment pending)](https://github.com/adebojel/dynamic-island-ultra/tree/main/site)
+[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases) · [Official website](https://adebojel.github.io/dynamic-island-ultra/) · [Website source](https://github.com/adebojel/dynamic-island-ultra/tree/main/site)
 
 </div>
 
