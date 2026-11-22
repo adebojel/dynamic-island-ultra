@@ -13,6 +13,15 @@ This checklist records the app's current release configuration and the remaining
 - Billing dependency: Google Play Billing Library 9.1.0
 - Premium subscription product queried by the app: `diu_premium`
 
+## Latest verified CI release
+
+- Latest signed release: [v0.0.3](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.3), published 22 November 2026.
+- Android version code: `97`.
+- CI: [run #97 — completed successfully](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44988489514).
+- Release assets: signed `app-release.apk`, signed `app-release.aab`, both SHA-256 files, and `release-info.json`.
+- APK and AAB signatures verified successfully; their certificate SHA-256 values match: `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`.
+- This CI verification is not a substitute for physical-device installation, Play Console review, Play Billing testing, AdMob production eligibility, or a successful public website deployment.
+
 ## Correct upload file
 
 Each signed GitHub release should attach:
