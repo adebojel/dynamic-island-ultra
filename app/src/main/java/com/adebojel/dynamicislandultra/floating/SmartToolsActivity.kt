@@ -94,7 +94,6 @@ private fun SmartToolsScreen(acceleration: FloatArray?) {
 }
 
 @Composable
-@Composable
 private fun LevelPanel(acceleration: FloatArray?) {
     val angles = acceleration?.let { LevelSensorMath.angles(it) }
     var zeroPitch by remember { mutableFloatStateOf(0f) }
@@ -148,6 +147,7 @@ private fun LevelPanel(acceleration: FloatArray?) {
     }
 }
 
+@Composable
 private fun UnitConverterPanel() {
     var category by remember { mutableStateOf(LocalUnitConverter.groups.first().key) }
     val group = LocalUnitConverter.group(category)
