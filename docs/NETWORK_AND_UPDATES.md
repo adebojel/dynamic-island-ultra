@@ -101,7 +101,7 @@ The Premium subscription product ID in the app is `diu_premium`. Play Console ba
 
 ## Public policy website
 
-The website source and policies are stored in `site/`. The GitHub Pages mirror still requires one-time activation in repository Settings → Pages → Build and deployment → Source → **GitHub Actions**.
+The website source and policies are stored in `site/`. GitHub Pages has been enabled with Source = **GitHub Actions** and deployed successfully in [Pages workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026. The deploy job completed validation, Configure Pages, upload, and deployment successfully. The current environment could not independently resolve `github.io`, so each public policy page still needs a normal-browser/device open check before being submitted to Play Console or AdMob.
 
 AdMob requests `https://<hostname>/app-ads.txt` at the hostname root. The GitHub Pages URL is a repository subpath, so this repository also prepares Firebase Hosting as a root-domain host for the same website and seller file.
 
