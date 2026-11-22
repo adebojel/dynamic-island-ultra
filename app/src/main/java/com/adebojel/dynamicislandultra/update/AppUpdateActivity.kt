@@ -57,7 +57,11 @@ class AppUpdateActivity : ComponentActivity() {
             setOnClickListener { checkForUpdate() }
         }
         val note = TextView(this).apply {
-            text = "Aplikasi memiliki akses internet untuk browser, pembaruan, dan modul online yang ditambahkan kemudian. Perintah AI lokal, kalkulator, catatan dan diagnostik tetap berjalan di perangkat. Android tetap meminta persetujuan instalasi pembaruan."
+            text = if (BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+                "Aplikasi memiliki akses internet untuk browser dan pemeriksaan pembaruan. Perintah AI lokal, kalkulator, catatan dan diagnostik tetap berjalan di perangkat. Android tetap meminta persetujuan sebelum APK dipasang."
+            } else {
+                "Pembaruan untuk distribusi Google Play dikelola melalui Play Store. Alat AI lokal, kalkulator, catatan dan diagnostik tetap berjalan di perangkat."
+            }
             textSize = 12f
             setTextColor(android.graphics.Color.LTGRAY)
             setPadding(0, 24, 0, 0)
