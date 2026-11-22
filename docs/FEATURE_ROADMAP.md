@@ -276,3 +276,14 @@ Still outstanding: snap-to-edge/grid, per-window opacity/priority, mini browser/
 
 - Global System Controls, Encrypted Backup & Restore, Persistent Reminders and Clipboard History have explicit dashboard cards in addition to their Floating Bubble routes.
 - Floating mini windows are opened from Floating Bubble while the overlay foreground service is active, since the mini-window manager is owned by that service.
+
+
+## Phase 1 File Manager transfer update
+
+Implemented in source:
+- File copy/move into a user-selected SAF destination folder, using streaming I/O and no-overwrite behaviour.
+- A move deletes the source only after successful destination copy; provider deletion failures are reported without losing the original.
+- ZIP export of a selected file or folder tree using the Android document destination picker.
+- Archive traversal is limited to 32 folder levels and 5,000 entries.
+
+Remaining: recursive folder copy/move, ZIP extraction, PDF merge/split/compress/annotate, document editing and SAF provider/OEM regression tests.

@@ -301,3 +301,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Stop the Floating Island service; confirm every mini window is removed and no overlay leaks remain.
 - [ ] Confirm mini notes are included in encrypted backup; confirm active timers are not restored.
 - [ ] Repeat under TalkBack and on Android 8/API 26 plus at least one current OEM device.
+
+
+## File Manager copy/move/ZIP checks
+
+- [ ] Copy a test file into a different selected folder; verify byte-identical content and that the source remains.
+- [ ] Move a test file; verify the destination is complete and the source is deleted only after copy succeeds.
+- [ ] Copy to a destination containing the same name; confirm overwrite is rejected with neither file damaged.
+- [ ] Test a read-only destination provider; confirm a clear error and no partial destination remains.
+- [ ] ZIP a single file and open the archive in a trusted archive viewer.
+- [ ] ZIP a nested folder tree; confirm all expected relative paths and file contents.
+- [ ] Test a deep folder tree and more than 5,000 files; confirm the operation fails safely at the documented limit.
+- [ ] Test local and cloud-backed SAF providers and record provider-specific capability failures.

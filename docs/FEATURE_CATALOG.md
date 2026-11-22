@@ -183,3 +183,14 @@ The built-in assistant and local tools work without internet, imported model fil
 - Windows are created only from the running floating service after Android overlay permission is granted.
 - Stopping the foreground Island service closes all mini windows; Notes persist locally and are included in encrypted backup, while active mini timers are session-only.
 - Does not embed or force third-party applications into freeform windows.
+
+
+## File Manager copy/move and ZIP export
+
+- Copy or move a single file into a user-selected SAF destination folder.
+- Existing destination filenames are rejected rather than silently overwritten.
+- File bytes are streamed between the source and destination provider.
+- Move deletes the source only after successful copy; when the provider denies deletion, the app reports that the copy exists and the original remains.
+- Export a selected file or directory tree as ZIP using the Android document destination picker.
+- ZIP traversal is limited to 32 nested levels and 5,000 entries; unsafe path separators and duplicate archive paths are rejected.
+- Recursive folder copy/move and ZIP extraction remain unimplemented.
