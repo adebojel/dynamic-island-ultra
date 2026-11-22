@@ -573,7 +573,7 @@ private fun AdBannerSlot(modifier: Modifier = Modifier, enabled: Boolean) {
 
     val adView = remember(context) { AdView(context) }
     AndroidView(factory = { adView }, modifier = modifier.fillMaxWidth())
-    DisposableEffect(adView, widthDp) {
+    LaunchedEffect(adView, widthDp) {
         val size = AdSize.getLargeAnchoredAdaptiveBannerAdSize(context, widthDp)
         val request = BannerAdRequest.Builder(AdsSdkManager.bannerUnitId, size).build()
         adView.loadAd(request, object : AdLoadCallback<BannerAd> {
@@ -584,6 +584,8 @@ private fun AdBannerSlot(modifier: Modifier = Modifier, enabled: Boolean) {
                 android.util.Log.w("DynamicIslandAds", "Banner failed: ${adError.message}")
             }
         })
+    }
+    DisposableEffect(adView) {
         onDispose {
             (adView.parent as? ViewGroup)?.removeView(adView)
             adView.destroy()
