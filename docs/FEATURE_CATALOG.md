@@ -10,7 +10,7 @@
 
 ## Offline modules
 
-- **Installed app collection:** launcher-visible activity list using a narrow manifest query; launches selected app.
+- **Installed app collection:** queries launcher-visible activities using `ACTION_MAIN` + `CATEGORY_LAUNCHER` (no `QUERY_ALL_PACKAGES`); labels, icons and package names are used locally to populate the launch list and are not uploaded to a developer server or the offline assistant.
 - **Offline notes:** stores note text in app-private preferences.
 - **Offline calculator:** evaluates arithmetic, parentheses and unary signs locally.
 - **Built-in local assistant:** deterministic command-routing engine, arithmetic, system shortcuts, browser/update launch and read-only diagnostics.
@@ -34,7 +34,7 @@ The built-in assistant and local tools work without internet, imported model fil
 - Minimum Android: 8.0 Oreo / API 26.
 - Compile/target SDK: 36.
 - Release `versionCode` comes from the monotonically increasing GitHub Actions run number.
-- Each signed main build increments the patch release tag from the latest successful `v0.0.N` (v0.0.0 → v0.0.1 → v0.0.2).
+- Each signed main build increments the patch release tag from the latest successful `v0.0.N`; the current verified release at the time of this update is `v0.0.5`.
 - Stable release signing secrets are required for the signed GitHub APK and Play AAB; both production flavors use the same application ID and stable release key.
 - APK checksum and release metadata accompany signed releases.
 
