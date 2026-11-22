@@ -77,7 +77,7 @@ class OfflineAssistant {
                 OfflineAssistantReply("Membuka pemindai QR dan barcode.", OfflineAction.OpenQrScanner)
             hasAny(query, "sensor", "accelerometer", "gyroscope", "kompas") ->
                 OfflineAssistantReply("Membuka sensor perangkat yang tersedia.", OfflineAction.OpenSensorKit)
-            hasAny(query, "media", "musik", "lagu", "putar musik", "jeda musik") ->
+            hasAny(query, "kontrol media", "media controls", "buka media", "buka media player", "kontrol musik", "putar musik", "jeda musik", "pemutar musik", "buka musik") ->
                 OfflineAssistantReply("Membuka kontrol media dari pemutar yang didukung.", OfflineAction.OpenMediaControls)
             hasAny(query, "preview dokumen", "pratinjau dokumen", "lihat pdf", "pratinjau gambar") ->
                 OfflineAssistantReply("Membuka pemilih gambar dan PDF.", OfflineAction.OpenDocumentPreview)
