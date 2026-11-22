@@ -57,7 +57,9 @@ class SensorKitActivity : ComponentActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        sensors.forEach { sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI) }
+        sensors.forEach { sensor ->
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)
+        }
     }
 
     override fun onPause() {
