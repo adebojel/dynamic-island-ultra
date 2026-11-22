@@ -1,24 +1,53 @@
-# Open-Source and App Reference Research
 
-This inventory records feature concepts and implementation candidates. It is not a claim that proprietary source code has been copied. Each component requires independent source, dependency, security, license, privacy and size review.
+## Google Play and store references
 
-## Google Play references
+The following matrix assesses only features described by discoverable product listings. This is a feature/design comparison, not an endorsement or a claim that proprietary code/assets may be copied.
 
-| Reference | Feature areas researched |
-|---|---|
-| [Floating Apps free](https://play.google.com/store/apps/details?id=com.lwi.android.flapps) | Floating mini-app windows, notes, calculator, browser, PDF/document viewer, resize/minimize |
-| [Floating Apps full](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull) | Expanded floating apps, widgets, file/media utilities and window manager |
-| [Floating Assistant](https://play.google.com/store/apps/details?id=com.glgjing.floating.apps.assistive.touch) | Assistive touch, quick actions, favourite apps and system panels |
-| [Floating Assistant Pro](https://play.google.com/store/apps/details?id=com.glgjing.floating.apps.assistive.touch.pro) | Floating clock/countdown, device monitor and assistive touch |
-| [Overlays](https://play.google.com/store/apps/details?id=com.applay.overlay) | Floating widgets, sidebar, launcher and notification/volume concepts |
-| [Mini Phone](https://play.google.com/store/apps/details?id=com.blackhole.miniphone) | Floating menu, compact app launcher and visual customization |
-| [All Tools](https://play.google.com/store/apps/details?id=com.pradhyu.alltoolseveryutility) | QR/barcode, measurement, sensors, connectivity and productivity |
-| [Smart Tools](https://play.google.com/store/apps/details?id=com.pcmehanik.smarttoolbox) | Compass, level, measurement, tuner, counters and notepad |
-| [EasyTouch](https://play.google.com/store/apps/details?id=com.easytouch.assistivetouch) | Assistive touch and quick-access menu |
-| [Dynamic Bar](https://play.google.com/store/apps/details?id=com.callcenter.dynamic.notch) | Dynamic notification island |
-| [Dynamic Notch](https://play.google.com/store/apps/details?id=com.dynamicisland.notchscreenview) | Dynamic notch visuals and quick interaction |
-| [Floating package reference](https://play.google.com/store/apps/details?id=com.ksxkq.floating) | Exact app identity and feature scope require separate verification |
-| [Package reference](https://play.google.com/store/apps/details?id=com.media720.games2020) | Supplied package was not established as a floating utility in initial inspection |
+| Supplied reference | Feature scope verified in listing | UX patterns worth learning | Dynamic Island Ultra gap / integration decision |
+|---|---|---|---|
+| [Floating Apps (multitasking), com.lwi.android.flapps](https://play.google.com/store/apps/details?id=com.lwi.android.flapps) | Floating browser, notes, calculator, document/PDF viewer, URL/widget-to-mini-app flow; floating menu and quick launch; normal/recent apps and shortcuts; resize, minimize, maximize, borders and transparency. | Persistent movable launcher, window title drag, bottom-bar resize, context controls and restore/minimize workflow. | Current app has a single bubble panel and app-owned PiP workspace, not general mini-windows. Build app-owned mini-tools one by one; do not claim arbitrary apps can float. |
+| [Floating Apps full, com.lwi.android.flappsfull](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull) | Paid SKU for the same Floating Apps suite; listing describes 41+ mini apps including browser, document viewer, YouTube, contacts, dialer, file manager, media player, recorder, translator and drawing. | Consistent mini-app catalogue, quick launch, floating menu, resize/minimize/maximize and multi-window management. | Proprietary app: use only as a feature/UX benchmark. No code, icons, brand assets or proprietary app content copied. |
+| [Floating Assistant, com.glgjing.floating.apps.assistive.touch.pro](https://play.google.com/store/apps/details?id=com.glgjing.floating.apps.assistive.touch.pro) | Assistive-touch quick access, virtual Home/Back/Recent/Volume, lock/screenshot/flashlight/rotation/brightness actions, floating clock/countdown and CPU/RAM/battery monitoring. Its listing says Accessibility is used for certain system actions. | Separate compact overlays for clock and device monitor; configurable quick actions; explicit setup for overlay and Accessibility access. | Only implement actions supported by public Android APIs or explicitly consented Accessibility. Current app has no Accessibility Service and does not emulate global Home/Back/lock/screenshot actions. |
+| [Overlays - Floating Launcher, com.applay.overlay](https://play.google.com/store/apps/details?id=com.applay.overlay) | Floating widgets, shortcuts, browser, launcher, notification history, media/volume controls, sidebar and multiple utility overlays; per-orientation sizing, transparency, movement and triggers. The listing explicitly says it does not support real third-party freeform app windows. | Window manager patterns, multiple overlay instances, opacity/size controls, sidebar, and conditional triggers. | Suitable reference for app-owned overlays, not a promise of arbitrary third-party app floating windows. Automation triggers require deliberate, user-visible Android-compliant implementation. |
+| [Mini Phone - Floating Apps, com.blackhole.miniphone](https://play.google.com/store/apps/details?id=com.blackhole.miniphone) | Floating windows and compact launcher for internet browsing, online video and quick search while another app is in use; themes, transparency, size and position. | Quick-search entry point and sidebar customization. | Listing is focused on online multitasking, not a complete offline toolbox. Its Data Safety section declares possible sharing/collection categories; do not copy its data model. |
+| [Floating Menu / Floating Ball, com.ksxkq.floating](https://play.google.com/store/apps/details?id=com.ksxkq.floating) | Package is confirmed by the [Xiaomi App Store listing](https://app.mi.com/details?id=com.ksxkq.floating): gesture-based floating menu, one-handed controls, message notices, quick actions and mini-window sizing. | Gesture combinations, reversible gestures, configurable menu and one-hand access. | The supplied Google Play listing could not be independently retrieved in this audit, so the Xiaomi listing is the verified source. Its store permission list includes broad device/network identifiers and network controls; those permissions are not imported. |
+| [All Tools: 70+ Utilities, com.pradhyu.alltoolseveryutility](https://play.google.com/store/apps/details?id=com.pradhyu.alltoolseveryutility) | Broad offline-first utility collection; listing mentions local file transfer, synchronized group music, Wi-Fi walkie-talkie and measuring/sensor utilities. | Tool grouping and separate shortcuts for frequently used utilities. | Current project already has QR scanning and a basic sensor kit. Add each tool only after sensor availability, calibration, permission, privacy and offline behavior are tested. |
+| [Smart Tools - All In One, com.pcmehanik.smarttoolbox](https://play.google.com/store/apps/details?id=com.pcmehanik.smarttoolbox) | 40+ ruler/level/protractor/magnifier, sound-level, altimeter, distance, magnetometer, vibration, light, compass, battery, network, QR/text/NFC, accelerometer, metronome, tuner and other tools. | Sensor-dependent tool groups, per-tool shortcuts and calibration guidance. | Do not fabricate unavailable sensors or present approximate readings as calibrated measurements. Gate every tool on actual hardware support and show calibration/accuracy limits. |
+| [Package com.media720.games2020](https://play.google.com/store/apps/details?id=com.media720.games2020) | The current store page resolves to an offline puzzle-games collection, not a floating-app/utility tool. | None for the Dynamic Island floating hub. | Excluded from product benchmarking; likely supplied package mismatch. |
+| [Assistive Touch for Android, com.easytouch.assistivetouch](https://play.google.com/store/apps/details?id=com.easytouch.assistivetouch) | Virtual Home/Back/Recent and Volume controls, favourites, settings and quick toggles, screenshot/flashlight/rotation, screen recorder and single/double/long-press actions; listing describes Accessibility use for selected global actions. | Simple quick menu, familiar virtual-button metaphors and gesture settings. | Current release only maps gestures to app-owned screens. Any future global action needs a disclosed Accessibility Service, explicit user opt-in, policy review and physical-device testing. |
+
+## Open-source design candidates
+
+| Project | License / verified scope | Assessment |
+|---|---|---|
+| [Halo](https://github.com/yogeshpaliyal/Halo) | MIT in repository; Kotlin/Compose edge bubble, long-press radial favourites/recents, slide-to-select, tap/double-tap actions, drag/snap, haptics, size/opacity, folders and boot restoration. | Strong reference for an edge gesture state machine and radial favourites menu. No code was copied in v0.0.9. Recheck exact commit, app permissions, minSdk and NOTICE before copying or integrating. |
+| [AssistiveDotApp](https://github.com/abdallahnatsheh/AssistiveDotApp) | Apache-2.0 in repository; tap/double-tap/long-press/drag, edge snap, custom size/colour and Accessibility-backed global actions; README says Android 14+. | Helpful accessibility and permission-disclosure reference, but its Android version floor is not a direct API-26 implementation target. No code was copied. |
+| [Islet](https://github.com/dylanneve1/islet) | Apache-2.0 license file previously verified; island, notification and media ideas. | Design reference only pending exact-commit and dependency review. |
+| [SmartIsland](https://github.com/agupta07505/SmartIsland) | GPL-3.0 license file previously verified. | Copyleft obligations apply if derived code is integrated; avoid copying unless the project accepts GPL compliance. |
+| [Aura Island](https://github.com/Sensui-moksha/Aura-Island) | GPL-3.0 license file previously verified. | Copyleft obligations apply if derived code is integrated; design reference only for now. |
+| [Overlay PowerToys](https://github.com/8bitgentleman/OverlayPowerToys) | Exact license at selected commit remains unverified. | Do not copy code until license and dependency review complete. |
+| [Sparrow](https://github.com/ilhan-gunduz/Sparrow) | License and Android applicability require fresh verification. | Research lead only. |
+| [PocketLLM](https://github.com/CaviraOSS/PocketLLM) | Software and individual model terms need separate verification. | Research lead only; not a runtime integrated in this release. |
+| [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM) | Google on-device LLM runtime; model format and model license are separate. | Evaluate separately from GGUF runtimes; no inference runtime added in v0.0.9. |
+
+## Lightweight local LLM feasibility
+
+The 400 MB limit is for the app plus models/data managed by the project, not just the download APK. The current v0.0.9 APK is about 19.1 MB (decimal).
+
+| Candidate | Quantized model file reported by repository | License / language caution | Decision |
+|---|---:|---|---|
+| [SmolLM2 360M Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/SmolLM2-360M-Instruct-GGUF) | About 0.271 GB (271 MB). | Base model card is Apache-2.0 but says the model primarily understands/generates English. The quantized GGUF repository's packaging and exact upstream revision must also be checked. | Best small-size benchmark candidate only; not accepted for Bahasa Indonesia without quality tests. |
+| [Qwen2.5 0.5B Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/Qwen2.5-0.5B-Instruct-GGUF) | About 0.398 GB (398 MB). | The file alone nearly consumes the full 400 MB budget before the APK, runtime, tokenizer, cache or update headroom. Confirm the exact base-model and quantization terms before redistribution. | Reject for bundled/default configuration under the current combined storage cap. |
+
+For GGUF experiments, evaluate one Android runtime at a time; llama.cpp is the corresponding candidate for GGUF. Build/benchmark it on real API-26+ devices before adding native binaries. LiteRT-LM uses a different model format and must not be added alongside llama.cpp without measured need. No generative model is bundled or downloaded by this release; all existing assistant actions remain local and deterministic.
+
+## Android platform constraints
+
+- [TYPE_APPLICATION_OVERLAY](https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY) requires user-granted SYSTEM_ALERT_WINDOW; Android may change an overlay's position, size or visibility.
+- [Overlay permission](https://developer.android.com/reference/android/Manifest.permission#SYSTEM_ALERT_WINDOW) must be granted by the user through Settings for modern target versions.
+- [Foreground-service changes](https://developer.android.com/develop/background-work/services/fgs/changes): Android 15 narrows background FGS start exceptions for overlay apps; a visible overlay is required for that exception when targeting Android 15+.
+- [NotificationListenerService](https://developer.android.com/reference/android/service/notification/NotificationListenerService) requires the declared protected binding permission and user approval in system settings.
+- [Picture-in-Picture](https://developer.android.com/develop/ui/views/picture-in-picture) only applies to activities that explicitly support PiP. It does not permit this app to force arbitrary third-party apps into windows.
 
 ## GitHub candidates and concepts
 

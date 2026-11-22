@@ -112,3 +112,18 @@ For each failure, record:
 - Whether the issue happened on the GitHub APK or Play-installed build
 
 Do not mark a section PASS until it has been exercised on a real device.
+## Floating bubble gesture and appearance checks (v0.0.9)
+
+- [ ] Tap the bubble once; confirm the categorized bubble panel opens.
+- [ ] Double-tap; confirm the offline assistant opens and no network request is made by the assistant.
+- [ ] Long-press; confirm the configured local action runs once and dragging remains possible after release.
+- [ ] Open Island Interaction settings and map one swipe direction to Media Controls. Swipe in that direction; confirm only the selected in-app action opens.
+- [ ] Set all swipe directions to “Tidak ada tindakan”; confirm swipe movement continues to drag the bubble instead of triggering an action.
+- [ ] Check the default configuration: swipe directions are disabled, preventing accidental interception of drag gestures.
+- [ ] Set bubble size to 80%, 100% and 140%; confirm the active pill updates after the setting is applied.
+- [ ] Set opacity to 40% and 100%; confirm pulse animation respects the selected maximum opacity.
+- [ ] Stop and restart the overlay service; confirm stored size, opacity, gesture mappings, position, edge-docking and haptic preference remain intact.
+- [ ] Rotate the device and test the bubble/menu touch targets, clipping and saved position in both orientations.
+- [ ] Enable TalkBack and verify the bubble description and settings controls are announced in a predictable focus order.
+
+**Expected:** only the allowlisted app-owned actions can be selected. No gesture may run arbitrary shell commands, silently grant permissions, or change protected system settings. Record any OEM-specific gesture timing issue as FAIL with a short recording.

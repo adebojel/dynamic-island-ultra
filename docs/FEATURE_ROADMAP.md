@@ -17,8 +17,9 @@
 
 ## Latest release verification
 
-- Latest signed release: [v0.0.8](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.8), Android versionCode 129.
-- [Android CI run #129](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44993860841) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
+- Latest signed release: [v0.0.9](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.9), Android versionCode 130.
+- [Android CI run #130](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45016895617) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
+- Release asset metadata reports a signed APK of 19,091,626 bytes and Play AAB of 18,636,191 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
 - Call-status notifications follow the same global privacy switch and per-app allowlist as other notification previews.
 - Physical-device/OEM validation is still outstanding.
 
@@ -28,7 +29,7 @@
 2. Browser smoke tests on WebView variants: DDG search, HTTPS sites, desktop/mobile User-Agent, cookies, video playback and lifecycle.
 3. Signed update regression: same application ID/signature, versionCode monotonicity, installer consent and app-data retention.
 4. AdMob production readiness: publish UMP privacy messages, complete app review/eligibility, publish root-host app-ads.txt, verify production ad serving without self-clicking, and audit placement/frequency compliance.
-5. Full floating-window resize controls, richer gesture configuration and a complete theme editor.
+5. Full app-owned floating mini-window manager, radial/favourites menu, custom shortcut editor and complete theme editor.
 6. Broader TalkBack, dynamic text scaling, high-contrast and keyboard-navigation validation.
 7. Optional generative on-device LLM remains a separate module requiring model licence, runtime, RAM/storage and Android 8+ hardware evaluation.
 
@@ -72,3 +73,19 @@ A generative offline LLM is not the existing deterministic command router. It re
 - Added unit tests for safe gesture defaults, invalid stored actions, and swipe/drag coexistence.
 
 Still outstanding: long-running OEM/device validation, TalkBack interaction testing on physical devices, auto-hide/restore behaviour, multi-window positioning tests, and a full custom shortcut/favourites editor.
+
+## External product and platform research snapshot — 22 November 2026
+
+- Ten supplied product/package references were checked against their discoverable store pages. The feature comparison and suitability notes are in [Open-source research and app reference matrix](OPEN_SOURCE_RESEARCH.md).
+- The supplied com.media720.games2020 reference resolves to an offline puzzle-games listing, not a floating utility; exclude it from feature benchmarking.
+- com.ksxkq.floating is confirmed by the Xiaomi App Store package listing. The corresponding Google Play listing could not be independently verified in this review.
+- Floating Apps is the strongest supplied multi-window reference, but its proprietary implementation is not copied. Overlays explicitly disclaims arbitrary third-party freeform windows; Dynamic Island Ultra will limit floating windows to its own activities/tools and Android-supported surfaces.
+- Open-source gesture/edge-menu design references include Halo (MIT) and AssistiveDotApp (Apache-2.0). Neither source was copied into this release; license notices and API compatibility must be rechecked at the exact commit before any code intake.
+
+## Local model feasibility snapshot — 22 November 2026
+
+- Current assistant remains an offline deterministic intent/rule engine, not a generative LLM.
+- SmolLM2 360M Instruct Q4_K_M GGUF is listed at about 271 MB and Apache-2.0, but its model card says it primarily understands and generates English. It is therefore not accepted as the Indonesian assistant model without language-quality evaluation.
+- Qwen2.5 0.5B Instruct Q4_K_M GGUF is listed at about 398 MB, leaving essentially no room under the combined 400 MB package/model budget for the existing app, runtime, tokenizer, cache or updates.
+- For future GGUF experimentation, evaluate one runtime only (llama.cpp Android/NDK) against the actual target device, using an optional, user-managed model file. Do not add it to release builds until storage, peak RAM, CPU latency, temperature, battery, Indonesian command tests and offline isolation all pass.
+- LiteRT-LM is a separate runtime/model format; do not combine both engines without a measured need. Its integration guidance describes local .litertlm model files from hundreds of MB to several GB; evaluate it separately, not as an additional dependency in the current release.
