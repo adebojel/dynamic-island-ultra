@@ -162,10 +162,19 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.2](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.2) (versionCode 95). CI unit tests, signed release assembly, APK signature verification, checksum generation, and GitHub Release publication passed. Physical-device smoke tests and first-time GitHub Pages enablement remain separate steps.
+The latest verified signed release is [v0.0.3](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.3) (**versionCode 97**, published 22 November 2026). [Android CI run #97](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44988489514) completed successfully. It passed unit tests, Android architecture/manifest gates, signed APK and AAB assembly, APK signature verification, AAB JAR signature verification, matching APK/AAB certificate fingerprint verification, SHA-256 generation, and GitHub Release asset publication.
 
+Release assets:
+- [Signed APK for direct device installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.apk)
+- [Signed AAB for Play Console upload](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.aab)
+- [APK SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.apk.sha256)
+- [AAB SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.3/app-release.aab.sha256)
 
-CI tests and APK assembly are necessary but do not replace physical-device testing. The next verification gate is smoke-testing overlay lifecycle, notification access, DuckDuckGo search/navigation and website playback, package-installer handoff, data retention across a signed update, Android 8/9/10 and current Android OEM variants.
+The release certificate SHA-256 is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. The AAB and direct-install APK were verified against the same certificate. This confirms the CI signing relationship; it does not by itself determine which app-signing key Google Play will use for store-distributed APKs. Follow the Play App Signing warning in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
+
+**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and public website deployment. The GitHub Pages workflow has not deployed because Pages has not yet been enabled for this repository. Do not submit the reserved website URLs to Play Console or AdMob until deployment succeeds and every page is checked.
+
+CI tests and APK assembly do not replace physical-device testing. The next device gate is to smoke-test overlay lifecycle, notification access, DuckDuckGo search/navigation and media playback, package-installer handoff, data retention across a signed update, and Android 8/9/10 plus current Android OEM variants.
 
 ---
 
