@@ -177,3 +177,20 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Assign Smart Toolbox to a gesture and each Quick Favorite slot; verify it launches only the app-owned toolbox.
 - [ ] Rotate the device and test large font/TalkBack focus order.
 - [ ] Background or force-stop the app during a countdown and record the observed behaviour; do not treat this in-app timer as a guaranteed alarm.
+
+
+## File Manager checks (SAF scoped access)
+
+- [ ] Launch File Manager from the dashboard and from Floating Bubble → My Floating Apps.
+- [ ] Confirm the system folder picker appears and no broad storage permission is requested.
+- [ ] Select a test folder and confirm its contents are listed.
+- [ ] Open a subfolder, use Back, and confirm the navigation stack returns to the parent.
+- [ ] Search for an existing file and test both alphabetical and newest-first sorting.
+- [ ] Create a folder; confirm it appears and remains after leaving/reopening the activity.
+- [ ] Open a supported file type and confirm Android launches a compatible viewer.
+- [ ] Share a selected file and confirm the receiving app can read it.
+- [ ] Rename an item and confirm the updated name is shown.
+- [ ] Delete a test item only after the confirmation prompt; confirm it disappears.
+- [ ] Reopen File Manager after force-stop/relaunch and confirm the persisted selected folder remains accessible.
+- [ ] Revoke folder access from Android settings (or move/remove the test storage) and confirm the activity returns to folder selection without crashing.
+- [ ] Repeat on Android 8/API 26 and a current Android release; record OEM/provider-specific failures.

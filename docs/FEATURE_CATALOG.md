@@ -99,3 +99,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - The category panel is not dimmed; closing it restarts the idle countdown.
 - Dimming cancels the pulse animator while idle and restarts the configured pulse when interacted with.
 - This is not full hide/auto-removal and does not promise immunity from Android/OEM service lifecycle controls.
+
+
+## File Manager (scoped storage)
+
+- Select a folder through Android's Storage Access Framework and persist access to that selected document tree only.
+- Navigate subfolders; search names; sort folders first by name or most recently modified.
+- Create folders; open files with a compatible installed application; share files using a temporary read grant; rename items; delete with explicit confirmation.
+- No broad storage permission or full-device file scan is requested.
+- Copy/move, ZIP extraction/creation, file preview/editor integration and provider-specific capability handling beyond the supported operations are not yet implemented.

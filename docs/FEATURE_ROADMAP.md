@@ -145,3 +145,15 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 The main-line implementation exposes Smart Toolbox directly through the floating bubble and configurable gesture/favorite allowlists. Implemented locally: length/mass/volume/temperature conversions, counter, stopwatch and countdown timer/Pomodoro preset. Unit conversion has deterministic unit tests. It intentionally does not claim calibrated ruler/protractor or sound/light meter readings: those need device-specific calibration and real hardware validation.
 
 Still requiring separate implementation and/or device tests: persistent alarms/reminders after process death, multi-window third-party app overlays, clipboard history, encrypted backup/restore, bookmarks/history/private browser sessions, broad OCR/object recognition and a generative local LLM. These are not represented as completed features.
+
+
+## Phase 1 delivery update — scoped File Manager
+
+Implemented in source on `main`:
+- SAF folder picker with persisted access to the user-selected document tree.
+- Folder navigation, filename search, folder-first sorting by name or modification time.
+- Create folder, open/share file, rename item and delete with confirmation.
+- Dashboard and Floating Bubble entry points.
+- Filename validation unit tests; no broad storage permission added.
+
+Still not complete for the wider Phase 1 scope: file copy/move, ZIP tools, full document editing, browser tabs/bookmarks/history/download manager, app-owned multi-window manager, global Accessibility Service controls, complete theme editor, and physical-device/OEM validation. These must not be marked done based solely on this module's CI result.

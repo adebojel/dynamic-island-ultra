@@ -42,6 +42,7 @@ import com.adebojel.dynamicislandultra.floating.QrScannerActivity
 import com.adebojel.dynamicislandultra.floating.SensorKitActivity
 import com.adebojel.dynamicislandultra.floating.SmartToolsActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
+import com.adebojel.dynamicislandultra.floating.FileManagerActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.notifications.ActiveMediaSession
@@ -323,7 +324,8 @@ class FloatingIslandService : Service() {
             "Installed app collection" to "installed_apps",
             "Floating workspace (PiP)" to "workspace",
             "Offline notes" to "notes",
-            "Offline calculator" to "local_calculator"
+            "Offline calculator" to "local_calculator",
+            "File manager (folder pilihan)" to "file_manager"
         ))
         addSection(content, "07  OFFLINE INTELLIGENCE", listOf(
             "Offline utility assistant" to "offline_assistant",
@@ -507,6 +509,7 @@ class FloatingIslandService : Service() {
                         "document_preview" -> Intent(this@FloatingIslandService, DocumentPreviewActivity::class.java)
                         "sensor_kit" -> Intent(this@FloatingIslandService, SensorKitActivity::class.java)
                         "smart_tools" -> Intent(this@FloatingIslandService, SmartToolsActivity::class.java)
+                        "file_manager" -> Intent(this@FloatingIslandService, FileManagerActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)

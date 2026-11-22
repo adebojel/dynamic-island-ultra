@@ -50,6 +50,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
 | Image/PDF preview | Android document picker and local image/first-page PDF preview |
+| File Manager | User-selected SAF folder browsing, search, alphabetical/recent sorting, create folder, open, share, rename and delete; no broad storage permission |
 | Sensor kit | Live supported sensors while the screen is foregrounded; listeners stop on pause |
 | Voice assistance | Android 12+ on-device recognition when available, explicit mic permission and device speech read-out |
 
@@ -256,3 +257,8 @@ The floating bubble now includes a **Smart Toolbox** entry. It can also be assig
 - Countdown timer with a 25-minute Pomodoro preset.
 
 These tools do not require network access or additional Android permissions. Timer and stopwatch are in-app session tools; they are not system alarms and are not guaranteed to keep notifying after the app is force-stopped. Physical-device validation is listed in `docs/DEVICE_SMOKE_TEST.md`.
+
+
+## File Manager — scoped local storage
+
+The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Copy/move, archive management and document editing are still separate backlog items.

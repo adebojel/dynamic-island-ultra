@@ -55,6 +55,7 @@ import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.floating.QrScannerActivity
 import com.adebojel.dynamicislandultra.floating.SensorKitActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
+import com.adebojel.dynamicislandultra.floating.FileManagerActivity
 import com.adebojel.dynamicislandultra.overlay.IslandInteractionSettingsActivity
 
 private val Night = Color(0xFF080B14)
@@ -102,6 +103,7 @@ class MainActivity : ComponentActivity() {
                     onMedia = { openLocal(MediaControlsActivity::class.java) },
                     onScanner = { openLocal(QrScannerActivity::class.java) },
                     onDocuments = { openLocal(DocumentPreviewActivity::class.java) },
+                    onFileManager = { openLocal(FileManagerActivity::class.java) },
                     onSensors = { openLocal(SensorKitActivity::class.java) },
                     onIslandSettings = { openLocal(IslandInteractionSettingsActivity::class.java) },
                     onBattery = { openBatterySettings() },
@@ -197,6 +199,7 @@ private fun Dashboard(
     onMedia: () -> Unit,
     onScanner: () -> Unit,
     onDocuments: () -> Unit,
+    onFileManager: () -> Unit,
     onSensors: () -> Unit,
     onIslandSettings: () -> Unit,
     onBattery: () -> Unit,
@@ -333,6 +336,7 @@ private fun Dashboard(
         item { FeatureCard(Icons.Default.Notifications, "Media controls", "Metadata, artwork, playback and seek controls where supported", "Media", onMedia) }
         item { FeatureCard(Icons.Default.Widgets, "QR & barcode scanner", "Google Code Scanner; no app camera permission", "Scanner", onScanner) }
         item { FeatureCard(Icons.Default.Apps, "Image & PDF preview", "Open and preview user-selected files locally", "Local", onDocuments) }
+        item { FeatureCard(Icons.Default.Apps, "File Manager", "Browse, search, create folders, rename, share and delete within a folder you select", "SAF / Local", onFileManager) }
         item { FeatureCard(Icons.Default.Tune, "Device sensor kit", "Read supported sensors while this screen is active", "Local", onSensors) }
         item { FeatureCard(Icons.Default.Widgets, "Island interaction", "Edge docking and optional haptic feedback", "Settings", onIslandSettings) }
         item { Text("INTERNET & ONLINE FEATURES", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
