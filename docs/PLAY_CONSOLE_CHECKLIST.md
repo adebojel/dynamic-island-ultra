@@ -26,12 +26,14 @@ This checklist records the app's current release configuration and the remaining
 
 Each signed GitHub release should attach:
 
-1. `app-release.apk` for direct Android device installation and GitHub updater tests.
-2. `app-release.aab` for upload to Google Play Console.
+1. `app-release.apk` from the `github` flavor for direct Android device installation and GitHub updater tests.
+2. `app-release.aab` from the `play` flavor for upload to Google Play Console.
 3. SHA-256 checksum files for each.
 4. `release-info.json` with package/version metadata.
 
-**Upload the AAB to Play Console, not the APK**, for a new Play app. New Play apps use Play App Signing. The stable JKS already used to sign the APK is the upload key candidate. The CI verifies that the AAB and APK share the same certificate SHA-256.
+**Upload only the AAB built from `bundlePlayRelease` to Play Console, not the APK**, for a new Play app. New Play apps use Play App Signing. The stable JKS already used to sign the APK is the upload key candidate. The CI must verify that the Play AAB and GitHub APK share the same certificate SHA-256.
+
+**Do not upload the existing v0.0.3 AAB.** It predates the product-flavor split and still includes `REQUEST_INSTALL_PACKAGES` used by the GitHub self-updater. The new main-branch build separates the GitHub updater into the `github` flavor and excludes the installer permission from the `play` flavor. Wait for a successful post-separation CI release before uploading its AAB.
 
 Because this package has already been distributed outside Google Play, check the Android developer verification/package registration flow during app creation. If Play Console asks to prove package ownership, use the original stable signing keystore and its matching certificate. The SHA-256 fingerprint verified by CI is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. Never replace the JKS or upload the private file to the repository.
 
@@ -42,6 +44,8 @@ Because this package has already been distributed outside Google Play, check the
 - [ ] Enroll in Play App Signing. The stable JKS is already the release/upload key used by GitHub CI. **Choose the app-signing-key option carefully:** the APK currently installed from GitHub is signed by this stable certificate. If the goal is an in-place update from that APK to the Play Store build, select the option to use/provide the same existing app-signing key when Play Console offers it before the first rollout. If Play App Signing uses a different Google-generated app-signing key, Play-distributed APKs will have a different signer and cannot update the GitHub-signed installation in place; a one-time uninstall/reinstall may be required. The upload key and app-signing key have different roles—do not assume that setting the upload key alone preserves the final APK certificate.
 - [ ] Upload the latest `app-release.aab` from GitHub Releases.
 - [ ] Verify app signing, package name, version code, target SDK, and generated device APKs.
+- [ ] Verify the uploaded AAB came from the `play` flavor and the merged Play manifest does not contain `android.permission.REQUEST_INSTALL_PACKAGES`.
+- [ ] Confirm the Play flavor's update screen opens the Google Play listing and never downloads or installs GitHub APKs.
 - [ ] Complete the store listing, screenshots, app icon, feature graphic, content rating, target audience, and app access declarations.
 - [ ] Complete the Data safety form using the actual SDK disclosures and app behaviour. Do not guess that the app collects no data: AdMob/UMP and WebView interactions introduce third-party data processing.
 - [ ] Provide the live Privacy Policy URL after GitHub Pages has been successfully enabled and each page checked.
