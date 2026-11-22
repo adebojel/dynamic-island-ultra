@@ -102,3 +102,9 @@ After a successful deployment, the website is intended to be available at:
 - Support: https://adebojel.github.io/dynamic-island-ultra/support.html
 
 The public website URL must not be submitted to AdMob or Play Console until the Pages deployment run succeeds and each page is opened and checked. Review the site whenever app permissions, SDKs, data processing, subscriptions or ad placements change.
+
+### AdMob app-ads.txt root-host requirement
+
+AdMob derives the hostname from the developer website in the store listing and checks `https://<hostname>/app-ads.txt` (then HTTP fallback). The current project Pages address uses hostname `adebojel.github.io` with project path `/dynamic-island-ultra/`; publishing `app-ads.txt` only inside this repository's `site/` directory would leave it at the project subpath and would not satisfy the crawler's root-host lookup. A root-host site/repository, custom domain, or Firebase Hosting root is needed. Copy the exact seller declaration from AdMob → Settings rather than guessing it, then verify the public root URL returns the plain-text file before using the developer website in Play Console. app-ads.txt is recommended by Google but is not itself proof of app approval or guaranteed ad fill.
+
+Official guidance: https://support.google.com/admob/answer/9363762 and https://developers.google.com/admob/android/app-ads.
