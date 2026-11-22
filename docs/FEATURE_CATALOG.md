@@ -23,6 +23,7 @@ The built-in assistant and local tools work without internet, imported model fil
 
 - **DuckDuckGo browser:** DuckDuckGo default home/search; HTTPS address bar for general websites; Back/Forward/Reload/Home; Desktop/Mobile layout mode via User-Agent and viewport switching.
 - **GitHub Update Center (GitHub flavor only):** checks the latest project release, downloads APK and metadata, verifies SHA-256, then opens Android's package installer.
+- **Update command:** the offline assistant routes to the app's official update center with distribution-neutral wording. The GitHub flavor checks signed GitHub releases and the Play flavor opens the Play Store listing.
 - **Google Play update route (Play flavor):** opens the Play Store listing; the Play variant does not include the package-install permission or GitHub self-updater path.
 - **AdMob/UMP:** Google Mobile Ads Next-Gen, publisher App ID/ad units, UMP consent flow, privacy options, Banner, Native Advanced, Rewarded and Rewarded Interstitial are integrated. Live serving remains dependent on publisher configuration, app review/eligibility, consent and inventory.
 - Shared manifest declares `INTERNET` and `ACCESS_NETWORK_STATE`; these are normal Android install-time permissions. `REQUEST_INSTALL_PACKAGES` is declared only by `app/src/github/AndroidManifest.xml`, never by the Play flavor. Cleartext HTTP remains disabled.
