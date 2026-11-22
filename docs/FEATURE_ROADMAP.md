@@ -18,7 +18,7 @@
 1. Physical-device matrix: Android 8/9/10, API 26–29, modern API 33–36 and OEM background restrictions.
 2. Browser smoke tests on WebView variants: DDG search, HTTPS sites, desktop/mobile User-Agent, cookies, video playback and lifecycle.
 3. Signed update regression: same application ID/signature, versionCode monotonicity, installer consent and app-data retention.
-4. AdMob setup after real App ID/ad unit IDs are supplied: Mobile Ads SDK, UMP consent update at each launch, privacy options and test-device configuration.
+4. AdMob production readiness: publish UMP privacy messages, complete app review/eligibility, publish root-host app-ads.txt, verify production ad serving without self-clicking, and audit placement/frequency compliance.
 5. Notification filters, allowlist and privacy controls.
 6. MediaSession metadata/artwork/progress/playback controls.
 7. Supported incoming/ongoing call activity cards.
