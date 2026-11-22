@@ -93,7 +93,7 @@ The release workflow produces two separately signed files from different flavors
 - `app-release.apk`: built with `assembleGithubRelease`; install directly on Android for physical-device smoke tests and GitHub-based updates.
 - `app-release.aab`: built with `bundlePlayRelease`; upload this AAB to Google Play Console. It excludes the GitHub updater permission and routes updates to Google Play. The AAB uses the same stable keystore certificate as the GitHub APK, and CI verifies the JAR signature and fingerprint before publication.
 
-The earlier v0.0.3 AAB was built before this split and must not be uploaded to Play Console. Use only a successful post-split CI artifact.
+The earlier v0.0.3 AAB was built before this split and must not be uploaded to Play Console. The current [v0.0.4 release](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.4), CI run #117, is the first verified flavor-separated release: the GitHub APK and Play AAB both passed signing checks, and the Play merged manifest was verified to exclude `REQUEST_INSTALL_PACKAGES`. Upload only the v0.0.4 AAB to Play Console.
 
 For a new Google Play app, use the AAB and enroll in Play App Signing. Keep the stable JKS as the upload key and retain its encrypted backups. Google Play will manage the app-signing key used to distribute device-specific APKs. Since this package has already been distributed outside Play, review the Android developer verification/package ownership process and be prepared to prove ownership of the same certificate if Play Console requests it.
 
