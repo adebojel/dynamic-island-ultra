@@ -97,3 +97,10 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Added an allowlisted catalog of ten app-owned destinations, including offline notes/calculator, assistant, media, QR, document preview and sensor kit.
 - Added persistent slot configuration and unit tests for defaults, invalid keys and accessible labels.
 - The favorites row is not a third-party freeform window manager or privileged system action surface.
+
+## Bubble category UX update
+
+- Converted the eight category groups into expandable/collapsible accordion sections; sections start closed while the Quick Favorites row stays visible.
+- Added full-width focusable category headers with explicit accessibility descriptions and state text.
+- Category actions close the floating panel before launching their destination, preventing a stale overlay from covering the opened screen.
+- Physical TalkBack, focus, rotation, and OEM overlay tests remain in the device checklist.

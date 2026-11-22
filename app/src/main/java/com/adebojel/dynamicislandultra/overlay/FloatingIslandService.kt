@@ -420,10 +420,33 @@ class FloatingIslandService : Service() {
         title: String,
         actions: List<Pair<String, String>>
     ) {
-        root.addView(label(title, 9f, true).apply {
+        val actionItems = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.GONE
+        }
+        val header = label("▸  $title", 10f, true).apply {
             setTextColor(Color.rgb(88, 220, 255))
-            setPadding(0, 16, 0, 7)
+            setPadding(13, 14, 10, 12)
+            background = rounded(
+                Color.rgb(19, 29, 49),
+                Color.rgb(42, 63, 94),
+                13f,
+                1
+            )
+            isClickable = true
+            isFocusable = true
+            contentDescription = "$title, kategori tertutup. Ketuk untuk membuka."
+            setOnClickListener {
+                val isOpening = actionItems.visibility != View.VISIBLE
+                actionItems.visibility = if (isOpening) View.VISIBLE else View.GONE
+                text = (if (isOpening) "▾  " else "▸  ") + title
+                contentDescription = "$title, kategori ${if (isOpening) "terbuka" else "tertutup"}. Ketuk untuk ${if (isOpening) "menutup" else "membuka"}."
+            }
+        }
+        root.addView(header, LinearLayout.LayoutParams(-1, -2).apply {
+            topMargin = (10 * resources.displayMetrics.density).toInt()
         })
+
         actions.forEach { (name, key) ->
             val item = label("›   $name", 13f, false).apply {
                 setPadding(13, 12, 12, 12)
@@ -453,7 +476,10 @@ class FloatingIslandService : Service() {
                     if (intent == null) {
                         Toast.makeText(this@FloatingIslandService, "Tool unavailable", Toast.LENGTH_SHORT).show()
                     } else {
-                        runCatching { startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.onFailure {
+                        closePanel()
+                        runCatching {
+                            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                        }.onFailure {
                             Toast.makeText(
                                 this@FloatingIslandService,
                                 "$name is not available on this device",
@@ -463,10 +489,11 @@ class FloatingIslandService : Service() {
                     }
                 }
             }
-            root.addView(item, LinearLayout.LayoutParams(-1, -2).apply {
+            actionItems.addView(item, LinearLayout.LayoutParams(-1, -2).apply {
                 bottomMargin = (6 * resources.displayMetrics.density).toInt()
             })
         }
+        root.addView(actionItems, LinearLayout.LayoutParams(-1, -2))
     }
 
     private fun label(value: String, size: Float, bold: Boolean) = TextView(this).apply {

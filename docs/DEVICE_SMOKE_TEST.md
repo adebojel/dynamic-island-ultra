@@ -136,3 +136,12 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Restart the overlay service and confirm favorite configuration persists.
 - [ ] Store an invalid favorite preference in a test build and confirm the slot falls back to a safe default.
 - [ ] Turn on TalkBack and confirm every favorite exposes its full action label, not only its abbreviated visual label.
+
+## Bubble category accordion checks
+
+- [ ] Open the bubble panel and confirm all eight category headers are visible while their items are initially collapsed.
+- [ ] Expand each category header and verify its action list becomes visible and the header announces the expanded state.
+- [ ] Collapse each category and verify its items are hidden again.
+- [ ] Use TalkBack to move through category headers; confirm each is focusable and announces its title and expanded/collapsed state.
+- [ ] Select an action from each applicable category and confirm the bubble panel closes before the destination opens.
+- [ ] Reopen the bubble panel after navigating back; confirm the accordion is in its documented default collapsed state.

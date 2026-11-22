@@ -66,3 +66,10 @@ The built-in assistant and local tools work without internet, imported model fil
 - Available allowlisted actions: offline assistant, notes, calculator, installed apps, media controls, QR scanner, document preview, sensor kit, app-owned PiP workspace and Island settings.
 - Each slot persists in app-private preferences; invalid/stale values resolve to a safe default.
 - Favorites open only app-owned activities. They do not perform privileged Android actions or launch arbitrary commands.
+
+## Bubble category accordion and launch lifecycle
+
+- All eight bubble categories are expandable/collapsible sections; they start collapsed to keep the bubble panel compact.
+- Category headers are full-width, keyboard-focusable controls with expanded/collapsed text and accessibility descriptions.
+- Opening/closing a category changes only its local panel content; it does not trigger system settings or external app automation.
+- Selecting a category action closes the overlay panel before starting the selected destination, avoiding the panel remaining above the target screen.

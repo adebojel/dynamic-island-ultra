@@ -227,6 +227,7 @@ The floating overlay now supports configurable local gesture routing:
 - Optional swipe up/down/left/right actions. Swipe gestures are disabled by default so dragging remains available until the user assigns an action.
 - Local action choices: bubble menu, offline assistant, media controls, notification privacy settings, app-owned PiP workspace, or bubble settings.
 - Four configurable Quick Favorites appear above the category list; choose from offline assistant, notes, calculator, installed apps, media, QR, document preview, sensors, workspace, and settings.
+- Bubble categories now expand/collapse as accessible accordion sections; category items close the overlay panel before launching their destination.
 - Bubble size (80–140%) and opacity (40–100%) are adjustable from Island Interaction settings. Changes refresh the active overlay without restarting the service.
 - The gesture router uses a fixed allowlist. It does not execute arbitrary shell commands, change protected Android settings, or control third-party apps.
 
