@@ -28,6 +28,7 @@ sealed interface OfflineAction {
     data object OpenDocumentPreview : OfflineAction
     data object OpenNotificationPrivacy : OfflineAction
     data object OpenIslandSettings : OfflineAction
+    data object OpenSmartTools : OfflineAction
 }
 
 /**
@@ -65,6 +66,8 @@ class OfflineAssistant {
                 OfflineAssistantReply("Menampilkan daftar aplikasi yang dapat dibuka.", OfflineAction.OpenInstalledApps)
             hasAny(query, "kalkulator", "calculator", "hitung") ->
                 OfflineAssistantReply("Membuka kalkulator perangkat.", OfflineAction.OpenCalculator)
+            hasAny(query, "smart toolbox", "smart tools", "toolbox", "konversi satuan", "converter", "penghitung", "counter", "stopwatch", "pomodoro", "timer lokal") ->
+                OfflineAssistantReply("Membuka Smart Toolbox lokal: konversi, penghitung, stopwatch dan timer.", OfflineAction.OpenSmartTools)
             hasAny(query, "timer", "penghitung waktu", "alarm") ->
                 OfflineAssistantReply("Membuka timer atau alarm perangkat.", OfflineAction.OpenTimer)
             hasAny(query, "file", "berkas", "dokumen") ->
@@ -89,11 +92,11 @@ class OfflineAssistant {
                 OfflineAssistantReply(calculate(query))
             hasAny(query, "bantuan", "help", "apa yang bisa", "perintah") ->
                 OfflineAssistantReply(
-                    "Saya dapat membuka Wi-Fi, Bluetooth, aksesibilitas, aplikasi terpasang, kalkulator, timer, file, tampilan, suara, pemindai QR, sensor, kontrol media, pratinjau dokumen, privasi notifikasi dan pengaturan island. Saya juga dapat menghitung ekspresi matematika sederhana."
+                    "Saya dapat membuka Wi-Fi, Bluetooth, aksesibilitas, aplikasi terpasang, kalkulator, timer, file, tampilan, suara, pemindai QR, sensor, kontrol media, pratinjau dokumen, privasi notifikasi, pengaturan island dan Smart Toolbox (konversi satuan, penghitung, stopwatch serta Pomodoro). Saya juga dapat menghitung ekspresi matematika sederhana."
                 )
             else ->
                 OfflineAssistantReply(
-                    "Perintah belum dikenali. Coba: baterai, buka Wi-Fi, daftar aplikasi, kalkulator, timer, atau bantuan."
+                    "Perintah belum dikenali. Coba: baterai, buka Wi-Fi, daftar aplikasi, Smart Toolbox, stopwatch, kalkulator, atau bantuan."
                 )
         }
     }
