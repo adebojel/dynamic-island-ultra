@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -12,6 +14,9 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
         </intent>
     </queries>
 
@@ -28,10 +33,19 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9305273212801233~4511201352" />
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode_ui" />
         <activity
             android:name=".ads.AdCenterActivity"
             android:exported="false"
             android:hardwareAccelerated="true" />
+        <activity android:name=".notifications.NotificationPreviewSettingsActivity" android:exported="false" />
+        <activity android:name=".notifications.MediaControlsActivity" android:exported="false" />
+        <activity android:name=".floating.QrScannerActivity" android:exported="false" />
+        <activity android:name=".floating.SensorKitActivity" android:exported="false" />
+        <activity android:name=".floating.DocumentPreviewActivity" android:exported="false" />
+        <activity android:name=".overlay.IslandInteractionSettingsActivity" android:exported="false" />
         <activity
             android:name=".browser.DuckDuckGoBrowserActivity"
             android:exported="false" />

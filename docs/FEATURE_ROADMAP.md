@@ -3,7 +3,9 @@
 ## Current source baseline
 
 - RGB/glass dashboard, draggable island, pulse, saved position and battery indicator.
-- Notification preview bridge and categorized shortcut menu.
+- Notification preview bridge with privacy controls and app allowlisting; MediaSession playback controls; generic call activity card derived from notifications.
+- Floating toolbox additions: QR/barcode scanner, image/PDF preview and foreground-only sensor kit.
+- On-device voice command input when a local recognizer is exposed, speech read-out, edge docking and haptics.
 - Installed-app collection, private local notes, calculator and app-owned PiP workspace.
 - Built-in offline command decision engine with arithmetic, feature routing and read-only diagnostics.
 - DuckDuckGo default browser with general HTTPS navigation and Desktop/Mobile mode.
@@ -19,12 +21,9 @@
 2. Browser smoke tests on WebView variants: DDG search, HTTPS sites, desktop/mobile User-Agent, cookies, video playback and lifecycle.
 3. Signed update regression: same application ID/signature, versionCode monotonicity, installer consent and app-data retention.
 4. AdMob production readiness: publish UMP privacy messages, complete app review/eligibility, publish root-host app-ads.txt, verify production ad serving without self-clicking, and audit placement/frequency compliance.
-5. Notification filters, allowlist and privacy controls.
-6. MediaSession metadata/artwork/progress/playback controls.
-7. Supported incoming/ongoing call activity cards.
-8. More app-owned floating tools: image/document preview, QR/barcode scanner and sensor kit.
-9. Internal window positioning/resizing, edge docking, gestures, haptics and theme editor.
-10. TalkBack, larger text, high contrast and keyboard navigation.
+5. Full floating-window resize controls, richer gesture configuration and a complete theme editor.
+6. Broader TalkBack, dynamic text scaling, high-contrast and keyboard-navigation validation.
+7. Optional generative on-device LLM remains a separate module requiring model licence, runtime, RAM/storage and Android 8+ hardware evaluation.
 
 ## AI scope
 
@@ -48,3 +47,12 @@ The bundled offline decision engine does not import model weights and has no net
 - APK hash, 400 MiB size, version monotonicity and release-asset verification.
 - Physical-device tests for in-place update and retained local data.
 - Memory, lifecycle, battery, crash and accessibility review.
+
+
+## Combined backlog status
+
+Implemented in the current source: local notification privacy settings and app allowlisting; generic call status from Android call-category notifications; media metadata and transport controls for supported MediaSessions; QR/barcode scanner; local image/PDF preview; foreground-only sensor readings; optional Android 12+ on-device speech input and device speech output; island edge docking and opt-in haptics.
+
+Not marked as complete: real-device/OEM testing, TalkBack user testing, Play Console foreground-service review, AdMob production fill and publisher review, Firebase root-host app-ads.txt confirmation, Play Billing product/base-plan activation and backend purchase-token verification.
+
+A generative offline LLM is not the existing deterministic command router. It remains a separate module requiring model licensing, runtime integration, device RAM/storage/thermal testing and API 26+ compatibility evaluation. Ordinary apps cannot silently switch protected Wi-Fi/mobile-data settings or take privileged control over other apps; those actions must route through Android settings and user confirmation.

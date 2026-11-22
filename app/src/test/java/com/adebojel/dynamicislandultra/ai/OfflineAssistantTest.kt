@@ -59,6 +59,31 @@ class OfflineAssistantTest {
     }
 
     @Test
+    fun qrScannerCommandIsRecognised() {
+        assertEquals(OfflineAction.OpenQrScanner, assistant.respond("buka pemindai QR").action)
+    }
+
+    @Test
+    fun sensorKitCommandIsRecognised() {
+        assertEquals(OfflineAction.OpenSensorKit, assistant.respond("buka sensor").action)
+    }
+
+    @Test
+    fun mediaControlsCommandIsRecognised() {
+        assertEquals(OfflineAction.OpenMediaControls, assistant.respond("kontrol musik").action)
+    }
+
+    @Test
+    fun notificationPrivacyCommandIsRecognised() {
+        assertEquals(OfflineAction.OpenNotificationPrivacy, assistant.respond("filter notifikasi").action)
+    }
+
+    @Test
+    fun islandSettingsCommandIsRecognised() {
+        assertEquals(OfflineAction.OpenIslandSettings, assistant.respond("pengaturan island").action)
+    }
+
+    @Test
     fun unknownCommandDoesNotCreateExternalAction() {
         assertNull(assistant.respond("buatkan lagu").action)
     }

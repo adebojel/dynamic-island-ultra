@@ -95,6 +95,15 @@ jobs:
           grep -q 'fragment-ktx:1.9.1' app/build.gradle.kts
           grep -q 'ca-app-pub-9305273212801233~4511201352' app/src/main/AndroidManifest.xml
           grep -q 'android:name=".ads.AdCenterActivity"' app/src/main/AndroidManifest.xml
+          grep -q 'play-services-code-scanner:16.1.0' app/build.gradle.kts
+          grep -q 'android:name=".notifications.NotificationPreviewSettingsActivity"' app/src/main/AndroidManifest.xml
+          grep -q 'NotificationPreviewPolicy.createPreview' app/src/main/java/com/adebojel/dynamicislandultra/notifications/IslandNotificationListener.kt
+          grep -q 'createOnDeviceSpeechRecognizer' app/src/main/java/com/adebojel/dynamicislandultra/ai/OfflineAssistantActivity.kt
+          grep -q 'android.permission.RECORD_AUDIO' app/src/main/AndroidManifest.xml
+          if grep -q 'android.permission.CAMERA' app/src/main/AndroidManifest.xml; then
+            echo "::error::Google Code Scanner must not add app camera permission."
+            exit 1
+          fi
           if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|HttpURLConnection|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
             echo "::error::The built-in AI module must remain local-only and must not contain network clients or endpoints."
             exit 1

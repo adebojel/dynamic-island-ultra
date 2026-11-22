@@ -45,11 +45,11 @@ This inventory records feature concepts and implementation candidates. It is not
 
 ## Network-enabled application policy
 
-- The app declares INTERNET and ACCESS_NETWORK_STATE so network-capable modules can function and future AdMob integration can be added.
+- The app declares INTERNET and ACCESS_NETWORK_STATE for browser, integrated AdMob/UMP and Google Play Billing. The built-in assistant stays offline by architecture and CI policy.
 - DuckDuckGo is the default browser/search engine; it supports general HTTPS browsing and Desktop/Mobile website modes.
 - GitHub Update Center retrieves versioned APK releases and validates SHA-256 before opening Android's package installer.
 - The built-in decision assistant, notes, calculator and diagnostics remain local-only. They do not invoke online models, send prompts, or transmit local diagnostic results.
-- AdMob is not installed yet: a real App ID, ad-unit IDs, Google Mobile Ads SDK, UMP consent flow and privacy disclosures are needed before serving advertisements.
+- Google Mobile Ads Next-Gen 1.7.0, publisher IDs/ad units and UMP 4.0.0 are integrated. Debug uses Google's official test units; signed release uses publisher IDs. Production fill, account review and app-ads.txt verification remain external gates.
 - Future generative on-device models must be assessed for model license, quantization, RAM, CPU/GPU support, Android 8+ compatibility and APK/storage budget.
 
 ## Component intake checklist
@@ -71,10 +71,11 @@ This inventory records feature concepts and implementation candidates. It is not
 - Cleartext HTTP remains disabled, file/content URL access is disabled, mixed content is blocked, Safe Browsing is enabled on supported API levels, and TLS certificate errors are cancelled.
 - CI retains a source-level network isolation gate for the `ai/` package so built-in AI processing stays local even though other app modules can use the internet.
 
-### AdMob preparation
-- INTERNET and ACCESS_NETWORK_STATE are in the manifest. The SDK is not yet included because the publisher App ID and ad-unit IDs have not been supplied.
-- Google's current AdMob guidance uses Google Mobile Ads SDK plus the UMP privacy SDK. Consent information must be refreshed at app launch, applicable forms presented, and `canRequestAds()` checked before requesting ad inventory.
-- Ad requests must use test IDs/devices during development and avoid covering key controls or interfering with accessibility.
+### AdMob integration and remaining publisher gates
+- Google Mobile Ads Next-Gen 1.7.0, UMP 4.0.0, publisher App ID and ad units are integrated.
+- Debug variants use Google's official test units; signed release variants use publisher production IDs.
+- UMP consent refresh/forms and `canRequestAds()` request gating are implemented.
+- Production fill, AdMob review/eligibility, published privacy messages and root-domain app-ads.txt remain external gates.
 
 ### In-place update requirements
 Android checks package identity, signing identity and version code before accepting an update. The release keystore must remain stable and private, and each build must increase versionCode. This project uses GitHub Actions run numbers to create `v0.0.N` versions. Without the stable signing secrets CI generates a debug preview only and does not publish an incompatible APK as an update release.

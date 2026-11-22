@@ -22,6 +22,12 @@ sealed interface OfflineAction {
     data object OpenFiles : OfflineAction
     data object OpenDisplaySettings : OfflineAction
     data object OpenSoundSettings : OfflineAction
+    data object OpenQrScanner : OfflineAction
+    data object OpenSensorKit : OfflineAction
+    data object OpenMediaControls : OfflineAction
+    data object OpenDocumentPreview : OfflineAction
+    data object OpenNotificationPrivacy : OfflineAction
+    data object OpenIslandSettings : OfflineAction
 }
 
 /**
@@ -67,11 +73,23 @@ class OfflineAssistant {
                 OfflineAssistantReply("Membuka pengaturan tampilan.", OfflineAction.OpenDisplaySettings)
             hasAny(query, "suara", "volume", "audio") ->
                 OfflineAssistantReply("Membuka pengaturan suara.", OfflineAction.OpenSoundSettings)
+            hasAny(query, "qr", "barcode", "kode batang", "pindai kode") ->
+                OfflineAssistantReply("Membuka pemindai QR dan barcode.", OfflineAction.OpenQrScanner)
+            hasAny(query, "sensor", "accelerometer", "gyroscope", "kompas") ->
+                OfflineAssistantReply("Membuka sensor perangkat yang tersedia.", OfflineAction.OpenSensorKit)
+            hasAny(query, "media", "musik", "lagu", "putar musik", "jeda musik") ->
+                OfflineAssistantReply("Membuka kontrol media dari pemutar yang didukung.", OfflineAction.OpenMediaControls)
+            hasAny(query, "preview dokumen", "pratinjau dokumen", "lihat pdf", "pratinjau gambar") ->
+                OfflineAssistantReply("Membuka pemilih gambar dan PDF.", OfflineAction.OpenDocumentPreview)
+            hasAny(query, "privasi notifikasi", "filter notifikasi", "sembunyikan isi notifikasi") ->
+                OfflineAssistantReply("Membuka pengaturan privasi notifikasi.", OfflineAction.OpenNotificationPrivacy)
+            hasAny(query, "pengaturan island", "atur island", "haptic island", "snap island") ->
+                OfflineAssistantReply("Membuka pengaturan interaksi island.", OfflineAction.OpenIslandSettings)
             query.matches(Regex("^[0-9+\\-*/().% ]+$")) ->
                 OfflineAssistantReply(calculate(query))
             hasAny(query, "bantuan", "help", "apa yang bisa", "perintah") ->
                 OfflineAssistantReply(
-                    "Saya dapat membuka Wi-Fi, Bluetooth, aksesibilitas, aplikasi terpasang, kalkulator, timer, file, tampilan, dan suara. Saya juga dapat menghitung ekspresi matematika sederhana."
+                    "Saya dapat membuka Wi-Fi, Bluetooth, aksesibilitas, aplikasi terpasang, kalkulator, timer, file, tampilan, suara, pemindai QR, sensor, kontrol media, pratinjau dokumen, privasi notifikasi dan pengaturan island. Saya juga dapat menghitung ekspresi matematika sederhana."
                 )
             else ->
                 OfflineAssistantReply(

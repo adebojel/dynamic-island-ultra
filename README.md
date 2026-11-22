@@ -36,7 +36,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 |---|---|
 | Dynamic Island | Draggable floating pill, soft pulse and saved position |
 | Battery | Live percentage/charging indicator while overlay is active |
-| Notification bridge | Notification previews after the user grants notification-listener access |
+| Notification bridge & privacy | Local preview settings, hide content by default, app allowlist, secret/ongoing/group-summary filtering, and generic call status cards |
 | Assistive hub | Categorized Android settings and app shortcuts |
 | App collection | Lists launcher-visible apps and launches selected apps |
 | Local notes | Saves notes in app-private storage |
@@ -46,6 +46,11 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
 | DuckDuckGo browser | General HTTPS browser with DuckDuckGo default search, desktop/mobile mode, history navigation and reload |
 | GitHub update center (GitHub flavor only) | Checks the latest project release, downloads the signed APK and SHA-256 file, verifies the hash, then opens Android's installer |
+| Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
+| QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
+| Image/PDF preview | Android document picker and local image/first-page PDF preview |
+| Sensor kit | Live supported sensors while the screen is foregrounded; listeners stop on pause |
+| Voice assistance | Android 12+ on-device recognition when available, explicit mic permission and device speech read-out |
 
 ## Internet access, AdMob and Premium
 
@@ -127,7 +132,7 @@ The pre-existing `v0.0.0` asset was built before stable signing was configured. 
 
 ## Permissions and privacy
 
-The app requests overlay access and notification access/permission only when their features need them. Install-from-this-source authorization exists only in the GitHub distribution APK, not in the Play distribution AAB. It does not request SMS, contacts, call logs, microphone capture, broad storage or broad package visibility. INTERNET and ACCESS_NETWORK_STATE are normal install-time network permissions.
+The app requests overlay access and notification access/permission only when their features need them. Notification content is hidden by default and can be disabled or restricted to an app allowlist. Voice input requests microphone access only after the user activates it and uses the on-device recognizer only where Android reports it available. QR scanning delegates to Google Play services and adds no app CAMERA permission. Image/PDF selection uses Android's document picker, not broad storage access. Install-from-this-source authorization exists only in the GitHub distribution APK, not in the Play distribution AAB. It does not request SMS, contacts, call logs or broad package visibility. INTERNET and ACCESS_NETWORK_STATE are normal install-time network permissions.
 
 DuckDuckGo searches and visited sites are handled by WebView and the selected website providers. GitHub update requests reveal ordinary connection metadata to GitHub. The offline assistant does not transmit commands or diagnostics.
 

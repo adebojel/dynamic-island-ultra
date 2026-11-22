@@ -5,7 +5,9 @@
 - User-started foreground overlay service.
 - Draggable floating pill, pulse animation and persisted X/Y position.
 - Live battery percentage/charging state.
-- Local notification preview after notification access is granted.
+- Local notification preview after notification access is granted, with global disable, hidden content by default, app allowlist and filtering of secret, ongoing, group-summary and own-app notifications.
+- Generic call activity pill from call-category notifications only; no call logs or phone-state permission.
+- MediaSession metadata, artwork, play/pause, skip and seek where the player exposes those actions.
 - Categorized shortcut hub for Android settings and installed apps.
 
 ## Offline modules
@@ -16,6 +18,11 @@
 - **Built-in local assistant:** deterministic command-routing engine, arithmetic, system shortcuts, browser/update launch and read-only diagnostics.
 - **Local diagnostics:** reads Android API/version, overlay permission, notification access/permission, WebView availability, battery and cache space.
 - **PiP workspace:** Android-managed PiP for this app's own activity.
+- **QR/barcode scanner:** Google Play services Code Scanner 16.1.0; no app camera permission; first use may download its scanner module.
+- **Image/PDF preview:** Android document picker, local image decoding and first-page PDF rendering.
+- **Sensor kit:** foreground-only accelerometer, gyroscope, magnetometer, light, proximity and pressure readings; listeners stop on pause.
+- **Voice assistance:** Android 12+ on-device SpeechRecognizer when a local service exists, explicit microphone request and device TextToSpeech response.
+- **Island interaction:** persisted drag position, optional left/right edge docking and opt-in haptic feedback.
 
 The built-in assistant and local tools work without internet, imported model files or AI API credentials. The built-in engine is not a generative LLM.
 

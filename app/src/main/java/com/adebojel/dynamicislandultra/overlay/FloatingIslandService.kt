@@ -34,6 +34,13 @@ import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
+import com.adebojel.dynamicislandultra.floating.QrScannerActivity
+import com.adebojel.dynamicislandultra.floating.SensorKitActivity
+import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
+import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
+import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
+import com.adebojel.dynamicislandultra.notifications.ActiveMediaSession
+import com.adebojel.dynamicislandultra.overlay.IslandInteractionSettingsActivity
 import kotlin.math.abs
 
 class FloatingIslandService : Service() {
@@ -50,6 +57,27 @@ class FloatingIslandService : Service() {
         override fun onReceive(context: Context?, intent: Intent?) {
             latestText = intent?.getStringExtra("preview")?.take(54) ?: latestText
             updateBubbleText()
+        }
+    }
+
+    private val activityCardReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ActiveMediaSession.ACTION_CHANGED -> {
+                    val title = intent.getStringExtra("title").orEmpty()
+                    val artist = intent.getStringExtra("artist").orEmpty()
+                    latestText = when {
+                        title.isNotBlank() -> "♫ $title".take(38)
+                        artist.isNotBlank() -> "♫ $artist".take(38)
+                        else -> latestText
+                    }
+                    updateBubbleText()
+                }
+                ACTION_CALL_ACTIVITY -> {
+                    latestText = intent.getStringExtra("preview")?.take(38) ?: "Panggilan"
+                    updateBubbleText()
+                }
+            }
         }
     }
 
@@ -83,6 +111,10 @@ class FloatingIslandService : Service() {
         registerAppReceiver(notificationReceiver, IntentFilter(ACTION_NOTIFICATION_PREVIEW))
         registerAppReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         registerAppReceiver(appearanceReceiver, IntentFilter(ACTION_APPEARANCE_CHANGED))
+        registerAppReceiver(activityCardReceiver, IntentFilter().apply {
+            addAction(ActiveMediaSession.ACTION_CHANGED)
+            addAction(ACTION_CALL_ACTIVITY)
+        })
     }
 
     private fun registerAppReceiver(receiver: BroadcastReceiver, filter: IntentFilter) {
@@ -232,7 +264,15 @@ class FloatingIslandService : Service() {
             "Offline calculator" to "local_calculator"
         ))
         addSection(content, "07  OFFLINE INTELLIGENCE", listOf(
-            "Offline utility assistant" to "offline_assistant"
+            "Offline utility assistant" to "offline_assistant",
+            "Notification privacy" to "notification_privacy",
+            "Island interaction settings" to "island_settings"
+        ))
+        addSection(content, "08  MEDIA & DEVICE TOOLS", listOf(
+            "Media session controls" to "media_controls",
+            "QR / barcode scanner" to "qr_scanner",
+            "Image / PDF preview" to "document_preview",
+            "Live sensor kit" to "sensor_kit"
         ))
 
         val scroll = ScrollView(this).apply {
@@ -295,6 +335,12 @@ class FloatingIslandService : Service() {
                         "notes" -> Intent(this@FloatingIslandService, OfflineNotesActivity::class.java)
                         "local_calculator" -> Intent(this@FloatingIslandService, OfflineCalculatorActivity::class.java)
                         "offline_assistant" -> Intent(this@FloatingIslandService, OfflineAssistantActivity::class.java)
+                        "notification_privacy" -> Intent(this@FloatingIslandService, NotificationPreviewSettingsActivity::class.java)
+                        "island_settings" -> Intent(this@FloatingIslandService, IslandInteractionSettingsActivity::class.java)
+                        "media_controls" -> Intent(this@FloatingIslandService, MediaControlsActivity::class.java)
+                        "qr_scanner" -> Intent(this@FloatingIslandService, QrScannerActivity::class.java)
+                        "document_preview" -> Intent(this@FloatingIslandService, DocumentPreviewActivity::class.java)
+                        "sensor_kit" -> Intent(this@FloatingIslandService, SensorKitActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)
@@ -359,10 +405,23 @@ class FloatingIslandService : Service() {
                 }
                 MotionEvent.ACTION_UP -> {
                     if (dragged) {
-                        getSharedPreferences("island", MODE_PRIVATE).edit()
-                            .putInt("bubble_x", bubbleParams.x)
-                            .putInt("bubble_y", bubbleParams.y)
-                            .apply()
+                        val preferences = getSharedPreferences("island", MODE_PRIVATE)
+                        if (preferences.getBoolean("edge_docking", true)) {
+                            val width = resources.displayMetrics.widthPixels
+                            val center = width / 2
+                            val inset = (12 * resources.displayMetrics.density).toInt()
+                            bubbleParams.x = if (event.rawX < width / 2f) {
+                                -center + view.width / 2 + inset
+                            } else {
+                                center - view.width / 2 - inset
+                            }
+                            runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
+                        }
+                        if (preferences.getBoolean("haptic_enabled", false)) {
+                            view.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                        }
+                        preferences.edit().putInt("bubble_x", bubbleParams.x)
+                            .putInt("bubble_y", bubbleParams.y).apply()
                     } else {
                         view.performClick()
                     }
@@ -408,6 +467,7 @@ class FloatingIslandService : Service() {
         runCatching { unregisterReceiver(notificationReceiver) }
         runCatching { unregisterReceiver(batteryReceiver) }
         runCatching { unregisterReceiver(appearanceReceiver) }
+        runCatching { unregisterReceiver(activityCardReceiver) }
         pulseAnimator?.cancel()
         pulseAnimator = null
         bubble?.let { runCatching { windowManager.removeView(it) } }
@@ -424,5 +484,6 @@ class FloatingIslandService : Service() {
             "com.adebojel.dynamicislandultra.NOTIFICATION_PREVIEW"
         const val ACTION_STOP = "com.adebojel.dynamicislandultra.STOP_ISLAND"
         const val ACTION_APPEARANCE_CHANGED = "com.adebojel.dynamicislandultra.PREMIUM_APPEARANCE_CHANGED"
+        const val ACTION_CALL_ACTIVITY = "com.adebojel.dynamicislandultra.CALL_ACTIVITY"
     }
 }

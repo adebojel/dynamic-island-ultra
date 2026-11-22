@@ -41,9 +41,21 @@ This checklist is for a real Android device. CI success does not replace these c
 
 - [ ] Send a test notification from another app.
 - [ ] Confirm the preview appears in the island only when Notification Access is enabled.
+- [ ] Confirm content is masked by default and the app label is shown.
+- [ ] Disable all previews, then test allowlist-only mode with one permitted app.
+- [ ] Confirm secret, ongoing, group-summary and own-app notifications are filtered.
 - [ ] Confirm the preview is local and is not sent to the app's AI or a remote endpoint.
 - [ ] Disable Notification Access in Android settings and confirm new previews stop.
 - [ ] Test a private/sensitive notification and decide whether its content should be shown in the island. Report any content that appears unexpectedly.
+
+## D. Media, QR, document, sensor and accessibility features
+
+- [ ] Play media in a compatible app with Notification Access enabled; inspect metadata, artwork and controls.
+- [ ] Test play/pause, skip and seek only where the player exposes those actions.
+- [ ] Scan a QR code and barcode; inspect local result and confirm only user-approved HTTPS links open.
+- [ ] Select an image/PDF with Android's document picker and verify local preview.
+- [ ] Open Sensor Kit; check readings update and stop after leaving the screen.
+- [ ] Check generic call-category activity; no call-log or phone-state permission should be requested.
 
 ## D. Built-in offline assistant and local tools
 
@@ -52,7 +64,10 @@ This checklist is for a real Android device. CI success does not replace these c
 - [ ] Confirm local commands work without an internet connection.
 - [ ] Confirm browser and GitHub update actions clearly require a network connection and do not pretend to work offline.
 - [ ] Test invalid arithmetic and unknown commands; they should return a safe explanation and must not launch an unrelated action.
-- [ ] Turn TalkBack on and navigate the dashboard, Permission Center, assistant, and Stop controls. Report any unlabeled or unreachable control.
+- [ ] On Android 12+, check local Indonesian recognizer availability, grant microphone permission only after tapping Voice, and test with network disabled.
+- [ ] On Android 8–11, confirm the app explains the local-recognition limitation and keeps text input available.
+- [ ] Test Text-to-Speech using an installed Indonesian system voice.
+- [ ] Turn TalkBack on and navigate the dashboard, Permission Center, assistant and Stop controls. Report unlabeled or unreachable controls.
 
 **Expected:** the built-in assistant is a deterministic offline command assistant, not a remote generative AI model. Do not interpret its local command replies as a claim that an external service was contacted.
 
