@@ -25,7 +25,7 @@ This project integrates Google Mobile Ads Next-Gen SDK `1.7.0`, UMP SDK `4.0.0`,
 
 | Format | Placement / trigger | In-app rule |
 |---|---|---|
-| Banner | Bottom slot, Bonus & Premium screen only | User can hide it; refresh is disabled in AdMob unit settings |
+| Banner | Bottom slot, Bonus & Premium screen only | User can hide it; the app does not schedule a refresh timer. Any unit-level refresh is governed by AdMob configuration and must be reviewed in the publisher console |
 | Native Advanced | One card labelled “IKLAN”, Bonus & Premium only | User can hide it |
 | Rewarded Ads | Explicit tap by user | Reward only on the SDK's earned-reward callback |
 | Rewarded Interstitial | Explicit tap plus disclosure dialog with Continue/Skip | At most one app impression per rolling 24 hours |
@@ -92,19 +92,22 @@ The Premium subscription product ID in the app is `diu_premium`. Play Console ba
 
 ## Public policy website
 
-The website source and documents are stored in `site/`. **One-time activation is still required** in repository Settings → Pages → Build and deployment → Source → **GitHub Actions**. The first Pages workflow attempt failed because no Pages site had been enabled/configured for this repository. After enabling it, start the “Deploy Dynamic Island Ultra website” workflow from the Actions tab.
+The website source and policies are stored in `site/`. The GitHub Pages mirror still requires one-time activation in repository Settings → Pages → Build and deployment → Source → **GitHub Actions**.
 
-After a successful deployment, the website is intended to be available at:
-- Privacy: https://adebojel.github.io/dynamic-island-ultra/privacy.html
-- Terms: https://adebojel.github.io/dynamic-island-ultra/terms.html
-- Ads: https://adebojel.github.io/dynamic-island-ultra/ads.html
-- Premium: https://adebojel.github.io/dynamic-island-ultra/premium.html
-- Support: https://adebojel.github.io/dynamic-island-ultra/support.html
+AdMob requests `https://<hostname>/app-ads.txt` at the hostname root. The GitHub Pages URL is a repository subpath, so this repository also prepares Firebase Hosting as a root-domain host for the same website and seller file.
 
-The public website URL must not be submitted to AdMob or Play Console until the Pages deployment run succeeds and each page is opened and checked. Review the site whenever app permissions, SDKs, data processing, subscriptions or ad placements change.
+Required GitHub Actions configuration:
+- Variable `FIREBASE_PROJECT_ID`: exact Firebase project ID.
+- Secret `FIREBASE_SERVICE_ACCOUNT`: Firebase Hosting deployment service-account JSON.
 
-### AdMob app-ads.txt root-host requirement
+Workflow: `.github/workflows/firebase-hosting.yml`. It copies the public site to a deployment directory, creates a root-host sitemap and robots.txt, validates seller-file syntax, then deploys to the live Hosting channel. It safely skips deployment until the variable and secret are configured.
 
-AdMob derives the hostname from the developer website in the store listing and checks `https://<hostname>/app-ads.txt` (then HTTP fallback). The current project Pages address uses hostname `adebojel.github.io` with project path `/dynamic-island-ultra/`; publishing `app-ads.txt` only inside this repository's `site/` directory would leave it at the project subpath and would not satisfy the crawler's root-host lookup. A root-host site/repository, custom domain, or Firebase Hosting root is needed. Copy the exact seller declaration from AdMob → Settings rather than guessing it, then verify the public root URL returns the plain-text file before using the developer website in Play Console. app-ads.txt is recommended by Google but is not itself proof of app approval or guaranteed ad fill.
+The Firebase website will be `https://<FIREBASE_PROJECT_ID>.web.app/`; app-ads.txt will be `https://<FIREBASE_PROJECT_ID>.web.app/app-ads.txt`. After checking both URLs, set the Firebase hostname as the developer website in the Play Store listing, then inspect app-ads.txt status in AdMob.
 
-Official guidance: https://support.google.com/admob/answer/9363762 and https://developers.google.com/admob/android/app-ads.
+The current seller line `google.com, pub-9305273212801233, DIRECT, f08c47fec0942fa0` is derived from the publisher number in the supplied AdMob App ID. Compare it with the personalized AdMob snippet before production; the AdMob Console is authoritative.
+
+Google's current verification guidance says new apps configured in AdMob from January 2025 must be verified using app-ads.txt before full ad serving. This is separate from Play Console AAB upload. Official guidance:
+- https://support.google.com/admob/answer/14538460
+- https://developers.google.com/admob/android/app-ads
+- https://support.google.com/admob/answer/9820295
+- https://firebase.google.com/docs/hosting/github-integration

@@ -1,0 +1,95 @@
+name: Deploy official website and app-ads.txt to Firebase Hosting
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'site/**'
+      - 'firebase.json'
+      - '.github/workflows/firebase-hosting.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Validate and deploy official website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Validate website and authorized seller file
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in index.html privacy.html terms.html ads.html premium.html support.html 404.html styles.css app-ads.txt; do
+            test -s "site/$file"
+          done
+          grep -Eq '^google\.com, pub-[0-9]+, DIRECT, f08c47fec0942fa0$' site/app-ads.txt
+          ! grep -Eq 'pub-000000|REPLACE_ME|PLACEHOLDER' site/app-ads.txt
+          echo "Website files and app-ads.txt syntax passed."
+
+      - name: Check Firebase deployment configuration
+        id: firebase
+        shell: bash
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$FIREBASE_PROJECT_ID" && -n "$FIREBASE_SERVICE_ACCOUNT" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "Firebase Hosting deployment is configured."
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Firebase Hosting deployment skipped. Configure repository variable FIREBASE_PROJECT_ID and secret FIREBASE_SERVICE_ACCOUNT."
+          fi
+
+      - name: Prepare root-domain website
+        if: steps.firebase.outputs.ready == 'true'
+        shell: bash
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p firebase-public
+          cp -R site/. firebase-public/
+          BASE_URL="https://${FIREBASE_PROJECT_ID}.web.app"
+          cat > firebase-public/sitemap.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+            <url><loc>${BASE_URL}/</loc></url>
+            <url><loc>${BASE_URL}/privacy.html</loc></url>
+            <url><loc>${BASE_URL}/terms.html</loc></url>
+            <url><loc>${BASE_URL}/ads.html</loc></url>
+            <url><loc>${BASE_URL}/premium.html</loc></url>
+            <url><loc>${BASE_URL}/support.html</loc></url>
+          </urlset>
+          EOF
+          cat > firebase-public/robots.txt <<EOF
+          User-agent: Google-adstxt
+          Disallow:
+          User-agent: Mediapartners-Google
+          Disallow:
+          User-agent: Googlebot
+          Disallow:
+          User-agent: *
+          Allow: /
+          Sitemap: ${BASE_URL}/sitemap.xml
+          EOF
+          test -s firebase-public/app-ads.txt
+          test -s firebase-public/index.html
+
+      - name: Deploy live Firebase Hosting site
+        if: steps.firebase.outputs.ready == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live

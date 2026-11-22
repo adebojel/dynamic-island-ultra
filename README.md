@@ -61,7 +61,7 @@ Cleartext HTTP is disabled; HTTPS is preferred. Network permission being availab
 
 UMP consent information is refreshed at app launch, applicable consent forms are shown before ad requests, and every request is gated by `canRequestAds()`. A privacy-options entry point is shown whenever UMP requires it. The publisher must still publish consent messages under AdMob → Privacy & messaging and complete AdMob app review/eligibility before expecting production ad fill.
 
-**Ad placement and frequency:** Banner and Native Advanced appear only on the dedicated Bonus & Premium screen. Native cards are clearly labelled “IKLAN”. Rewarded Ads and Rewarded Interstitial are requested only after a direct user action; Rewarded Interstitial has a disclosure dialog with “Lanjutkan” and “Lewati”. The application applies a combined cap of two video reward impressions per rolling 24 hours and a one-per-24-hour cap for Rewarded Interstitial. No ads are requested from the floating island, assistant, microphone, notifications, browser, permission centre or Android system controls. Delivered video duration is determined by the ad creative and cannot be guaranteed by the app.
+**Ad placement and frequency:** Banner and Native Advanced appear only on the dedicated Bonus & Premium screen. Native cards are clearly labelled “IKLAN”. Rewarded Ads and Rewarded Interstitial are requested only after a direct user action; Rewarded Interstitial has a disclosure dialog with “Lanjutkan” and “Lewati”. The application applies a combined cap of two video reward impressions per rolling 24 hours and a one-per-24-hour cap for Rewarded Interstitial. The app does not schedule its own Banner reload timer; any unit-level refresh behaviour must be reviewed in AdMob. No ads are requested from the floating island, assistant, microphone, notifications, browser, permission centre or Android system controls. Delivered video duration is determined by the ad creative and cannot be guaranteed by the app.
 
 ### Premium and feature access
 
@@ -141,19 +141,21 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 ## Official website and policies
 
+The public policy pages and official website source are stored in `site/`.
 
-The official website source and policy pages are in the `site/` directory. **Initial GitHub Pages activation is still required**: open repository Settings → Pages → Build and deployment → Source, then choose **GitHub Actions**. Until the Pages deployment workflow succeeds, the public website URL is reserved but not yet live: https://adebojel.github.io/dynamic-island-ultra/
+**GitHub Pages mirror:** initial activation still requires repository Settings → Pages → Build and deployment → Source → **GitHub Actions**. The Pages workflow previously failed because Pages was not enabled for this repository. After activation, run **Deploy Dynamic Island Ultra website** from Actions.
 
-Intended public URLs after a successful deployment (these URLs are **not live yet**):
 - [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
 - [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
 - [Ads Disclosure](https://adebojel.github.io/dynamic-island-ultra/ads.html)
 - [Premium information](https://adebojel.github.io/dynamic-island-ultra/premium.html)
 - [Help and Support](https://adebojel.github.io/dynamic-island-ultra/support.html)
 
-**AdMob recommends app-ads.txt to identify authorized sellers; it is a monetization integrity recommendation, not a mandatory Play Console submission item. When used, it must be published at the root of the developer website hostname.** This project Pages URL uses the path `/dynamic-island-ultra/`, while AdMob checks `https://adebojel.github.io/app-ads.txt`. A file stored only in this repository's `site/` folder would remain under the project path and would not satisfy that root-host lookup. Use a root-host website, custom domain, or suitable hosting such as Firebase Hosting, then publish the exact seller declaration copied from AdMob and verify the public URL before declaring this gate complete.
+**Root-domain app-ads.txt:** AdMob requests `https://<hostname>/app-ads.txt`; this GitHub Pages project URL is under `/dynamic-island-ultra/`, so a file stored only in this repository does not satisfy the hostname-root lookup. The repository also prepares Firebase Hosting to deploy the same site and seller file at a root-level `*.web.app` hostname. Configure GitHub Actions variable `FIREBASE_PROJECT_ID` and secret `FIREBASE_SERVICE_ACCOUNT`, then run **Deploy official website and app-ads.txt to Firebase Hosting**. See [Firebase app-ads.txt setup](docs/APP_ADS_TXT_FIREBASE_SETUP.md).
 
-Review these documents whenever permissions, SDKs, data processing, subscriptions or ad placements change. Never send signing keys, passwords, OTPs or tokens to support.
+The seller entry in `site/app-ads.txt` is derived from the numeric publisher component of the supplied AdMob App ID. Compare it character-for-character with the personalized AdMob snippet before production; AdMob's snippet is authoritative. New AdMob apps created from January 2025 need app-ads.txt verification before full ad serving. This is an AdMob monetization verification gate, not a Google Play Console upload prerequisite. Do not claim AdMob verification until its console status confirms it.
+
+Review these documents whenever permissions, SDKs, data processing, subscriptions, or ad placements change. Never send signing keys, passwords, OTPs, or tokens to support.
 
 ## Source and roadmap
 

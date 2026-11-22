@@ -94,7 +94,17 @@ The standard prepaid durations do not include exactly 2 weeks, 3 weeks, or 2 yea
 - [ ] Publish the plain-text file at `https://<hostname>/app-ads.txt` and confirm it returns HTTP 200 and is crawlable.
 - [ ] Enter the same developer website URL in the Play Store listing and check the app-ads.txt status in AdMob after the crawler has had time to process it.
 
-**Current limitation:** `https://adebojel.github.io/dynamic-island-ultra/` is a project Pages subpath. AdMob derives the hostname and checks `https://adebojel.github.io/app-ads.txt`; adding a file only under this repository's `site/` directory is not enough. Set up a root-host site/repository, custom domain, or Firebase Hosting before treating this item as complete. Google recommends app-ads.txt to identify authorized sellers; do not claim it is verified until AdMob reports the status. This is a recommended AdMob inventory-integrity measure, not by itself a mandatory Google Play listing submission requirement.
+**Current limitation:** `https://adebojel.github.io/dynamic-island-ultra/` is a project Pages subpath. AdMob derives the hostname and checks `https://adebojel.github.io/app-ads.txt`; adding a file only under this repository's `site/` directory is not enough. Set up a root-host site/repository, custom domain, or Firebase Hosting before treating this item as complete. Google recommends app-ads.txt to identify authorized sellers; do not claim it is verified until AdMob reports the status. This is not a Google Play Console AAB upload gate. However, Google's current AdMob setup guidance says new AdMob apps configured from January 2025 must be verified with app-ads.txt before full ad serving; treat it as an AdMob monetization-verification gate.
+
+## Firebase Hosting root-domain deployment
+
+- [ ] Create a Firebase project and enable Hosting.
+- [ ] Add GitHub Actions variable `FIREBASE_PROJECT_ID`.
+- [ ] Add GitHub Actions secret `FIREBASE_SERVICE_ACCOUNT` containing the Firebase Hosting deployment service-account JSON.
+- [ ] Run **Deploy official website and app-ads.txt to Firebase Hosting**.
+- [ ] Verify `https://<FIREBASE_PROJECT_ID>.web.app/` and `https://<FIREBASE_PROJECT_ID>.web.app/app-ads.txt` return the intended content.
+- [ ] Confirm the seller declaration matches AdMob's personalized snippet character-for-character.
+- [ ] Set the Firebase hostname as the developer website in the Play Store listing and complete AdMob app verification.
 
 ## Website activation
 
