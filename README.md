@@ -177,6 +177,7 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 - [Network and update design](docs/NETWORK_AND_UPDATES.md)
 - [Google Play Console & monetization checklist](docs/PLAY_CONSOLE_CHECKLIST.md)
 - [Physical-device release smoke test](docs/DEVICE_SMOKE_TEST.md)
+- [Firebase root-host/app-ads.txt setup](docs/APP_ADS_TXT_FIREBASE_SETUP.md)
 
 ## Validation status
 
