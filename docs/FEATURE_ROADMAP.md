@@ -17,9 +17,10 @@
 
 ## Latest release verification
 
-- Latest signed release: [v0.0.9](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.9), Android versionCode 130.
-- [Android CI run #130](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45016895617) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
-- Release asset metadata reports a signed APK of 19,091,626 bytes and Play AAB of 18,636,191 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
+- Latest signed release: [v0.0.10](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.10), Android versionCode 131.
+- [Android CI run #131](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45017575156) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
+- Release asset metadata reports a signed APK of 19,091,622 bytes and Play AAB of 18,643,330 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
+- Version v0.0.10 adds four configurable Quick Favorites at the top of the floating bubble, with ten allowlisted app-owned shortcuts and persistent local preferences.
 - Call-status notifications follow the same global privacy switch and per-app allowlist as other notification previews.
 - Physical-device/OEM validation is still outstanding.
 
