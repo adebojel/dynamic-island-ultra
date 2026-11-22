@@ -92,6 +92,7 @@ object PremiumBillingManager {
                         status = "Google Play Billing belum tersedia di perangkat ini."
                         Log.w(TAG, "Billing setup: ${result.debugMessage}")
                         synchronized(lock) { if (client === billingClient) client = null }
+                        billingClient.endConnection()
                     }
                 }
 
@@ -99,6 +100,7 @@ object PremiumBillingManager {
                     billingAvailable = false
                     status = "Google Play terputus. Koneksi akan diperbarui saat halaman Premium dibuka kembali."
                     synchronized(lock) { if (client === billingClient) client = null }
+                        billingClient.endConnection()
                 }
             })
         }
