@@ -85,6 +85,15 @@ Recommended prepaid base-plan IDs and intended durations:
 
 The standard prepaid durations do not include exactly 2 weeks, 3 weeks, or 2 years. Google documents 1 week, 4 weeks, 1/2/3/4/6/8 months, and 1 year. The installment type can cover 3–24 months but is currently offered only in Brazil, France, Italy, and Spain, not Indonesia. Do not advertise those durations as purchasable until a secure one-time pass/entitlement flow is built and validated. The current app only queries the standard subscription product.
 
+## AdMob app-ads.txt
+
+- [ ] Choose a developer website hostname that can serve `/app-ads.txt` at its root.
+- [ ] Copy the exact personalized seller line from AdMob → Settings; do not infer the publisher declaration from an ad-unit ID.
+- [ ] Publish the plain-text file at `https://<hostname>/app-ads.txt` and confirm it returns HTTP 200 and is crawlable.
+- [ ] Enter the same developer website URL in the Play Store listing and check the app-ads.txt status in AdMob after the crawler has had time to process it.
+
+**Current limitation:** `https://adebojel.github.io/dynamic-island-ultra/` is a project Pages subpath. AdMob derives the hostname and checks `https://adebojel.github.io/app-ads.txt`; adding a file only under this repository's `site/` directory is not enough. Set up a root-host site/repository, custom domain, or Firebase Hosting before treating this item as complete. Google recommends app-ads.txt to identify authorized sellers; do not claim it is verified until AdMob reports the status.
+
 ## Website activation
 
 - [ ] Open repository Settings → Pages.
