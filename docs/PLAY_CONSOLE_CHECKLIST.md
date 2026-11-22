@@ -59,7 +59,8 @@ The Play flavor targets API 36 and declares `FloatingIslandService` with `androi
 - [ ] In Play Console → App content, complete the Foreground Service declaration and select the matching `specialUse` use case.
 - [ ] Describe the feature accurately: a user-enabled floating island overlay and assistive shortcut panel remain available over other apps while the user keeps the feature enabled.
 - [ ] Explain user impact: if the service is deferred or interrupted, the floating island and its shortcut panel disappear until the user starts the feature again; the app's other tools remain available.
-- [ ] Explain user control: the feature is started from the dashboard, an ongoing notification identifies the running service, and the dashboard Stop control ends it.
+- [ ] Explain user control: the feature is started from the dashboard, an ongoing notification identifies the running service and has a Stop action, and both that notification action and the dashboard Stop control end it.
+- [ ] Demonstration video should show the notification Stop action as well as the dashboard Stop control, so reviewers can see the persistent service is user-stoppable from either surface.
 - [ ] Provide a demonstration video showing the user tapping Start Island, granting the Android overlay permission if needed, using the floating island/shortcut panel, observing the foreground notification, then tapping Stop and confirming the overlay disappears.
 - [ ] Review the manifest subtype wording and Play Console description so both describe only the actual overlay/shortcut service.
 - [ ] Complete the separate special-access permission disclosure for `SYSTEM_ALERT_WINDOW` if Play Console requests it; explain that the permission is required only to draw the user-enabled floating island and that the feature remains off if permission is declined.
