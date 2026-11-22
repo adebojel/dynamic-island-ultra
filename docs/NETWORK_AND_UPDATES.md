@@ -58,9 +58,16 @@ The in-APK assistant is a deterministic on-device decision engine with command r
 
 This built-in decision engine is not a general-purpose generative LLM. A generative offline LLM requires model weights and an inference runtime. Those files may be hundreds of MB to several GB, so they must be evaluated against the 400 MiB package budget, runtime RAM, device CPU/GPU and Android 8+ support before claiming generative AI.
 
-## GitHub updates and signing
+## Distribution-specific update channels
 
-The updater reads the latest release of `adebojel/dynamic-island-ultra`, reads `release-info.json`, downloads the APK plus SHA-256 asset, checks the digest and opens Android's package installer.
+Gradle defines two release product flavors with the same production application ID and the same stable release signing key:
+
+- `github`: produces the direct-install `app-release.apk`. It contains the GitHub release updater and is the only flavor whose source-set manifest declares `REQUEST_INSTALL_PACKAGES`.
+- `play`: produces `app-release.aab` for Google Play. The shared manifest contains no `REQUEST_INSTALL_PACKAGES`, and this flavor does not merge the GitHub flavor manifest. Its update entry opens the Google Play listing. The updater activity is guarded so the Play flavor cannot run the GitHub APK download/install path.
+
+The GitHub-only `REQUEST_INSTALL_PACKAGES` permission exists to support user-initiated APK installation in the sideloaded GitHub channel. It is not declared by the Play AAB. Google Play policy prohibits using this permission for an app's own self-update; see the Play Console checklist for the AAB-specific release gate.
+
+The updater in the `github` flavor reads the latest release of `adebojel/dynamic-island-ultra`, reads `release-info.json`, downloads the APK plus SHA-256 asset, checks the digest and opens Android's package installer.
 
 For a non-destructive in-place update Android requires:
 - unchanged application ID;
@@ -82,9 +89,11 @@ The app cannot silently install APKs or bypass Android's package installer/user-
 
 ## Google Play Console upload bundle
 
-The release workflow produces two separately signed files:
-- `app-release.apk`: install directly on Android for physical-device smoke tests and GitHub-based updates.
-- `app-release.aab`: upload to Google Play Console. The AAB uses the same stable keystore certificate as the APK, and CI verifies the JAR signature and fingerprint before publication.
+The release workflow produces two separately signed files from different flavors:
+- `app-release.apk`: built with `assembleGithubRelease`; install directly on Android for physical-device smoke tests and GitHub-based updates.
+- `app-release.aab`: built with `bundlePlayRelease`; upload this AAB to Google Play Console. It excludes the GitHub updater permission and routes updates to Google Play. The AAB uses the same stable keystore certificate as the GitHub APK, and CI verifies the JAR signature and fingerprint before publication.
+
+The earlier v0.0.3 AAB was built before this split and must not be uploaded to Play Console. Use only a successful post-split CI artifact.
 
 For a new Google Play app, use the AAB and enroll in Play App Signing. Keep the stable JKS as the upload key and retain its encrypted backups. Google Play will manage the app-signing key used to distribute device-specific APKs. Since this package has already been distributed outside Play, review the Android developer verification/package ownership process and be prepared to prove ownership of the same certificate if Play Console requests it.
 
