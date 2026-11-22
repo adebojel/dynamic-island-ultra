@@ -53,6 +53,33 @@ class NotificationPreviewPolicyTest {
     }
 
     @Test
+    fun callActivityIsDisabledWhenPreviewsAreDisabled() {
+        assertEquals(false, NotificationPreviewPolicy.allowsCallActivity(
+            "com.example.phone",
+            NotificationPreviewSettings(enabled = false)
+        ))
+    }
+
+    @Test
+    fun callActivityObeysTheAppAllowlist() {
+        assertEquals(false, NotificationPreviewPolicy.allowsCallActivity(
+            "com.example.phone",
+            NotificationPreviewSettings(allowlistOnly = true, allowedPackages = setOf("com.example.chat"))
+        ))
+        assertEquals(true, NotificationPreviewPolicy.allowsCallActivity(
+            "com.example.chat",
+            NotificationPreviewSettings(allowlistOnly = true, allowedPackages = setOf("com.example.chat"))
+        ))
+    }
+
+    @Test
+    fun callActivityIsAllowedWhenAppFilterIsOff() {
+        assertEquals(true, NotificationPreviewPolicy.allowsCallActivity(
+            "com.example.phone", NotificationPreviewSettings()
+        ))
+    }
+
+    @Test
     fun secretOngoingGroupAndOwnNotificationsAreSuppressed() {
         listOf(
             sample.copy(isSecretVisibility = true),

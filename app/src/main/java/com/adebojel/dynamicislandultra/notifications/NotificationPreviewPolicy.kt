@@ -19,6 +19,11 @@ data class NotificationPreviewSettings(
 object NotificationPreviewPolicy {
     private const val MAX_LENGTH = 70
 
+    fun allowsCallActivity(packageName: String, settings: NotificationPreviewSettings): Boolean =
+        settings.enabled &&
+            packageName.isNotBlank() &&
+            (!settings.allowlistOnly || packageName in settings.allowedPackages)
+
     fun createPreview(
         candidate: NotificationPreviewCandidate,
         settings: NotificationPreviewSettings,

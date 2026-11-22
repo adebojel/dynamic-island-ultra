@@ -55,7 +55,7 @@ This checklist is for a real Android device. CI success does not replace these c
 - [ ] Scan a QR code and barcode; inspect local result and confirm only user-approved HTTPS links open.
 - [ ] Select an image/PDF with Android's document picker and verify local preview.
 - [ ] Open Sensor Kit; check readings update and stop after leaving the screen.
-- [ ] Check generic call-category activity; no call-log or phone-state permission should be requested.
+- [ ] Check generic call-category activity; verify the global preview switch and app allowlist both suppress calls from excluded apps. No call-log or phone-state permission should be requested.
 
 ## D. Built-in offline assistant and local tools
 

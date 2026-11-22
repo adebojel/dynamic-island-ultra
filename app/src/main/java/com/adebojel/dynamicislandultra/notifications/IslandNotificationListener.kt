@@ -23,7 +23,7 @@ class IslandNotificationListener : NotificationListenerService() {
         }
         if (token != null) ActiveMediaSession.attach(this, token)
 
-        if (settings.enabled &&
+        if (NotificationPreviewPolicy.allowsCallActivity(posted.packageName, settings) &&
             notification.category == Notification.CATEGORY_CALL &&
             notification.visibility != Notification.VISIBILITY_SECRET
         ) {
