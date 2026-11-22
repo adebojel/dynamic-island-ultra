@@ -176,6 +176,7 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 - [Open-source research and license review](docs/OPEN_SOURCE_RESEARCH.md)
 - [Network and update design](docs/NETWORK_AND_UPDATES.md)
 - [Google Play Console & monetization checklist](docs/PLAY_CONSOLE_CHECKLIST.md)
+- [Physical-device release smoke test](docs/DEVICE_SMOKE_TEST.md)
 
 ## Validation status
 
