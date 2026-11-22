@@ -78,6 +78,7 @@ jobs:
           grep -q 'android.permission.FOREGROUND_SERVICE_SPECIAL_USE' app/src/main/AndroidManifest.xml
           grep -q 'android:foregroundServiceType="specialUse"' app/src/main/AndroidManifest.xml
           grep -q 'android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE' app/src/main/AndroidManifest.xml
+          grep -q 'addAction(R.drawable.ic_stat_island, "Stop", stopPendingIntent)' app/src/main/java/com/adebojel/dynamicislandultra/overlay/FloatingIslandService.kt
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
           grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
           grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
