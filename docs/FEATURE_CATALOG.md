@@ -118,3 +118,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Download files are stored in the app-specific external Downloads directory; no broad storage permission is requested.
 - TLS certificate errors remain cancelled; the browser does not accept a certificate bypass.
 - Multi-tab session manager, private/incognito sessions and a full bookmark/download library editor remain unimplemented.
+
+
+## Global system navigation controls
+
+- Optional user-enabled Accessibility Service for Home, Back, Recent Apps, Notifications, Quick Settings and Power Dialog.
+- Lock Screen is offered on Android 9/API 28 and newer.
+- Service must be enabled manually in Android Accessibility settings; the app cannot silently enable it.
+- XML configuration sets `canRetrieveWindowContent=false`; the event callback does not inspect or retain screen content. Every action is initiated by an explicit user tap.
+- Screenshot, screen recording, global volume/brightness sliders and flashlight toggles are not implemented by this service.

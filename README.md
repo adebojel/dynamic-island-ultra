@@ -267,3 +267,8 @@ The File Manager uses Android's Storage Access Framework. The user selects a fol
 ### Browser library and downloads
 
 The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Multiple independent tabs, private browsing sessions, and a full bookmark/download management editor remain planned work.
+
+
+## Global Android navigation controls
+
+The optional Accessibility Service provides explicit Home, Back, Recent Apps, Notifications, Quick Settings and Power Dialog actions, plus Lock Screen on Android 9/API 28 and newer. The user must enable it manually in Android Accessibility settings. Its configuration disables window-content retrieval and its event callback intentionally does not inspect or retain screen content. Actions are executed only after a direct tap in the Global System Controls screen or its mapped app-owned entry point. Android/OEM policy may still restrict an individual action. Screenshot, screen recording, global volume/brightness sliders and flashlight toggles are not part of this service yet.

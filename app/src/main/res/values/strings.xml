@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_action_accessibility_description">Global navigation controls. Runs only explicit user-selected Android navigation actions and does not read screen content.</string>
+</resources>

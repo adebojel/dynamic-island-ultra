@@ -168,3 +168,14 @@ Implemented:
 - Smoke-test checklist for persistence, download hand-off and absence of broad storage permission.
 
 Still outstanding: independent multi-tab WebView lifecycle, private browsing mode with isolated storage/cookie policy, bookmark CRUD/search, download history controls, and physical WebView/device compatibility tests.
+
+
+## Phase 1 system navigation controls
+
+Implemented in source:
+- Android Accessibility Service for explicitly tapped global navigation actions.
+- Home, Back, Recents, Notification Shade, Quick Settings and Power Dialog; Lock Screen on API 28+.
+- Manual enablement through Android Accessibility settings, with no window-content retrieval and no screen-content processing in the event callback.
+- Dashboard and Floating Bubble entry points.
+
+Still outstanding: screenshot and screen-recording workflows, flashlight/rotation/brightness/volume control surfaces, full accessibility user experience, TalkBack usability review and OEM validation. Protected settings must continue to use Android's own user-controlled settings surfaces.

@@ -46,6 +46,7 @@
         <activity android:name=".floating.SensorKitActivity" android:exported="false" />
         <activity android:name=".floating.SmartToolsActivity" android:exported="false" />
         <activity android:name=".floating.FileManagerActivity" android:exported="false" />
+        <activity android:name=".system.DeviceControlActivity" android:exported="false" />
         <activity android:name=".floating.DocumentPreviewActivity" android:exported="false" />
         <activity android:name=".overlay.IslandInteractionSettingsActivity" android:exported="false" />
         <activity
@@ -81,6 +82,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".system.GlobalActionAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/global_action_accessibility_service" />
+        </service>
         <service
             android:name=".overlay.FloatingIslandService"
             android:exported="false"

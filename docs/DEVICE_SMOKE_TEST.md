@@ -206,3 +206,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Confirm HTTP/HTTPS navigation and TLS error handling remain strict; certificate errors must not be bypassed.
 - [ ] Confirm non-HTTP(S) active-content URLs are rejected.
 - [ ] Test browser destruction/recreation, rotation, long downloads and WebView behaviour on Android 8/API 26 and a current Android version.
+
+
+## Global navigation control service checks
+
+- [ ] Open Global System Controls and read the disclosure before enabling the Accessibility Service.
+- [ ] Confirm the service is disabled by default and the app opens Android Accessibility settings only after the user taps Enable.
+- [ ] Enable the service manually and return; confirm the UI detects the enabled state.
+- [ ] Tap Home, Back, Recent Apps, Notifications, Quick Settings and Power Dialog individually; confirm each action runs only after the direct tap.
+- [ ] On API 28+, test Lock Screen; on API 26–27 confirm it is not offered.
+- [ ] Confirm the service does not expose or read window text/content and no screen text is shown or stored by the module.
+- [ ] Disable the service in Android settings; return and confirm controls become disabled and no false success is shown.
+- [ ] Test with TalkBack enabled and across at least two OEM implementations.

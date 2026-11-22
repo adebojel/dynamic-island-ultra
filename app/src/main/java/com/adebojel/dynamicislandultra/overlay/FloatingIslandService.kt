@@ -43,6 +43,7 @@ import com.adebojel.dynamicislandultra.floating.SensorKitActivity
 import com.adebojel.dynamicislandultra.floating.SmartToolsActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
 import com.adebojel.dynamicislandultra.floating.FileManagerActivity
+import com.adebojel.dynamicislandultra.system.DeviceControlActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.notifications.ActiveMediaSession
@@ -318,7 +319,8 @@ class FloatingIslandService : Service() {
             "Accessibility settings" to "accessibility",
             "Application settings" to "apps",
             "This app's settings" to "app_info",
-            "System settings" to "system_settings"
+            "System settings" to "system_settings",
+            "Global navigation controls" to "device_controls"
         ))
         addSection(content, "06  MY FLOATING APPS", listOf(
             "Installed app collection" to "installed_apps",
@@ -510,6 +512,7 @@ class FloatingIslandService : Service() {
                         "sensor_kit" -> Intent(this@FloatingIslandService, SensorKitActivity::class.java)
                         "smart_tools" -> Intent(this@FloatingIslandService, SmartToolsActivity::class.java)
                         "file_manager" -> Intent(this@FloatingIslandService, FileManagerActivity::class.java)
+                        "device_controls" -> Intent(this@FloatingIslandService, DeviceControlActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)
