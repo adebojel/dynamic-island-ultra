@@ -58,16 +58,21 @@ object PremiumBillingManager {
         val app = context.applicationContext
         appContext = app
 
-        if (client?.isReady == true) {
-            client?.let {
-                queryProducts(it)
-                queryOwnedSubscriptions(it)
-            }
+        // Keep the BillingClient alive. With automatic service reconnection enabled,
+        // the next Billing API request asks the library to reconnect a disconnected client.
+        val existingClient = client
+        if (existingClient != null) {
+            refreshStore(existingClient)
             return
         }
 
         synchronized(lock) {
-            if (client?.isReady == true || client != null) return
+            val activeClient = client
+            if (activeClient != null) {
+                refreshStore(activeClient)
+                return
+            }
+
             val billingClient = BillingClient.newBuilder(app)
                 .setListener(purchasesListener)
                 .enablePendingPurchases(
@@ -85,8 +90,7 @@ object PremiumBillingManager {
                     if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                         billingAvailable = true
                         status = "Google Play Billing terhubung."
-                        queryProducts(billingClient)
-                        queryOwnedSubscriptions(billingClient)
+                        refreshStore(billingClient)
                     } else {
                         billingAvailable = false
                         status = "Google Play Billing belum tersedia di perangkat ini."
@@ -98,12 +102,25 @@ object PremiumBillingManager {
 
                 override fun onBillingServiceDisconnected() {
                     billingAvailable = false
-                    status = "Google Play terputus. Koneksi akan diperbarui saat halaman Premium dibuka kembali."
-                    synchronized(lock) { if (client === billingClient) client = null }
-                    billingClient.endConnection()
+                    status = "Google Play terputus. Koneksi akan dipulihkan otomatis saat permintaan berikutnya."
+                    Log.w(TAG, "Billing service disconnected; keeping client for automatic reconnection.")
+                    // Do not call endConnection() here: that would disable automatic reconnection.
                 }
             })
         }
+    }
+
+    private fun refreshStore(billingClient: BillingClient) {
+        if (!billingClient.isReady) {
+            billingAvailable = false
+            status = "Mencoba menyambungkan kembali ke Google Play…"
+        } else {
+            billingAvailable = true
+            status = "Google Play Billing terhubung."
+        }
+        // API calls made while disconnected trigger BillingClient auto-reconnection.
+        queryProducts(billingClient)
+        queryOwnedSubscriptions(billingClient)
     }
 
     private fun queryProducts(billingClient: BillingClient) {

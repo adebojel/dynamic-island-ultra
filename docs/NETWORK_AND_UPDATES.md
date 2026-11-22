@@ -40,7 +40,7 @@ The app queries Play subscription product ID `diu_premium`; price and available 
 
 Standard prepaid subscription periods include 1 week, 4 weeks, 1, 2, 3, 4, 6, or 8 months, and 1 year. Exact 2-week, 3-week, and 2-year options are not standard base plan periods for Indonesia; they need a separately designed one-time pass and secure entitlement validation. These durations are not advertised as available in this build. Current cosmetic Premium features are RGB themes, Island Pulse FX, Island Size, and Compact Panel. Earned ad rewards give a 24-hour local unlock and are not account-backed.
 
-The paid subscription is queried and acknowledged on-device using Google Play Billing. A trusted backend with Google Play Developer API purchase-token verification should be added before relying on account-synced or transferable entitlements.
+The paid subscription is queried and acknowledged on-device using Google Play Billing. The BillingClient uses automatic service reconnection and remains alive after `onBillingServiceDisconnected()`; the next product or purchase query triggers reconnection instead of prematurely closing the client. A trusted backend with Google Play Developer API purchase-token verification should be added before relying on account-synced or transferable entitlements.
 
 Official references:
 - GMA Next-Gen SDK: https://developers.google.com/admob/android/next-gen/quick-start
