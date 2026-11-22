@@ -100,7 +100,13 @@ class MainActivity : ComponentActivity() {
                     onCalculator = { openLocal(OfflineCalculatorActivity::class.java) },
                     onWorkspace = { openLocal(FloatingWorkspaceActivity::class.java) },
                     onBrowser = { openLocal(DuckDuckGoBrowserActivity::class.java) },
-                    onUpdate = { openLocal(AppUpdateActivity::class.java) },
+                    onUpdate = {
+                        if (BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+                            openLocal(AppUpdateActivity::class.java)
+                        } else {
+                            openPlayStoreUpdates()
+                        }
+                    },
                     premiumActive = premiumActive,
                     onAdCenter = { adCenterLauncher.launch(Intent(this, AdCenterActivity::class.java)) }
                 )
@@ -155,6 +161,17 @@ class MainActivity : ComponentActivity() {
 
     private fun openLocal(type: Class<*>) {
         startActivity(Intent(this, type))
+    }
+
+    private fun openPlayStoreUpdates() {
+        val storeUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        val marketIntent = Intent(Intent.ACTION_VIEW, storeUri)
+            .setPackage("com.android.vending")
+        try {
+            startActivity(marketIntent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, storeUri))
+        }
     }
 }
 
@@ -292,7 +309,17 @@ private fun Dashboard(
             FeatureCard(Icons.Default.Language, "DuckDuckGo Browser", "Browser bawaan DuckDuckGo, pencarian privat, semua situs HTTPS dan mode Desktop/Mobile", "Internet", onBrowser)
         }
         item {
-            FeatureCard(Icons.Default.SystemUpdate, "GitHub update center", "Check latest release, verify SHA-256 and hand off installation to Android", "Internet", onUpdate)
+            FeatureCard(
+                Icons.Default.SystemUpdate,
+                if (BuildConfig.ENABLE_GITHUB_APK_UPDATER) "GitHub update center" else "Google Play updates",
+                if (BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+                    "Check GitHub releases, verify SHA-256 and hand off installation to Android"
+                } else {
+                    "Check updates and manage installation securely through Google Play"
+                },
+                if (BuildConfig.ENABLE_GITHUB_APK_UPDATER) "GitHub" else "Play Store",
+                onUpdate
+            )
         }
         item { Text("FEATURE CATEGORIES", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
         item {
