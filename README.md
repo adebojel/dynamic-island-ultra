@@ -180,22 +180,22 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.4](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.4) (**versionCode 117**, published 22 November 2026). [Android CI run #117](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44990083563) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified the merged manifests (installer permission exists only in GitHub APK), APK signature, AAB JAR signature, matching stable certificate fingerprint, SHA-256 generation, artifact upload, and Release publication.
+The latest verified signed release is [v0.0.5](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.5) (**versionCode 119**, published 22 November 2026). [Android CI run #119](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44990455088) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified the merged manifests (installer permission exists only in GitHub APK), APK signature, AAB JAR signature, matching stable certificate fingerprint, SHA-256 generation, artifact upload, and Release publication.
 
 Release assets:
-- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.4/app-release.apk)
-- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.4/app-release.aab)
-- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.4/app-release.apk.sha256)
-- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.4/app-release.aab.sha256)
-- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.4/release-info.json)
+- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/app-release.apk)
+- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/app-release.aab)
+- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/app-release.apk.sha256)
+- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/app-release.aab.sha256)
+- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/release-info.json)
 
-GitHub's release API also reports these artifact digests: APK `sha256:8762eeafbb82d33d7be085de4589a52b1ef2de8012ef17979c6acecd1f2928c4`; AAB `sha256:2ee98aa9fedb4cfb199140ea649168c5924b6ed56f70d9fcee3af0e0e9a7eb29`. The signing certificate SHA-256 is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`, and CI confirmed the AAB uses the same stable certificate as the APK.
+GitHub's release API also reports these artifact digests: APK `sha256:499210865e3e6cb4aa8c0b624faa808e7fe663e7e3b5b35e745d7bed442da490`; AAB `sha256:05a07996adaf3477bf006c19ec48081c21caea9116eb9ee2f205a15ab505c930`. The signing certificate SHA-256 is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`, and CI confirmed the AAB uses the same stable certificate as the APK.
 
-**Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and still contains the self-update permission. The v0.0.4 AAB is built from `bundlePlayRelease`; its Play merged manifest passed the check that `REQUEST_INSTALL_PACKAGES` is absent. Upload only the v0.0.4 AAB to Play Console.
+**Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and still contains the self-update permission. The v0.0.5 AAB is built from `bundlePlayRelease`; its Play merged manifest passed the check that `REQUEST_INSTALL_PACKAGES` is absent. Upload only the v0.0.5 AAB to Play Console.
 
 The signed artifacts use the stable release key. The certificate match confirms GitHub APK/AAB signing consistency, but does not decide which app-signing key Google Play will use for its distributed APKs. Follow the Play App Signing warning in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
 
-**Additional hardening in v0.0.4:** UMP privacy-options completion waits for the real SDK initialization callback instead of a fixed delay; adaptive banner requests reload on width changes without destroying and reusing the same view; and the foreground-service notification includes a direct Stop action. **Billing reconnection hardening was committed after v0.0.4**; it now keeps the BillingClient alive and uses the Billing Library automatic reconnection flow. That later change is being verified in [Android CI run #119](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44990455088) and is not part of the v0.0.4 artifact. Physical-device smoke testing is still outstanding.
+**Hardening included in v0.0.4 and v0.0.5:** UMP privacy-options completion waits for the real SDK initialization callback instead of a fixed delay; adaptive banner requests reload on width changes without destroying and reusing the same view; the foreground-service notification includes a direct Stop action; and v0.0.5 adds Google Play Billing automatic service reconnection while retaining the BillingClient after disconnection. The v0.0.5 Billing change passed the run #119 static architecture gate and both flavor unit-test tasks. Physical-device smoke testing is still outstanding.
 
 **Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment succeeded in run #6, but public reachability and page contents still need to be checked from a normal browser. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
 
