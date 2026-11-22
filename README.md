@@ -85,7 +85,7 @@ See [Network and Update Design](docs/NETWORK_AND_UPDATES.md).
 
 The APK includes a deterministic local decision engine. It interprets supported commands, launches approved app/system surfaces, evaluates arithmetic and runs read-only diagnostics. It needs no model import, account, API key or internet.
 
-**Technical distinction:** this engine is not a general-purpose generative LLM. A generative on-device model needs model weights plus an inference runtime. Official LiteRT-LM Android guidance describes model files from hundreds of MB to multiple GB and stores the model as a device file rather than APK assets. That would exceed or consume most of the current 400 MiB APK budget and would not run reliably on every Android 8+ device. We do not falsely label the built-in decision engine as a generative model.
+**Technical distinction:** this engine is not a general-purpose generative LLM. A compact experimental candidate is Gemma 3 270M IT in Q4_K_M GGUF format (about 253 MB in a community quantization). Combined with the current 19.1 MB APK, the weights alone would use about 272 MB of the 400 MB managed-storage budget, leaving roughly 128 MB for the native inference runtime, tokenizer/assets, cache and updates. The Gemma family advertises broad multilingual capability, but the 270M variant's Indonesian quality has not been independently validated for this app. Gemma is governed by the Gemma Terms of Use, not Apache-2.0; distributing weights or derivatives requires the prescribed use restrictions, a copy of the Terms and a Notice file. Therefore no model or inference runtime is bundled yet. A device benchmark, language evaluation, memory/thermal test and license packaging review are still required. The existing assistant is accurately described as a deterministic offline command engine, not a generative LLM.
 
 ## Distribution-specific update channels
 
@@ -186,22 +186,22 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.11](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.11) (**versionCode 132**, published 22 November 2026). [Android CI run #132](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45017961115) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified the GitHub/Play installer-permission split, stable APK signature, AAB JAR signature and matching certificate, SHA-256 generation, artifact upload, and Release publication. Version v0.0.9 adds configurable bubble gestures, size and opacity; v0.0.10 adds four configurable Quick Favorites; v0.0.11 adds accessible collapsible category sections and closes the overlay before category destinations launch.
+The latest verified signed release is [v0.0.12](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.12) (**versionCode 133**, published 22 November 2026). [Android CI run #133](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45018487835) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified the GitHub/Play installer-permission split, stable APK signature, AAB JAR signature and matching certificate, SHA-256 generation, artifact upload, and Release publication. Version v0.0.9 adds configurable bubble gestures, size and opacity; v0.0.10 adds four Quick Favorites; v0.0.11 adds accessible collapsible categories and panel dismissal; v0.0.12 improves adaptive launcher icon layers and gesture cancellation/haptic handling.
 
 Release assets:
-- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.11/app-release.apk)
-- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.11/app-release.aab)
-- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.11/app-release.apk.sha256)
-- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.11/app-release.aab.sha256)
-- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.11/release-info.json)
+- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.apk)
+- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.aab)
+- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.apk.sha256)
+- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.aab.sha256)
+- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/release-info.json)
 
-GitHub's release API reports APK digest `sha256:d013de64e8c0eb39033cba0483925488fb857ed4245aa07e965af8106351da7f` (19,091,622 bytes) and AAB digest `sha256:c8a21015a85e2fc88dc03c081568ce941fe417a0a4b43d19302f8f59f07ab4df` (18,644,073 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
+GitHub's release API reports APK digest `sha256:6a183f42ff9f0373432ca058a32997d6fb262566d34921e70d20d0e674e3dd3d` (19,091,830 bytes) and AAB digest `sha256:2f49d5807f06ee250813b5cc6e4b4f651f251074e5e8f9ec86bb06307ec3b670` (18,644,494 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
 
 **Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and contains the self-update permission. Upload only the `v0.0.9 app-release.aab`, built from `bundlePlayRelease`, to Play Console. Its Play merged manifest was checked to exclude `REQUEST_INSTALL_PACKAGES`.
 
 The signed artifacts use the stable release key. The certificate match confirms GitHub APK/AAB signing consistency, but does not decide which app-signing key Google Play uses for APKs served to users. Follow the Play App Signing guidance in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
 
-**Hardening in v0.0.4–v0.0.8:** UMP privacy-options completion waits for the real SDK initialization callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; Ad Center refreshes its `canRequestAds` state; v0.0.7 adds the combined assistive toolbox; and v0.0.8 adds call-card allowlist enforcement with unit coverage. **v0.0.9** adds configurable bubble gestures and appearance; **v0.0.10** adds four Quick Favorites; **v0.0.11** adds accordion category navigation and reliable panel dismissal before launching tools. Physical-device smoke testing remains outstanding.
+**Hardening in v0.0.4–v0.0.8:** UMP privacy-options completion waits for the real SDK initialization callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; Ad Center refreshes its `canRequestAds` state; v0.0.7 adds the combined assistive toolbox; and v0.0.8 adds call-card allowlist enforcement. **v0.0.9** adds bubble gesture/appearance controls; **v0.0.10** adds four Quick Favorites; **v0.0.11** adds accordion navigation and panel dismissal; **v0.0.12** corrects adaptive icon layering and haptic/cancelled-touch lifecycle. Physical-device smoke testing remains outstanding.
 
 
 

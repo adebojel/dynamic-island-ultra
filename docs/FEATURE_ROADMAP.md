@@ -19,9 +19,9 @@
 
 - Version v0.0.11 adds accessible accordion navigation for the eight bubble categories and closes the floating panel before a category action launches.
 
-- Latest signed release: [v0.0.11](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.11), Android versionCode 132.
-- [Android CI run #132](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45017961115) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
-- Release asset metadata reports a signed APK of 19,091,622 bytes and Play AAB of 18,644,073 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
+- Latest signed release: [v0.0.12](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.12), Android versionCode 133.
+- [Android CI run #133](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45018487835) passed both flavor unit-test suites, signed APK/AAB builds, installer permission separation, stable certificate verification, checksums, artifact upload and Release publication.
+- Release asset metadata reports a signed APK of 19,091,830 bytes and Play AAB of 18,644,494 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
 - Version v0.0.10 adds four configurable Quick Favorites at the top of the floating bubble, with ten allowlisted app-owned shortcuts and persistent local preferences.
 - Call-status notifications follow the same global privacy switch and per-app allowlist as other notification previews.
 - Physical-device/OEM validation is still outstanding.
@@ -113,3 +113,12 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Fixed long-press feedback to obey the user haptic toggle.
 - Added cancellation cleanup for pending tap/long-press callbacks and restored the pre-drag coordinates on ACTION_CANCEL.
 - Release CI will verify resource compilation and both distribution variants.
+
+
+## v0.0.12 adaptive icon and gesture-lifecycle update
+
+- The launcher foreground is now transparent adaptive artwork with a separate dark background color resource shared by regular and round launcher icons.
+- Long-press haptics obey the saved haptic toggle.
+- ACTION_CANCEL removes pending tap/long-press callbacks and restores the pre-drag coordinates.
+- Android CI run #133 passed both distribution test suites, signed builds, manifest separation, certificate validation, checksum generation and release publication.
+- Physical launcher-mask, drag-cancellation and haptic tests remain in docs/DEVICE_SMOKE_TEST.md.

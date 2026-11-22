@@ -32,14 +32,21 @@ The following matrix assesses only features described by discoverable product li
 
 ## Lightweight local LLM feasibility
 
-The 400 MB limit is for the app plus models/data managed by the project, not just the download APK. The current v0.0.9 APK is about 19.1 MB (decimal).
+The 400 MB cap applies to the APK plus model/runtime/data managed by the app, not only the raw weights. The latest release APK is about 19.1 MB.
 
-| Candidate | Quantized model file reported by repository | License / language caution | Decision |
+| Candidate | Quantized model file reported by source | Language and license constraints | Decision |
 |---|---:|---|---|
-| [SmolLM2 360M Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/SmolLM2-360M-Instruct-GGUF) | About 0.271 GB (271 MB). | Base model card is Apache-2.0 but says the model primarily understands/generates English. The quantized GGUF repository's packaging and exact upstream revision must also be checked. | Best small-size benchmark candidate only; not accepted for Bahasa Indonesia without quality tests. |
-| [Qwen2.5 0.5B Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/Qwen2.5-0.5B-Instruct-GGUF) | About 0.398 GB (398 MB). | The file alone nearly consumes the full 400 MB budget before the APK, runtime, tokenizer, cache or update headroom. Confirm the exact base-model and quantization terms before redistribution. | Reject for bundled/default configuration under the current combined storage cap. |
+| [Gemma 3 270M IT Q4_K_M GGUF](https://huggingface.co/gguf-org/gemma-3-270m-it-gguf) | About 253 MB. Several community GGUF repositories list this quantization. | The Gemma family advertises support for more than 140 languages, but the official 270M model card does not publish a dedicated Indonesian benchmark for this small variant. The model is under the separate Gemma Terms of Use, not Apache-2.0. The terms require the restrictions to be passed on to recipients and distribution to include a copy of the terms and a Notice file. Community quantization source and exact revision still require provenance review. | **Best size candidate to prototype**, not approved for release. APK + raw weights are about 272 MB, leaving about 128 MB nominal for native runtime, tokenizer, cache and updates. Measure the actual full footprint before accepting. |
+| [SmolLM2 360M Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/SmolLM2-360M-Instruct-GGUF) | About 271 MB. | Base model is Apache-2.0, but its model card says it primarily understands/generates English. The GGUF repository's exact upstream revision and packaging terms also need review. | Lower-priority benchmark; not accepted as the Indonesian assistant model without quality tests. |
+| [Qwen2.5 0.5B Instruct Q4_K_M GGUF](https://huggingface.co/tensorblock/Qwen2.5-0.5B-Instruct-GGUF) | About 398 MB. | Qwen2.5 offers broad multilingual support, but this quantized file alone nearly consumes the full cap. A smaller Q3/Q2 variant saves space at a documented quality cost. | Reject for a default bundled configuration under the combined storage cap. |
 
-For GGUF experiments, evaluate one Android runtime at a time; llama.cpp is the corresponding candidate for GGUF. Build/benchmark it on real API-26+ devices before adding native binaries. LiteRT-LM uses a different model format and must not be added alongside llama.cpp without measured need. No generative model is bundled or downloaded by this release; all existing assistant actions remain local and deterministic.
+### Runtime and minimum Android version
+
+- [llama.cpp Android build documentation](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md) currently documents Android `arm64-v8a` NDK builds; its example uses Android API 28. The project minimum is API 26, so a custom API-26-compatible build and runtime testing would be required before integrating it.
+- Use only one GGUF runtime (llama.cpp) for the first prototype. Do not ship both llama.cpp and LiteRT-LM without measured need.
+- Gemma Terms: [official terms of use](https://ai.google.dev/gemma/terms). Model family information: [official Gemma 3 model card](https://ai.google.dev/gemma/docs/core/model_card_3) and [Gemma 3 270M IT card](https://huggingface.co/google/gemma-3-270m-it).
+- The candidate remains unbundled until Indonesian command/response tests, short-context prompt quality, peak RAM, native runtime size, CPU latency, temperature, battery use, offline isolation, license notices and full storage footprint all pass on real API-26+ devices.
+- No generative model is bundled or downloaded by v0.0.12; the built-in assistant remains a deterministic local intent/command engine.
 
 ## Android platform constraints
 
