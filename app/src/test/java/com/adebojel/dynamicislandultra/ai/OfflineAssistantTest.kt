@@ -84,6 +84,13 @@ class OfflineAssistantTest {
     }
 
     @Test
+    fun smartToolboxCommandsOpenLocalTools() {
+        assertEquals(OfflineAction.OpenSmartTools, assistant.respond("buka konversi satuan").action)
+        assertEquals(OfflineAction.OpenSmartTools, assistant.respond("stopwatch").action)
+        assertEquals(OfflineAction.OpenSmartTools, assistant.respond("smart toolbox").action)
+    }
+
+    @Test
     fun unknownCommandDoesNotCreateExternalAction() {
         assertNull(assistant.respond("buatkan lagu").action)
     }
