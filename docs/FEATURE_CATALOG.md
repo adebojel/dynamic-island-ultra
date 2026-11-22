@@ -144,3 +144,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - The custom accent is saved to app-private preferences and refreshed on the floating pill.
 - Reset returns to the default cyan accent.
 - The editor changes the island accent only; it is not yet a complete theme/gradient/animation or icon-pack editor.
+
+
+## Encrypted Backup & Restore
+
+- Export and restore the app's selected local preference stores: island interaction settings, offline notes, browser bookmarks/history and notification privacy settings.
+- Backup file format `.diub` uses PBKDF2-HMAC-SHA256 (180,000 iterations) to derive a 256-bit key and AES-256-GCM authenticated encryption with fresh random salt and IV.
+- The user chooses the file destination/source through Android's Storage Access Framework and supplies the passphrase; there is no cloud upload.
+- Restore requires successful authentication and explicit confirmation; it stops and disables the floating island before replacing the included settings.
+- Premium purchase entitlements, Android permission grants, SAF folder grants, media files and other apps' data are excluded intentionally.

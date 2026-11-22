@@ -210,3 +210,17 @@ Implemented:
 - Dashboard accent reads the same saved local color on app launch.
 
 Still outstanding: full theme/gradient editor, per-widget styles, island shape editor, RGB animation timeline/speed profiles, icon packs and import/export of theme presets.
+
+
+## Phase 1 encrypted backup
+
+Implemented:
+- Password-protected `.diub` local backup file.
+- PBKDF2-HMAC-SHA256 key derivation, 180,000 iterations, AES-256-GCM authentication/encryption, random salt and IV.
+- Export/import through Android's document picker, local-only processing.
+- Preference whitelist covers island settings, offline notes, browser library and notification privacy.
+- Restore is confirmed by the user and disables the floating island before replacing saved state.
+- Premium entitlements, OS permissions, SAF grants and media files are excluded.
+- Crypto unit tests cover round-trip encryption, wrong passwords and password length.
+
+Remaining: restore-corruption UX regression, physical-device URI-provider tests, key/password memory handling review, backup schema migration strategy and encrypted backup size/performance benchmark on Android 8 devices.

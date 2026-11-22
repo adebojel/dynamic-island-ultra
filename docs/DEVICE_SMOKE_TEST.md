@@ -248,3 +248,14 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Close/reopen the app and confirm the custom accent persists in dashboard theme and island.
 - [ ] Reset accent and confirm cyan default is restored.
 - [ ] Test low brightness/high saturation combinations for text contrast and daylight readability.
+
+
+## Encrypted Backup & Restore checks
+
+- [ ] Create a backup using a passphrase of at least eight characters; confirm Android opens the document destination picker.
+- [ ] Confirm the resulting `.diub` file is not readable as plain JSON/text.
+- [ ] Change notes, gestures, custom accent and notification privacy settings, then restore the backup; confirm only the documented stores return to their backed-up values.
+- [ ] Confirm island is stopped and disabled after restore, then manually restart it.
+- [ ] Attempt restore with a wrong passphrase and a modified/truncated file; confirm it is rejected and current preferences remain unchanged.
+- [ ] Confirm Premium purchases/entitlements, Android permission grants, and File Manager SAF folder grants are not restored or fabricated.
+- [ ] Test export/import using at least two document providers and on Android 8/API 26.

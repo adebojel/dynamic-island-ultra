@@ -44,6 +44,7 @@ import com.adebojel.dynamicislandultra.floating.SmartToolsActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
 import com.adebojel.dynamicislandultra.floating.FileManagerActivity
 import com.adebojel.dynamicislandultra.system.DeviceControlActivity
+import com.adebojel.dynamicislandultra.backup.BackupActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.notifications.ActiveMediaSession
@@ -345,6 +346,9 @@ class FloatingIslandService : Service() {
             "Unit converter" to "smart_tools",
             "Pomodoro 25 menit" to "smart_tools"
         ))
+        addSection(content, "10  BACKUP & DATA", listOf(
+            "Encrypted backup & restore" to "backup_manager"
+        ))
 
         val scroll = ScrollView(this).apply {
             isFillViewport = false
@@ -513,6 +517,7 @@ class FloatingIslandService : Service() {
                         "smart_tools" -> Intent(this@FloatingIslandService, SmartToolsActivity::class.java)
                         "file_manager" -> Intent(this@FloatingIslandService, FileManagerActivity::class.java)
                         "device_controls" -> Intent(this@FloatingIslandService, DeviceControlActivity::class.java)
+                        "backup_manager" -> Intent(this@FloatingIslandService, BackupActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)
