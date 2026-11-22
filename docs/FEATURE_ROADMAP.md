@@ -237,3 +237,11 @@ Implemented in source:
 - Reminders are included in encrypted local backup.
 
 Limitations: not an exact alarm; Doze and manufacturer policies can delay delivery. Force-stop may prevent scheduled receiver execution until the app is relaunched. Physical reboot, notification-permission and OEM battery tests remain required.
+
+
+## Global screenshot action
+
+Implemented:
+- Adds Android AccessibilityService `GLOBAL_ACTION_TAKE_SCREENSHOT` to Global System Controls on API 28+.
+- The action runs only after a direct user tap and is performed by Android; app code does not read or retain screenshot pixels.
+- API 26–27 do not display the screenshot action.

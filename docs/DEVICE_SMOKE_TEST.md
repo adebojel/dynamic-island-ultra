@@ -271,3 +271,7 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Revoke notifications and confirm no crash; verify UI/documentation describes the notification permission requirement.
 - [ ] Test during Doze and battery optimization; record actual delay and OEM model.
 - [ ] Confirm expired reminders are removed during reboot rescheduling and notification dispatch.
+
+
+- [ ] On Android 9/API 28+, tap Take Screenshot and verify Android's system screenshot action runs; confirm app code does not read the resulting image.
+- [ ] On Android 8/API 26–27, verify the screenshot action is not shown.

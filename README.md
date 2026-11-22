@@ -277,3 +277,8 @@ The optional Accessibility Service provides explicit Home, Back, Recent Apps, No
 ### Custom accent editor
 
 Island Interaction settings now include a local HSV accent editor (hue, saturation and brightness) with a live color preview and reset action. The saved accent is applied to the floating pill and dashboard on the next activity render. Preset Advanced RGB themes, pulse styles, size and compact-panel Premium options remain in Bonus & Premium.
+
+
+### Global screenshot action
+
+The optional Accessibility Service offers a user-triggered system screenshot action on Android 9/API 28 and newer. The app only calls the Android global action after the user taps the control; it does not retrieve, inspect or save screen contents itself.

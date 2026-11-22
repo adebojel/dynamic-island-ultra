@@ -122,7 +122,7 @@ The built-in assistant and local tools work without internet, imported model fil
 
 ## Global system navigation controls
 
-- Optional user-enabled Accessibility Service for Home, Back, Recent Apps, Notifications, Quick Settings and Power Dialog.
+- Optional user-enabled Accessibility Service for Home, Back, Recent Apps, Notifications, Quick Settings, Power Dialog and user-triggered system screenshot (API 28+).
 - Lock Screen is offered on Android 9/API 28 and newer.
 - Service must be enabled manually in Android Accessibility settings; the app cannot silently enable it.
 - XML configuration sets `canRetrieveWindowContent=false`; the event callback does not inspect or retain screen content. Every action is initiated by an explicit user tap.

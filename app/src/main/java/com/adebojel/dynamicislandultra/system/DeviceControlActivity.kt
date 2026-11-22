@@ -71,7 +71,10 @@ private fun DeviceControlScreen(enabled: Boolean, onEnable: () -> Unit, onAction
         add("Notifications" to AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS)
         add("Quick Settings" to AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS)
         add("Power Dialog" to AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
-        if (Build.VERSION.SDK_INT >= 28) add("Lock Screen" to AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+        if (Build.VERSION.SDK_INT >= 28) {
+            add("Lock Screen" to AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+            add("Take Screenshot" to AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+        }
     }
     Column(
         Modifier.fillMaxSize().background(ControlNight).padding(16.dp),
