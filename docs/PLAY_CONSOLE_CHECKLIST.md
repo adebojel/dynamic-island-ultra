@@ -61,6 +61,8 @@ The app includes the publisher App ID and four publisher production unit IDs in 
 
 Production IDs being compiled into a signed release does not guarantee ad fill or revenue. Serving depends on account/app eligibility, consent, region, inventory and AdMob policy review.
 
+**app-ads.txt is still a release blocker for AdMob app verification.** Google requires new AdMob apps to verify app-ads.txt (requirement effective January 2025). Copy the personalized seller line from AdMob and publish it at the root of the developer website hostname, then verify its status in AdMob. The current project Pages URL is a subpath (`https://adebojel.github.io/dynamic-island-ultra/`), while the crawler checks the hostname root (`https://adebojel.github.io/app-ads.txt`). A file placed only inside this repository's `site/` directory would resolve under the project subpath and is not sufficient. Before listing this website as the developer website, provide a root-domain hosting solution (for example, a custom domain correctly mapped to Pages or Firebase Hosting) and verify the resulting `/app-ads.txt` URL returns successfully.
+
 ## Premium product in Play Console
 
 The app queries a subscription product with ID `diu_premium`. Offers are read from Google Play, so the app displays no fabricated or locally simulated purchasable price.
