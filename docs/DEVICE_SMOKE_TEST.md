@@ -239,3 +239,12 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Resume and record another lap; confirm split timing continues from the previous lap.
 - [ ] Reset; confirm elapsed time and all lap records are cleared.
 - [ ] Confirm elapsed timing uses monotonic elapsed-realtime and does not jump when device wall-clock time changes.
+
+
+## Custom accent editor checks
+
+- [ ] Open Island Interaction settings and adjust hue, saturation and brightness; confirm the preview color and HEX label update.
+- [ ] Leave settings and confirm the floating island outline/accent changes without restarting the service.
+- [ ] Close/reopen the app and confirm the custom accent persists in dashboard theme and island.
+- [ ] Reset accent and confirm cyan default is restored.
+- [ ] Test low brightness/high saturation combinations for text contrast and daylight readability.

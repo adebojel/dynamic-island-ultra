@@ -272,3 +272,8 @@ The browser stores bookmarks and up to 100 recent HTTPS visits in app-private pr
 ## Global Android navigation controls
 
 The optional Accessibility Service provides explicit Home, Back, Recent Apps, Notifications, Quick Settings and Power Dialog actions, plus Lock Screen on Android 9/API 28 and newer. The user must enable it manually in Android Accessibility settings. Its configuration disables window-content retrieval and its event callback intentionally does not inspect or retain screen content. Actions are executed only after a direct tap in the Global System Controls screen or its mapped app-owned entry point. Android/OEM policy may still restrict an individual action. Screenshot, screen recording, global volume/brightness sliders and flashlight toggles are not part of this service yet.
+
+
+### Custom accent editor
+
+Island Interaction settings now include a local HSV accent editor (hue, saturation and brightness) with a live color preview and reset action. The saved accent is applied to the floating pill and dashboard on the next activity render. Preset Advanced RGB themes, pulse styles, size and compact-panel Premium options remain in Bonus & Premium.

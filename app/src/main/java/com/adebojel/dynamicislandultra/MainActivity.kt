@@ -78,12 +78,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AdsSdkManager.start(this)
         PremiumBillingManager.connect(this)
-        val premiumAccent = when (PremiumAccess.accentColor(this)) {
-            AndroidColor.rgb(179, 107, 255) -> Color(0xFFB36BFF)
-            AndroidColor.rgb(65, 220, 145) -> Color(0xFF41DC91)
-            AndroidColor.rgb(255, 200, 87) -> Color(0xFFFFC857)
-            else -> Cyan
-        }
+        val premiumAccent = Color(
+            getSharedPreferences("island", Context.MODE_PRIVATE)
+                .getInt("custom_accent_color", PremiumAccess.accentColor(this))
+        )
         val premiumActive = PremiumAccess.hasPremiumAccess(this)
         setContent {
             MaterialTheme(

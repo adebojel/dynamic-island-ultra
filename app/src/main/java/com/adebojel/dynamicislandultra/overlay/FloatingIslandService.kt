@@ -199,8 +199,8 @@ class FloatingIslandService : Service() {
 
     private fun applyPremiumAppearance(scheduleDim: Boolean = true) {
         val view = bubble ?: return
-        val accent = PremiumAccess.accentColor(this)
         val preferences = getSharedPreferences("island", MODE_PRIVATE)
+        val accent = preferences.getInt("custom_accent_color", PremiumAccess.accentColor(this))
         val scale = PremiumAccess.islandScale(this)
         val bubbleScale = preferences.getFloat("bubble_size", 1f).coerceIn(0.8f, 1.4f)
         val opacity = preferences.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)

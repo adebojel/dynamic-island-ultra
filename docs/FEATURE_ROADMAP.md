@@ -199,3 +199,14 @@ Implemented in Smart Toolbox:
 - Lap records are shown newest-first and cleared only by Reset.
 - Lap capture is disabled while paused; no wall-clock timer is used for elapsed measurement.
 - The feature is session-local and is not persisted after closing the screen.
+
+
+## Phase 1 custom accent editor
+
+Implemented:
+- User-controlled HSV accent hue, saturation and brightness.
+- Live preview, HEX value and reset-to-cyan action.
+- Local persistence and appearance broadcast to the floating island.
+- Dashboard accent reads the same saved local color on app launch.
+
+Still outstanding: full theme/gradient editor, per-widget styles, island shape editor, RGB animation timeline/speed profiles, icon packs and import/export of theme presets.

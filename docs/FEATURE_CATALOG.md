@@ -136,3 +136,11 @@ The built-in assistant and local tools work without internet, imported model fil
 - User can set the current physical device orientation as a local zero reference and reset the reference.
 - Unsupported devices show an explicit unavailable state; no simulated readings or network dependency.
 - Not a certified precision instrument; case shape, sensor bias, movement and device calibration affect accuracy.
+
+
+## Local RGB accent editor
+
+- Hue, saturation and brightness sliders with a live color/hex preview.
+- The custom accent is saved to app-private preferences and refreshed on the floating pill.
+- Reset returns to the default cyan accent.
+- The editor changes the island accent only; it is not yet a complete theme/gradient/animation or icon-pack editor.

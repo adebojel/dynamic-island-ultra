@@ -1,6 +1,7 @@
 package com.adebojel.dynamicislandultra.overlay
 
 import android.content.Intent
+import android.graphics.Color as AndroidColor
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,15 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                 var autoDim by remember { mutableStateOf(prefs.getBoolean("auto_dim_enabled", false)) }
                 var bubbleSize by remember { mutableFloatStateOf(prefs.getFloat("bubble_size", 1f).coerceIn(0.8f, 1.4f)) }
                 var bubbleOpacity by remember { mutableFloatStateOf(prefs.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)) }
+                val initialHsv = remember {
+                    FloatArray(3).also {
+                        AndroidColor.colorToHSV(prefs.getInt("custom_accent_color", AndroidColor.rgb(67, 232, 255)), it)
+                    }
+                }
+                var accentHue by remember { mutableFloatStateOf(initialHsv[0]) }
+                var accentSaturation by remember { mutableFloatStateOf(initialHsv[1]) }
+                var accentBrightness by remember { mutableFloatStateOf(initialHsv[2]) }
+                val customAccent = Color(AndroidColor.HSVToColor(floatArrayOf(accentHue, accentSaturation, accentBrightness)))
                 var tapAction by remember { mutableStateOf(BubbleGestureConfig.resolve("tap", prefs.getString("gesture_tap", null))) }
                 var doubleTapAction by remember { mutableStateOf(BubbleGestureConfig.resolve("double_tap", prefs.getString("gesture_double_tap", null))) }
                 var longPressAction by remember { mutableStateOf(BubbleGestureConfig.resolve("long_press", prefs.getString("gesture_long_press", null))) }
@@ -105,6 +115,65 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                         onValueChangeFinished = { refreshBubbleAppearance() }
                     )
 
+                    Text("CUSTOM RGB ACCENT", color = Color(0xFF43E8FF), fontSize = 14.sp)
+                    Text(
+                        "Atur rona, saturasi dan kecerahan aksen Floating Island. Warna disimpan lokal pada perangkat.",
+                        color = Color.LightGray,
+                        fontSize = 11.sp
+                    )
+                    Surface(
+                        color = customAccent,
+                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.fillMaxWidth().height(48.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                "#%06X".format(0xFFFFFF and AndroidColor.HSVToColor(floatArrayOf(accentHue, accentSaturation, accentBrightness))),
+                                color = if (accentBrightness > 0.72f) Color.Black else Color.White
+                            )
+                        }
+                    }
+                    Text("HUE · ${accentHue.toInt()}°", color = Color.White)
+                    Slider(
+                        value = accentHue,
+                        onValueChange = {
+                            accentHue = it
+                            saveCustomAccent(prefs, accentHue, accentSaturation, accentBrightness)
+                        },
+                        valueRange = 0f..360f,
+                        onValueChangeFinished = { refreshBubbleAppearance() }
+                    )
+                    Text("SATURATION · ${(accentSaturation * 100).toInt()}%", color = Color.White)
+                    Slider(
+                        value = accentSaturation,
+                        onValueChange = {
+                            accentSaturation = it
+                            saveCustomAccent(prefs, accentHue, accentSaturation, accentBrightness)
+                        },
+                        valueRange = 0.2f..1f,
+                        onValueChangeFinished = { refreshBubbleAppearance() }
+                    )
+                    Text("BRIGHTNESS · ${(accentBrightness * 100).toInt()}%", color = Color.White)
+                    Slider(
+                        value = accentBrightness,
+                        onValueChange = {
+                            accentBrightness = it
+                            saveCustomAccent(prefs, accentHue, accentSaturation, accentBrightness)
+                        },
+                        valueRange = 0.4f..1f,
+                        onValueChangeFinished = { refreshBubbleAppearance() }
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            accentHue = 190f
+                            accentSaturation = 0.86f
+                            accentBrightness = 0.91f
+                            saveCustomAccent(prefs, accentHue, accentSaturation, accentBrightness)
+                            refreshBubbleAppearance()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Reset warna aksen") }
+
                     Text("GESTURE MAPPING", color = Color(0xFF43E8FF), fontSize = 14.sp)
                     Text(
                         "Swipe hanya mengambil alih gerakan saat tindakan swipe terkait diaktifkan. Jika tidak, bubble tetap dapat digeser.",
@@ -170,6 +239,20 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun saveCustomAccent(
+        prefs: android.content.SharedPreferences,
+        hue: Float,
+        saturation: Float,
+        brightness: Float
+    ) {
+        val color = AndroidColor.HSVToColor(floatArrayOf(
+            hue.coerceIn(0f, 360f),
+            saturation.coerceIn(0.2f, 1f),
+            brightness.coerceIn(0.4f, 1f)
+        ))
+        prefs.edit().putInt("custom_accent_color", color).apply()
     }
 
     private fun saveGesture(gesture: String, action: String) {
