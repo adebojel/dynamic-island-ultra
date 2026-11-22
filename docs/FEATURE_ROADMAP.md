@@ -40,7 +40,7 @@ The bundled offline decision engine does not import model weights and has no net
 
 - AdMob/UMP SDK and publisher IDs are integrated; debug uses Google's official test units and signed release uses production units. Production fill and account eligibility are not yet independently verified.
 - Premium cosmetic themes, pulse speed, island size and compact layout are implemented. Paid subscription offers require the Play Console product/base plans to exist and become active.
-- GitHub Pages deployment succeeded in [Pages workflow run #10](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991324924); verify public reachability before submitting URLs. Firebase root-domain app-ads.txt still requires the publisher's Firebase project and service-account configuration. AdMob app-ads.txt requires a file at the developer hostname root, not only the project Pages subpath.
+- GitHub Pages deployment succeeded in [Pages workflow run #14](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45013720877); verify public reachability before submitting URLs. Firebase root-domain app-ads.txt still requires the publisher's Firebase project and service-account configuration. AdMob app-ads.txt requires a file at the developer hostname root, not only the project Pages subpath.
 - Current paid entitlement is client-side Billing only; add secure backend purchase-token verification before account-synced or transferable entitlement.
 
 ## Release gates

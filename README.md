@@ -160,7 +160,7 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 The public policy pages and official website source are stored in `site/`.
 
-**GitHub Pages mirror:** successfully deployed by [Pages workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026. GitHub completed Configure Pages, uploaded the site artifact, and deployed it to [the official project site](https://adebojel.github.io/dynamic-island-ultra/). The current environment could not independently resolve the `github.io` hostname, so open each policy link below on your Android phone before submitting it to Play Console or AdMob.
+**GitHub Pages mirror:** latest policy deployment completed successfully in [Pages workflow run #14](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45013720877) on 22 November 2026. GitHub validated the website, uploaded the site artifact and deployed it to [the official project site](https://adebojel.github.io/dynamic-island-ultra/). Verify each policy URL in a normal browser on the target device before submitting it to Play Console or AdMob.
 
 - [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
 - [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
@@ -205,7 +205,7 @@ The signed artifacts use the stable release key. The certificate match confirms 
 
 
 
-**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment of the latest policy updates succeeded in [Pages run #10](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991324924); public reachability and page contents still need to be checked from a normal browser/device. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
+**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment of the latest policy updates succeeded in [Pages run #14](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45013720877); public reachability and page contents still need to be checked from a normal browser/device. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
 
 CI tests and APK assembly do not replace physical-device testing. The next device gate is to smoke-test overlay lifecycle, notification access, DuckDuckGo search/navigation and media playback, package-installer handoff, data retention across a signed update, and Android 8/9/10 plus current Android OEM variants.
 
