@@ -6,7 +6,7 @@
 - Draggable floating pill, pulse animation and persisted X/Y position.
 - Live battery percentage/charging state.
 - Local notification preview after notification access is granted, with global disable, hidden content by default, app allowlist and filtering of secret, ongoing, group-summary and own-app notifications.
-- Generic call activity pill from call-category notifications only; no call logs or phone-state permission.
+- Generic call activity pill from call-category notifications only; it obeys the global preview switch and app allowlist and uses no call logs or phone-state permission.
 - MediaSession metadata, artwork, play/pause, skip and seek where the player exposes those actions.
 - Categorized shortcut hub for Android settings and installed apps.
 
@@ -41,7 +41,7 @@ The built-in assistant and local tools work without internet, imported model fil
 - Minimum Android: 8.0 Oreo / API 26.
 - Compile/target SDK: 36.
 - Release `versionCode` comes from the monotonically increasing GitHub Actions run number.
-- Each signed main build increments the patch release tag from the latest successful `v0.0.N`; the current verified release at the time of this update is `v0.0.7`.
+- Each signed main build increments the patch release tag from the latest successful `v0.0.N`; the current verified release at the time of this update is `v0.0.8`.
 - Stable release signing secrets are required for the signed GitHub APK and Play AAB; both production flavors use the same application ID and stable release key.
 - APK checksum and release metadata accompany signed releases.
 

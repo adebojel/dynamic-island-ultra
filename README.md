@@ -186,22 +186,22 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.7](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.7) (**versionCode 128**, published 22 November 2026). [Android CI run #128](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44993467293) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified that the GitHub APK alone contains `REQUEST_INSTALL_PACKAGES`, the APK signature, the AAB JAR signature and matching stable certificate, SHA-256 generation, artifact upload, and Release publication.
+The latest verified signed release is [v0.0.8](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.8) (**versionCode 129**, published 22 November 2026). [Android CI run #129](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44993860841) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified that the GitHub APK alone contains `REQUEST_INSTALL_PACKAGES`, the APK signature, the AAB JAR signature and matching stable certificate, SHA-256 generation, artifact upload, and Release publication. The final notification-privacy hardening also verifies that call-status cards obey both the global preview switch and the selected-app allowlist.
 
 Release assets:
-- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.7/app-release.apk)
-- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.7/app-release.aab)
-- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.7/app-release.apk.sha256)
-- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.7/app-release.aab.sha256)
-- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.7/release-info.json)
+- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.8/app-release.apk)
+- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.8/app-release.aab)
+- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.8/app-release.apk.sha256)
+- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.8/app-release.aab.sha256)
+- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.8/release-info.json)
 
-GitHub's release API reports APK digest `sha256:f10059851f78597b8389403931b7f3de0a2ca24cd08815337eae3914a319c538` (19,075,242 bytes) and AAB digest `sha256:755016185ab9bf20bb2fc703680d978c60c72c5c58e5a0eae302bb5480e14a07` (18,627,090 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
+GitHub's release API reports APK digest `sha256:db48de8903d402e9643bcc758113242df3ac42d01ccef1be6c0e988ed90f41f9` (19,075,242 bytes) and AAB digest `sha256:c5a9dddea41dd97dc6a94ffac32df4c0380eb2c422613d5436db78ddf3a8dd5d` (18,627,279 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
 
-**Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and contains the self-update permission. Upload only the `v0.0.7 app-release.aab`, built from `bundlePlayRelease`, to Play Console. Its Play merged manifest was checked to exclude `REQUEST_INSTALL_PACKAGES`.
+**Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and contains the self-update permission. Upload only the `v0.0.8 app-release.aab`, built from `bundlePlayRelease`, to Play Console. Its Play merged manifest was checked to exclude `REQUEST_INSTALL_PACKAGES`.
 
 The signed artifacts use the stable release key. The certificate match confirms GitHub APK/AAB signing consistency, but does not decide which app-signing key Google Play uses for APKs served to users. Follow the Play App Signing guidance in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
 
-**Hardening in v0.0.4–v0.0.7:** UMP privacy-options completion waits for the real SDK initialization callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; Ad Center refreshes its `canRequestAds` state; and v0.0.7 adds the combined assistive toolbox, on-device privacy filters, media-session controls, QR/barcode scanning, image/PDF preview, sensor readings and conditional offline voice input. CI passed both flavor test suites and signed build verification. Physical-device smoke testing remains outstanding.
+**Hardening in v0.0.4–v0.0.8:** UMP privacy-options completion waits for the real SDK initialization callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; Ad Center refreshes its `canRequestAds` state; v0.0.7 adds the combined assistive toolbox; and v0.0.8 adds call-card allowlist enforcement with unit coverage. CI passed both flavor test suites and signed build verification. Physical-device smoke testing remains outstanding.
 
 
 

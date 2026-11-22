@@ -15,6 +15,13 @@
 - Stable signing key is read from private GitHub Actions secrets; no key material belongs in source control.
 - INTERNET and ACCESS_NETWORK_STATE permissions are present for application networking, AdMob/UMP consent and Google Play Billing.
 
+## Latest release verification
+
+- Latest signed release: [v0.0.8](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.8), Android versionCode 129.
+- [Android CI run #129](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44993860841) passed tests for both distribution flavors, signed APK/AAB build, manifest separation, signature verification, checksums and release publication.
+- Call-status notifications follow the same global privacy switch and per-app allowlist as other notification previews.
+- Physical-device/OEM validation is still outstanding.
+
 ## Next engineering modules
 
 1. Physical-device matrix: Android 8/9/10, API 26–29, modern API 33–36 and OEM background restrictions.
