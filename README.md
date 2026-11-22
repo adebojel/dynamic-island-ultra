@@ -11,7 +11,7 @@
 [![Android](https://img.shields.io/badge/Android-8%2B%20(API%2026)-43E8FF?logo=android&logoColor=white)](https://developer.android.com/)
 [![Network](https://img.shields.io/badge/Network-Internet%20Enabled-42DFA5)](docs/NETWORK_AND_UPDATES.md)
 
-[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases) · [Official website](https://adebojel.github.io/dynamic-island-ultra/)
+[**Download latest signed APK**](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk) · [SHA-256](https://github.com/adebojel/dynamic-island-ultra/releases/latest/download/app-release.apk.sha256) · [All releases](https://github.com/adebojel/dynamic-island-ultra/releases) · [Website source (deployment pending)](https://github.com/adebojel/dynamic-island-ultra/tree/main/site)
 
 </div>
 
@@ -144,6 +144,7 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 The official website source and policy pages are in the `site/` directory. **Initial GitHub Pages activation is still required**: open repository Settings → Pages → Build and deployment → Source, then choose **GitHub Actions**. Until the Pages deployment workflow succeeds, the public website URL is reserved but not yet live: https://adebojel.github.io/dynamic-island-ultra/
 
+Intended public URLs after a successful deployment (these URLs are **not live yet**):
 - [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
 - [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
 - [Ads Disclosure](https://adebojel.github.io/dynamic-island-ultra/ads.html)
