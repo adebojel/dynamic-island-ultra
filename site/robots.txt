@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://adebojel.github.io/dynamic-island-ultra/sitemap.xml

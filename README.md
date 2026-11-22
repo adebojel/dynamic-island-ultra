@@ -141,7 +141,8 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 ## Official website and policies
 
-The official website is deployed from the `site/` directory using GitHub Pages: https://adebojel.github.io/dynamic-island-ultra/
+
+The official website source and policy pages are in the `site/` directory. **Initial GitHub Pages activation is still required**: open repository Settings → Pages → Build and deployment → Source, then choose **GitHub Actions**. Until the Pages deployment workflow succeeds, the public website URL is reserved but not yet live: https://adebojel.github.io/dynamic-island-ultra/
 
 - [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
 - [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
@@ -159,6 +160,9 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 - [Network and update design](docs/NETWORK_AND_UPDATES.md)
 
 ## Validation status
+
+The latest verified signed release is [v0.0.2](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.2) (versionCode 95). CI unit tests, signed release assembly, APK signature verification, checksum generation, and GitHub Release publication passed. Physical-device smoke tests and first-time GitHub Pages enablement remain separate steps.
+
 
 CI tests and APK assembly are necessary but do not replace physical-device testing. The next verification gate is smoke-testing overlay lifecycle, notification access, DuckDuckGo search/navigation and website playback, package-installer handoff, data retention across a signed update, Android 8/9/10 and current Android OEM variants.
 

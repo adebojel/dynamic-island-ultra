@@ -25,10 +25,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate public policy website
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in index.html privacy.html terms.html ads.html premium.html support.html styles.css 404.html sitemap.xml robots.txt; do
+            test -s "site/$file"
+          done
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload website
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site
       - name: Deploy website

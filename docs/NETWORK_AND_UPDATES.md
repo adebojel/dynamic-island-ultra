@@ -82,10 +82,13 @@ The app cannot silently install APKs or bypass Android's package installer/user-
 
 ## Public policy website
 
+The website source and documents are stored in `site/`. **One-time activation is still required** in repository Settings → Pages → Build and deployment → Source → **GitHub Actions**. The first Pages workflow attempt failed because no Pages site had been enabled/configured for this repository. After enabling it, start the “Deploy Dynamic Island Ultra website” workflow from the Actions tab.
+
+After a successful deployment, the website is intended to be available at:
 - Privacy: https://adebojel.github.io/dynamic-island-ultra/privacy.html
 - Terms: https://adebojel.github.io/dynamic-island-ultra/terms.html
 - Ads: https://adebojel.github.io/dynamic-island-ultra/ads.html
 - Premium: https://adebojel.github.io/dynamic-island-ultra/premium.html
 - Support: https://adebojel.github.io/dynamic-island-ultra/support.html
 
-Review the site whenever app permissions, SDKs, data processing, subscriptions or ad placements change. If requested by GitHub, enable Pages with GitHub Actions as the deployment source.
+The public website URL must not be submitted to AdMob or Play Console until the Pages deployment run succeeds and each page is opened and checked. Review the site whenever app permissions, SDKs, data processing, subscriptions or ad placements change.
