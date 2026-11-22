@@ -127,7 +127,7 @@ private fun CounterPanel() {
     var count by remember { mutableLongStateOf(0L) }
     Text("PENGHITUNG", color = Color.White, fontSize = 16.sp)
     Surface(color = Color(0xFF172A45), shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth()) {
-        Text(count.toString(), color = Color.White, fontSize = 44.sp, modifier = Modifier.padding(24.dp).align(Alignment.CenterHorizontally))
+        Text(count.toString(), color = Color.White, fontSize = 44.sp, modifier = Modifier.fillMaxWidth().padding(24.dp))
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = { count-- }, modifier = Modifier.weight(1f)) { Text("− 1") }
