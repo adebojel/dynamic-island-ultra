@@ -3,6 +3,7 @@ package com.adebojel.dynamicislandultra.browser
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DownloadManager
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
