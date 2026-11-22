@@ -94,7 +94,7 @@ The standard prepaid durations do not include exactly 2 weeks, 3 weeks, or 2 yea
 - [ ] Publish the plain-text file at `https://<hostname>/app-ads.txt` and confirm it returns HTTP 200 and is crawlable.
 - [ ] Enter the same developer website URL in the Play Store listing and check the app-ads.txt status in AdMob after the crawler has had time to process it.
 
-**Current limitation:** `https://adebojel.github.io/dynamic-island-ultra/` is a project Pages subpath. AdMob derives the hostname and checks `https://adebojel.github.io/app-ads.txt`; adding a file only under this repository's `site/` directory is not enough. Set up a root-host site/repository, custom domain, or Firebase Hosting before treating this item as complete. Google recommends app-ads.txt to identify authorized sellers; do not claim it is verified until AdMob reports the status.
+**Current limitation:** `https://adebojel.github.io/dynamic-island-ultra/` is a project Pages subpath. AdMob derives the hostname and checks `https://adebojel.github.io/app-ads.txt`; adding a file only under this repository's `site/` directory is not enough. Set up a root-host site/repository, custom domain, or Firebase Hosting before treating this item as complete. Google recommends app-ads.txt to identify authorized sellers; do not claim it is verified until AdMob reports the status. This is a recommended AdMob inventory-integrity measure, not by itself a mandatory Google Play listing submission requirement.
 
 ## Website activation
 
