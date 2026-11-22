@@ -11,7 +11,7 @@
 - Android 8+ minimum (API 26), cleartext traffic disabled, AI source package remains offline by CI policy.
 - GitHub Actions uses the latest successful `v0.0.N` tag to increment the next patch release, while the Android `versionCode` uses the monotonically increasing workflow run number.
 - Stable signing key is read from private GitHub Actions secrets; no key material belongs in source control.
-- INTERNET and ACCESS_NETWORK_STATE permissions are present for application networking and future AdMob.
+- INTERNET and ACCESS_NETWORK_STATE permissions are present for application networking, AdMob/UMP consent and Google Play Billing.
 
 ## Next engineering modules
 
