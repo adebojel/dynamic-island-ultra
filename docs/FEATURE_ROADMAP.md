@@ -7,7 +7,7 @@
 - Installed-app collection, private local notes, calculator and app-owned PiP workspace.
 - Built-in offline command decision engine with arithmetic, feature routing and read-only diagnostics.
 - DuckDuckGo default browser with general HTTPS navigation and Desktop/Mobile mode.
-- GitHub updater verifies SHA-256 before handing an APK to Android's installer.
+- Distribution split: `github` APK includes SHA-256-verified GitHub self-updates; `play` AAB excludes `REQUEST_INSTALL_PACKAGES` and routes updates through Google Play.
 - Android 8+ minimum (API 26), cleartext traffic disabled, AI source package remains offline by CI policy.
 - GitHub Actions uses the latest successful `v0.0.N` tag to increment the next patch release, while the Android `versionCode` uses the monotonically increasing workflow run number.
 - Stable signing key is read from private GitHub Actions secrets; no key material belongs in source control.
@@ -41,7 +41,8 @@ The bundled offline decision engine does not import model weights and has no net
 
 - Unit/instrumentation and UI tests.
 - CI gate for API 26 minimum and offline-AI source isolation.
-- Repeatable signed builds with a stable private key.
+- Repeatable signed `github` APK and `play` AAB builds with a stable private key.
+- Play merged manifest excludes `REQUEST_INSTALL_PACKAGES`; GitHub flavor alone contains it.
 - APK hash, 400 MiB size, version monotonicity and release-asset verification.
 - Physical-device tests for in-place update and retained local data.
 - Memory, lifecycle, battery, crash and accessibility review.
