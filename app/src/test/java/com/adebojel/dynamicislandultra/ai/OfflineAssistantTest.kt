@@ -41,7 +41,7 @@ class OfflineAssistantTest {
     }
 
     @Test
-    fun updateCommandRoutesToGitHubUpdateCenter() {
+    fun updateCommandRoutesToOfficialUpdateCenter() {
         assertEquals(OfflineAction.OpenUpdateCenter, assistant.respond("cek update").action)
     }
 
