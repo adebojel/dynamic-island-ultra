@@ -19,9 +19,9 @@
 
 - Version v0.0.11 adds accessible accordion navigation for the eight bubble categories and closes the floating panel before a category action launches.
 
-- Latest signed release: [v0.0.12](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.12), Android versionCode 133.
-- [Android CI run #133](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45018487835) passed both flavor unit-test suites, signed APK/AAB builds, installer permission separation, stable certificate verification, checksums, artifact upload and Release publication.
-- Release asset metadata reports a signed APK of 19,091,830 bytes and Play AAB of 18,644,494 bytes; each has a SHA-256 sidecar. The APK and AAB remain comfortably below the 400 MiB cap.
+- Latest signed release: [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13), Android versionCode 134.
+- [Android CI run #134](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45019191147) passed both flavor unit-test suites, signed APK/AAB assembly, installer permission separation, stable certificate verification, checksum generation, artifact upload and release publication.
+- Release asset metadata reports a signed APK of 19,108,214 bytes and Play AAB of 18,646,482 bytes; each has a SHA-256 sidecar.
 - Version v0.0.10 adds four configurable Quick Favorites at the top of the floating bubble, with ten allowlisted app-owned shortcuts and persistent local preferences.
 - Call-status notifications follow the same global privacy switch and per-app allowlist as other notification previews.
 - Physical-device/OEM validation is still outstanding.
@@ -130,3 +130,11 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Expanded menu panels suspend dimming; closing a panel starts a fresh timer.
 - Added unit tests for disabled state, expanded state, detached bubble, delay and visible alpha floor.
 - Physical visibility, reachability and OLED/readability checks remain on the device checklist.
+
+## v0.0.13 optional floating-bubble auto-dim
+
+- Eight-second idle timer, opt-in and disabled by default.
+- Dimmed bubble remains visible and touchable; interaction restores the selected opacity and pulse style.
+- Open category panel pauses dimming; closing the panel restarts the idle interval.
+- Unit tests cover disabled state, menu exclusion, detached overlay, timeout and minimum visible alpha.
+- Physical OEM, sunlight readability and reachability checks remain outstanding.

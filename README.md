@@ -186,22 +186,22 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.12](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.12) (**versionCode 133**, published 22 November 2026). [Android CI run #133](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45018487835) completed successfully. Both distribution-flavor unit-test tasks passed; signed GitHub APK and Play AAB assembly passed; CI verified the GitHub/Play installer-permission split, stable APK signature, AAB JAR signature and matching certificate, SHA-256 generation, artifact upload, and Release publication. Version v0.0.9 adds configurable bubble gestures, size and opacity; v0.0.10 adds four Quick Favorites; v0.0.11 adds accessible collapsible categories and panel dismissal; v0.0.12 improves adaptive launcher icon layers and gesture cancellation/haptic handling.
+The latest verified signed release is [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13) (**versionCode 134**, published 22 November 2026). [Android CI run #134](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45019191147) completed successfully. Both distribution-flavor test suites passed; signed GitHub APK and Play AAB builds passed; CI verified the installer-permission split, stable APK signature, AAB certificate match, SHA-256 generation, artifact upload and Release publication. Version v0.0.13 adds an optional 8-second visible auto-dim for the floating bubble; it remains touchable, restores on interaction, and pauses while the category panel is open.
 
 Release assets:
-- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.apk)
-- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.aab)
-- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.apk.sha256)
-- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/app-release.aab.sha256)
-- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.12/release-info.json)
+- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.apk)
+- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.aab)
+- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.apk.sha256)
+- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.aab.sha256)
+- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/release-info.json)
 
-GitHub's release API reports APK digest `sha256:6a183f42ff9f0373432ca058a32997d6fb262566d34921e70d20d0e674e3dd3d` (19,091,830 bytes) and AAB digest `sha256:2f49d5807f06ee250813b5cc6e4b4f651f251074e5e8f9ec86bb06307ec3b670` (18,644,494 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
+GitHub's release API reports APK digest `sha256:ae4f965d5a116c751b07e610ad65f91789b2b5dc307224896afd981e27c5df4c` (19,108,214 bytes) and AAB digest `sha256:9cbf78f6cbd419290575a364b720a1e27d225cbb8a0857fff1dd12ee24bb987e` (18,646,482 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
 
 **Do not upload the old v0.0.3 AAB.** It predates the distribution-flavor split and contains the self-update permission. Upload only the `v0.0.9 app-release.aab`, built from `bundlePlayRelease`, to Play Console. Its Play merged manifest was checked to exclude `REQUEST_INSTALL_PACKAGES`.
 
 The signed artifacts use the stable release key. The certificate match confirms GitHub APK/AAB signing consistency, but does not decide which app-signing key Google Play uses for APKs served to users. Follow the Play App Signing guidance in [the Play Console checklist](docs/PLAY_CONSOLE_CHECKLIST.md).
 
-**Hardening in v0.0.4–v0.0.8:** UMP privacy-options completion waits for the real SDK initialization callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; Ad Center refreshes its `canRequestAds` state; v0.0.7 adds the combined assistive toolbox; and v0.0.8 adds call-card allowlist enforcement. **v0.0.9** adds bubble gesture/appearance controls; **v0.0.10** adds four Quick Favorites; **v0.0.11** adds accordion navigation and panel dismissal; **v0.0.12** corrects adaptive icon layering and haptic/cancelled-touch lifecycle. Physical-device smoke testing remains outstanding.
+**Hardening in v0.0.4–v0.0.8:** UMP privacy-options completion waits for the real SDK callback; adaptive banners respond to width changes; the foreground-service notification exposes a direct Stop action; Billing retains its client for automatic reconnection; v0.0.7 adds the assistive toolbox; v0.0.8 adds call-card allowlist enforcement. **v0.0.9** adds bubble gesture/appearance controls; **v0.0.10** adds Quick Favorites; **v0.0.11** adds accordion navigation; **v0.0.12** corrects adaptive icon and touch-cancellation lifecycle; **v0.0.13** adds optional visible auto-dim.
 
 
 
@@ -240,3 +240,7 @@ The launcher artwork now uses a transparent adaptive foreground with a neon cyan
 ### Floating bubble auto-dim
 
 The floating bubble can optionally dim after 8 seconds without interaction. The dimmed bubble remains visible and touchable; this is not a system overlay hide/removal or a guarantee that Android/OEM power management will keep the service alive. Touching the bubble restores its normal appearance, and an expanded category panel is never dimmed.
+
+### Floating bubble inactivity dimming
+
+Auto-dim is optional and disabled by default. When enabled, the bubble dims after eight seconds without touch but remains visible and interactive. Touch restores its configured appearance. An expanded category panel is never dimmed.
