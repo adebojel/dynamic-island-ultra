@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.adebojel.dynamicislandultra.BuildConfig
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -66,9 +67,31 @@ class AppUpdateActivity : ComponentActivity() {
         root.addView(checkButton)
         root.addView(note)
         setContentView(root)
+
+        if (!BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+            heading.text = "GOOGLE PLAY UPDATE"
+            status.text = "Versi ini diperbarui melalui Google Play. Gunakan tombol di bawah untuk membuka halaman resmi aplikasi."
+            checkButton.text = "Buka Google Play"
+            checkButton.setOnClickListener { openPlayStoreListing() }
+            return
+        }
+    }
+
+    private fun openPlayStoreListing() {
+        val storeUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        val marketIntent = Intent(Intent.ACTION_VIEW, storeUri).setPackage("com.android.vending")
+        try {
+            startActivity(marketIntent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, storeUri))
+        }
     }
 
     private fun checkForUpdate() {
+        if (!BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+            status.text = "Pembaruan untuk versi Google Play dikelola oleh Google Play."
+            return
+        }
         checkButton.isEnabled = false
         status.text = "Menghubungi GitHub dan memeriksa versi…"
         lifecycleScope.launch {
@@ -219,6 +242,10 @@ class AppUpdateActivity : ComponentActivity() {
     }
 
     private fun installVerifiedApk() {
+        if (!BuildConfig.ENABLE_GITHUB_APK_UPDATER) {
+            status.text = "Pemasangan APK mandiri dinonaktifkan untuk versi Google Play."
+            return
+        }
         val apk = pendingApk ?: return
         if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
             waitingForInstallPermission = true
