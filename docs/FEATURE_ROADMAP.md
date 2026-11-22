@@ -156,7 +156,7 @@ Implemented in source on `main`:
 - Dashboard and Floating Bubble entry points.
 - Filename validation unit tests; no broad storage permission added.
 
-Still not complete for the wider Phase 1 scope: file copy/move, ZIP tools, full document editing, browser tabs/bookmarks/history/download manager, app-owned multi-window manager, global Accessibility Service controls, complete theme editor, and physical-device/OEM validation. These must not be marked done based solely on this module's CI result.
+Remaining Phase 1 gaps after subsequent integration: file copy/move, ZIP tools, full document editing, independent browser tabs/private sessions, snap-to-edge and window opacity/priority controls, screen recording/flashlight/rotation/brightness/volume surfaces, complete theme editor, and physical-device/OEM validation. Browser bookmarks/history/downloads, app-owned mini windows and user-triggered global navigation/screenshot actions are now present in source and must still pass full CI/device validation.
 
 
 ## Phase 1 browser enhancement
@@ -270,3 +270,9 @@ Implemented in source:
 - No third-party app embedding or unsupported freeform-window claim.
 
 Still outstanding: snap-to-edge/grid, per-window opacity/priority, mini browser/PDF/media windows, multiple independent note documents, keyboard/IME regression and physical-device overlay/OEM tests.
+
+
+## Dashboard integration audit
+
+- Global System Controls, Encrypted Backup & Restore, Persistent Reminders and Clipboard History have explicit dashboard cards in addition to their Floating Bubble routes.
+- Floating mini windows are opened from Floating Bubble while the overlay foreground service is active, since the mini-window manager is owned by that service.
