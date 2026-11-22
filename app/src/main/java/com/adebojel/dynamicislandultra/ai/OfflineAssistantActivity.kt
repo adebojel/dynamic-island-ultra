@@ -37,6 +37,7 @@ import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.floating.QrScannerActivity
 import com.adebojel.dynamicislandultra.floating.SensorKitActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
+import com.adebojel.dynamicislandultra.floating.SmartToolsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.overlay.IslandInteractionSettingsActivity
@@ -98,6 +99,7 @@ class OfflineAssistantActivity : ComponentActivity() {
                         OfflineAction.OpenDocumentPreview -> startActivity(Intent(this@OfflineAssistantActivity, DocumentPreviewActivity::class.java))
                         OfflineAction.OpenNotificationPrivacy -> startActivity(Intent(this@OfflineAssistantActivity, NotificationPreviewSettingsActivity::class.java))
                         OfflineAction.OpenIslandSettings -> startActivity(Intent(this@OfflineAssistantActivity, IslandInteractionSettingsActivity::class.java))
+                        OfflineAction.OpenSmartTools -> startActivity(Intent(this@OfflineAssistantActivity, SmartToolsActivity::class.java))
                         OfflineAction.ShowBattery -> {
                             val battery = getSystemService(BATTERY_SERVICE) as android.os.BatteryManager
                             val level = battery.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
