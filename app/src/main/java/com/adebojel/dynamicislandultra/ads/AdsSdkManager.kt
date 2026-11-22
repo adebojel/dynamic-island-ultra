@@ -72,7 +72,10 @@ object AdsSdkManager {
     fun start(activity: Activity, onComplete: (Boolean) -> Unit = {}) {
         synchronized(this) {
             if (isInitialized) {
-                mainHandler.post { onComplete(true) }
+                // Initialization is process-wide, but consent can change later in the same process.
+                // Never report ads-ready unless the current UMP state still allows requests.
+                val ready = canRequestAds
+                mainHandler.post { onComplete(ready) }
                 return
             }
             if (consentFlowStarted) {
