@@ -93,7 +93,7 @@ The release workflow produces two separately signed files from different flavors
 - `app-release.apk`: built with `assembleGithubRelease`; install directly on Android for physical-device smoke tests and GitHub-based updates.
 - `app-release.aab`: built with `bundlePlayRelease`; upload this AAB to Google Play Console. It excludes the GitHub updater permission and routes updates to Google Play. The AAB uses the same stable keystore certificate as the GitHub APK, and CI verifies the JAR signature and fingerprint before publication.
 
-The earlier v0.0.3 AAB was built before this split and must not be uploaded to Play Console. The current [v0.0.5 release](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.5), CI run #119, is the latest verified flavor-separated release: the GitHub APK and Play AAB both passed signing checks, and the Play merged manifest was verified to exclude `REQUEST_INSTALL_PACKAGES`. It also includes the Billing Library automatic service reconnection fix. Upload only the v0.0.5 AAB to Play Console.
+The earlier v0.0.3 AAB was built before this split and must not be uploaded to Play Console. The current [v0.0.6 release](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.6), CI run #124, is the latest verified flavor-separated release: the GitHub APK and Play AAB both passed signing checks, and the Play merged manifest was verified to exclude `REQUEST_INSTALL_PACKAGES`. It includes Billing Library automatic service reconnection and the UMP current-consent gate. Upload only the v0.0.6 AAB to Play Console.
 
 For a new Google Play app, use the AAB and enroll in Play App Signing. Keep the stable JKS as the upload key and retain its encrypted backups. Google Play will manage the app-signing key used to distribute device-specific APKs. Since this package has already been distributed outside Play, review the Android developer verification/package ownership process and be prepared to prove ownership of the same certificate if Play Console requests it.
 
@@ -101,7 +101,7 @@ The Premium subscription product ID in the app is `diu_premium`. Play Console ba
 
 ## Public policy website
 
-The website source and policies are stored in `site/`. GitHub Pages has been enabled with Source = **GitHub Actions** and deployed successfully in [Pages workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026. The deploy job completed validation, Configure Pages, upload, and deployment successfully. The current environment could not independently resolve `github.io`, so each public policy page still needs a normal-browser/device open check before being submitted to Play Console or AdMob.
+The website source and policies are stored in `site/`. GitHub Pages has been enabled with Source = **GitHub Actions** and the latest policy updates deployed successfully in [Pages workflow run #10](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991324924) on 22 November 2026. The deploy job completed validation, Configure Pages, upload, and deployment successfully. The current environment could not independently resolve `github.io`, so each public policy page still needs a normal-browser/device open check before being submitted to Play Console or AdMob.
 
 AdMob requests `https://<hostname>/app-ads.txt` at the hostname root. The GitHub Pages URL is a repository subpath, so this repository also prepares Firebase Hosting as a root-domain host for the same website and seller file.
 
