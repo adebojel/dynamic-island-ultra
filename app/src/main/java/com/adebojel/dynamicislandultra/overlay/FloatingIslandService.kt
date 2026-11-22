@@ -15,6 +15,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.IBinder
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.view.ViewConfiguration
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -52,6 +56,7 @@ class FloatingIslandService : Service() {
     private var latestText = "DYNAMIC ISLAND"
     private var batteryText = ""
     private var pulseAnimator: ObjectAnimator? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -164,8 +169,8 @@ class FloatingIslandService : Service() {
             typeface = Typeface.DEFAULT_BOLD
             setPadding(22, 13, 22, 13)
             background = rounded(Color.rgb(10, 13, 24), Color.rgb(67, 232, 255), 48f, 2)
-            contentDescription = "Dynamic Island floating control. Tap to open tools; drag to move."
-            setOnClickListener { togglePanel() }
+            contentDescription = "Dynamic Island floating control. Tap, double-tap, long-press, or swipe according to gesture settings; drag to move."
+            setOnClickListener { performBubbleGesture("tap") }
             setOnTouchListener(DragTouchListener())
         }
         windowManager.addView(bubble, bubbleParams)
@@ -181,26 +186,55 @@ class FloatingIslandService : Service() {
     private fun applyPremiumAppearance() {
         val view = bubble ?: return
         val accent = PremiumAccess.accentColor(this)
+        val preferences = getSharedPreferences("island", MODE_PRIVATE)
         val scale = PremiumAccess.islandScale(this)
+        val bubbleScale = preferences.getFloat("bubble_size", 1f).coerceIn(0.8f, 1.4f)
+        val opacity = preferences.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)
         view.background = rounded(Color.rgb(10, 13, 24), accent, 48f, 2)
-        view.textSize = 11f * scale
-        val horizontal = (22 * scale).toInt()
-        val vertical = (13 * scale).toInt()
+        view.textSize = 11f * scale * bubbleScale
+        val horizontal = (22 * scale * bubbleScale).toInt()
+        val vertical = (13 * scale * bubbleScale).toInt()
         view.setPadding(horizontal, vertical, horizontal, vertical)
 
         pulseAnimator?.cancel()
         pulseAnimator = null
         val (lowAlpha, duration) = when (PremiumAccess.pulseStyle(this)) {
-            "off" -> return
+            "off" -> { view.alpha = opacity; return }
             "soft" -> 0.94f to 2300L
             "fast" -> 0.76f to 900L
             else -> 0.86f to 1450L
         }
-        pulseAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, lowAlpha, 1f).apply {
+        pulseAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, lowAlpha * opacity, opacity).apply {
             this.duration = duration
             repeatMode = ValueAnimator.REVERSE
             repeatCount = ValueAnimator.INFINITE
             start()
+        }
+    }
+
+
+    private fun performBubbleGesture(gesture: String) {
+        val preferences = getSharedPreferences("island", MODE_PRIVATE)
+        val action = BubbleGestureConfig.resolve(
+            gesture,
+            preferences.getString("gesture_$gesture", null)
+        )
+        when (action) {
+            "menu" -> togglePanel()
+            "assistant" -> launchBubbleActivity(OfflineAssistantActivity::class.java)
+            "media" -> launchBubbleActivity(MediaControlsActivity::class.java)
+            "notifications" -> launchBubbleActivity(NotificationPreviewSettingsActivity::class.java)
+            "workspace" -> launchBubbleActivity(FloatingWorkspaceActivity::class.java)
+            "settings" -> launchBubbleActivity(IslandInteractionSettingsActivity::class.java)
+            "none" -> Unit
+        }
+    }
+
+    private fun launchBubbleActivity(activity: Class<*>) {
+        runCatching {
+            startActivity(Intent(this, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.onFailure {
+            Toast.makeText(this, "Fitur tidak tersedia pada perangkat ini", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -383,6 +417,19 @@ class FloatingIslandService : Service() {
         private var startX = 0
         private var startY = 0
         private var dragged = false
+        private var longPressTriggered = false
+        private var swipeGesture: String? = null
+        private var activeView: View? = null
+        private var lastTapAt = 0L
+        private var pendingTap: Runnable? = null
+
+        private val longPressTask = Runnable {
+            if (!dragged && activeView != null) {
+                longPressTriggered = true
+                activeView?.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                performBubbleGesture("long_press")
+            }
+        }
 
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             when (event.action) {
@@ -392,19 +439,43 @@ class FloatingIslandService : Service() {
                     startX = bubbleParams.x
                     startY = bubbleParams.y
                     dragged = false
+                    longPressTriggered = false
+                    swipeGesture = null
+                    activeView = view
+                    mainHandler.removeCallbacks(longPressTask)
+                    mainHandler.postDelayed(
+                        longPressTask,
+                        ViewConfiguration.getLongPressTimeout().toLong()
+                    )
                     return true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (event.rawX - downX).toInt()
                     val dy = (event.rawY - downY).toInt()
-                    if (abs(dx) + abs(dy) > 12) dragged = true
-                    bubbleParams.x = startX + dx
-                    bubbleParams.y = startY + dy
-                    runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
+                    val configuration = ViewConfiguration.get(this@FloatingIslandService)
+                    if (abs(dx) + abs(dy) > configuration.scaledTouchSlop) {
+                        dragged = true
+                        mainHandler.removeCallbacks(longPressTask)
+                    }
+                    if (dragged) {
+                        swipeGesture = detectConfiguredSwipe(dx, dy)
+                        if (swipeGesture == null) {
+                            bubbleParams.x = startX + dx
+                            bubbleParams.y = startY + dy
+                            runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
+                        }
+                    }
                     return true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (dragged) {
+                    mainHandler.removeCallbacks(longPressTask)
+                    val gesture = swipeGesture
+                    if (gesture != null) {
+                        bubbleParams.x = startX
+                        bubbleParams.y = startY
+                        runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
+                        performBubbleGesture(gesture)
+                    } else if (dragged) {
                         val preferences = getSharedPreferences("island", MODE_PRIVATE)
                         if (preferences.getBoolean("edge_docking", true)) {
                             val width = resources.displayMetrics.widthPixels
@@ -422,13 +493,61 @@ class FloatingIslandService : Service() {
                         }
                         preferences.edit().putInt("bubble_x", bubbleParams.x)
                             .putInt("bubble_y", bubbleParams.y).apply()
-                    } else {
-                        view.performClick()
+                    } else if (!longPressTriggered) {
+                        dispatchTap(view)
                     }
+                    activeView = null
+                    return true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    mainHandler.removeCallbacks(longPressTask)
+                    activeView = null
                     return true
                 }
             }
             return false
+        }
+
+        private fun dispatchTap(view: View) {
+            val now = SystemClock.uptimeMillis()
+            val doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout().toLong()
+            val previousTap = pendingTap
+            if (previousTap != null && now - lastTapAt <= doubleTapTimeout) {
+                mainHandler.removeCallbacks(previousTap)
+                pendingTap = null
+                lastTapAt = 0L
+                performBubbleGesture("double_tap")
+                return
+            }
+            if (previousTap != null) {
+                mainHandler.removeCallbacks(previousTap)
+                previousTap.run()
+            }
+            lastTapAt = now
+            val task = Runnable {
+                pendingTap = null
+                lastTapAt = 0L
+                view.performClick()
+            }
+            pendingTap = task
+            mainHandler.postDelayed(task, doubleTapTimeout)
+        }
+
+        private fun detectConfiguredSwipe(dx: Int, dy: Int): String? {
+            val threshold = (42 * resources.displayMetrics.density).toInt()
+            val candidate = when {
+                abs(dx) >= threshold && abs(dx) > abs(dy) * 1.25f ->
+                    if (dx > 0) "swipe_right" else "swipe_left"
+                abs(dy) >= threshold && abs(dy) > abs(dx) * 1.25f ->
+                    if (dy > 0) "swipe_down" else "swipe_up"
+                else -> null
+            } ?: return null
+            val preferences = getSharedPreferences("island", MODE_PRIVATE)
+            val action = BubbleGestureConfig.resolve(
+                candidate,
+                preferences.getString("gesture_$candidate", null)
+            )
+            return candidate.takeIf { action != "none" }
         }
     }
 
@@ -468,6 +587,7 @@ class FloatingIslandService : Service() {
         runCatching { unregisterReceiver(batteryReceiver) }
         runCatching { unregisterReceiver(appearanceReceiver) }
         runCatching { unregisterReceiver(activityCardReceiver) }
+        mainHandler.removeCallbacksAndMessages(null)
         pulseAnimator?.cancel()
         pulseAnimator = null
         bubble?.let { runCatching { windowManager.removeView(it) } }

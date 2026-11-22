@@ -1,10 +1,13 @@
 package com.adebojel.dynamicislandultra.overlay
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 
 class IslandInteractionSettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,34 +25,165 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
             MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFF43E8FF))) {
                 var snap by remember { mutableStateOf(prefs.getBoolean("edge_docking", true)) }
                 var haptics by remember { mutableStateOf(prefs.getBoolean("haptic_enabled", false)) }
-                Column(Modifier.fillMaxSize().background(Color(0xFF0B1222)).padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                var bubbleSize by remember { mutableFloatStateOf(prefs.getFloat("bubble_size", 1f).coerceIn(0.8f, 1.4f)) }
+                var bubbleOpacity by remember { mutableFloatStateOf(prefs.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)) }
+                var tapAction by remember { mutableStateOf(BubbleGestureConfig.resolve("tap", prefs.getString("gesture_tap", null))) }
+                var doubleTapAction by remember { mutableStateOf(BubbleGestureConfig.resolve("double_tap", prefs.getString("gesture_double_tap", null))) }
+                var longPressAction by remember { mutableStateOf(BubbleGestureConfig.resolve("long_press", prefs.getString("gesture_long_press", null))) }
+                var swipeUpAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_up", prefs.getString("gesture_swipe_up", null))) }
+                var swipeDownAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_down", prefs.getString("gesture_swipe_down", null))) }
+                var swipeLeftAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_left", prefs.getString("gesture_swipe_left", null))) }
+                var swipeRightAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_right", prefs.getString("gesture_swipe_right", null))) }
+
+                Column(
+                    Modifier.fillMaxSize()
+                        .background(Color(0xFF0B1222))
+                        .verticalScroll(rememberScrollState())
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
                     Text("ISLAND INTERACTION", color = Color(0xFF43E8FF), fontSize = 18.sp)
-                    Text("Pengaturan disimpan lokal. Haptic dapat dimatikan kapan saja.",
-                        color = Color.LightGray, fontSize = 12.sp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Snap ke tepi layar", color = Color.White)
-                            Text("Pill menempel ke sisi kiri atau kanan setelah digeser.", color = Color.LightGray, fontSize = 10.sp)
-                        }
-                        Switch(checked = snap, onCheckedChange = {
+                    Text(
+                        "Atur posisi, ukuran, transparansi, dan aksi gesture bubble. Semua preferensi disimpan lokal.",
+                        color = Color.LightGray,
+                        fontSize = 12.sp
+                    )
+
+                    SettingSwitch(
+                        title = "Snap ke tepi layar",
+                        description = "Pill menempel ke sisi kiri atau kanan setelah digeser.",
+                        checked = snap,
+                        onCheckedChange = {
                             snap = it
                             prefs.edit().putBoolean("edge_docking", it).apply()
-                        })
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Haptic feedback", color = Color.White)
-                            Text("Getaran singkat saat pill dilepas.", color = Color.LightGray, fontSize = 10.sp)
                         }
-                        Switch(checked = haptics, onCheckedChange = {
+                    )
+                    SettingSwitch(
+                        title = "Haptic feedback",
+                        description = "Getaran singkat saat pill dilepas atau long-press dijalankan.",
+                        checked = haptics,
+                        onCheckedChange = {
                             haptics = it
                             prefs.edit().putBoolean("haptic_enabled", it).apply()
-                        })
+                        }
+                    )
+
+                    Text("UKURAN BUBBLE · ${(bubbleSize * 100).roundToInt()}%", color = Color.White)
+                    Slider(
+                        value = bubbleSize,
+                        onValueChange = {
+                            bubbleSize = it
+                            prefs.edit().putFloat("bubble_size", it).apply()
+                        },
+                        valueRange = 0.8f..1.4f,
+                        onValueChangeFinished = { refreshBubbleAppearance() }
+                    )
+                    Text("OPASITAS · ${(bubbleOpacity * 100).roundToInt()}%", color = Color.White)
+                    Slider(
+                        value = bubbleOpacity,
+                        onValueChange = {
+                            bubbleOpacity = it
+                            prefs.edit().putFloat("bubble_opacity", it).apply()
+                        },
+                        valueRange = 0.4f..1f,
+                        onValueChangeFinished = { refreshBubbleAppearance() }
+                    )
+
+                    Text("GESTURE MAPPING", color = Color(0xFF43E8FF), fontSize = 14.sp)
+                    Text(
+                        "Swipe hanya mengambil alih gerakan saat tindakan swipe terkait diaktifkan. Jika tidak, bubble tetap dapat digeser.",
+                        color = Color.LightGray,
+                        fontSize = 11.sp
+                    )
+                    GestureSettingRow("Tap", "Sentuhan satu kali", "tap", tapAction) {
+                        tapAction = it
+                        saveGesture("tap", it)
                     }
+                    GestureSettingRow("Double tap", "Dua sentuhan cepat", "double_tap", doubleTapAction) {
+                        doubleTapAction = it
+                        saveGesture("double_tap", it)
+                    }
+                    GestureSettingRow("Long press", "Tekan dan tahan", "long_press", longPressAction) {
+                        longPressAction = it
+                        saveGesture("long_press", it)
+                    }
+                    GestureSettingRow("Swipe up", "Geser ke atas", "swipe_up", swipeUpAction) {
+                        swipeUpAction = it
+                        saveGesture("swipe_up", it)
+                    }
+                    GestureSettingRow("Swipe down", "Geser ke bawah", "swipe_down", swipeDownAction) {
+                        swipeDownAction = it
+                        saveGesture("swipe_down", it)
+                    }
+                    GestureSettingRow("Swipe left", "Geser ke kiri", "swipe_left", swipeLeftAction) {
+                        swipeLeftAction = it
+                        saveGesture("swipe_left", it)
+                    }
+                    GestureSettingRow("Swipe right", "Geser ke kanan", "swipe_right", swipeRightAction) {
+                        swipeRightAction = it
+                        saveGesture("swipe_right", it)
+                    }
+
                     OutlinedButton(onClick = { finish() }, modifier = Modifier.fillMaxWidth()) {
                         Text("Selesai")
                     }
+                }
+            }
+        }
+    }
+
+    private fun saveGesture(gesture: String, action: String) {
+        getSharedPreferences("island", MODE_PRIVATE).edit()
+            .putString("gesture_$gesture", BubbleGestureConfig.resolve(gesture, action))
+            .apply()
+    }
+
+    private fun refreshBubbleAppearance() {
+        sendBroadcast(Intent(FloatingIslandService.ACTION_APPEARANCE_CHANGED).setPackage(packageName))
+    }
+}
+
+@Composable
+private fun SettingSwitch(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = Color.White)
+            Text(description, color = Color.LightGray, fontSize = 10.sp)
+        }
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+@Composable
+private fun GestureSettingRow(
+    title: String,
+    description: String,
+    gesture: String,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(title, color = Color.White)
+        Text(description, color = Color.LightGray, fontSize = 10.sp)
+        Box {
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(BubbleGestureConfig.labelFor(selected))
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                BubbleGestureConfig.optionsFor(gesture).forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.label) },
+                        onClick = {
+                            onSelect(option.key)
+                            expanded = false
+                        }
+                    )
                 }
             }
         }

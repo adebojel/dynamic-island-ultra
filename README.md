@@ -218,3 +218,15 @@ CI tests and APK assembly do not replace physical-device testing. The next devic
 [Repository](https://github.com/adebojel/dynamic-island-ultra) · [Issues](https://github.com/adebojel/dynamic-island-ultra/issues)
 
 </div>
+
+## Floating bubble controls
+
+The floating overlay now supports configurable local gesture routing:
+
+- Tap (opens the bubble menu by default), double tap (offline assistant by default), and long press.
+- Optional swipe up/down/left/right actions. Swipe gestures are disabled by default so dragging remains available until the user assigns an action.
+- Local action choices: bubble menu, offline assistant, media controls, notification privacy settings, app-owned PiP workspace, or bubble settings.
+- Bubble size (80–140%) and opacity (40–100%) are adjustable from Island Interaction settings. Changes refresh the active overlay without restarting the service.
+- The gesture router uses a fixed allowlist. It does not execute arbitrary shell commands, change protected Android settings, or control third-party apps.
+
+These controls are implemented in the existing overlay service and persist in app-private preferences. Physical drag, haptic, accessibility, and OEM behaviour still require device validation.

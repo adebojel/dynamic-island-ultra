@@ -51,3 +51,11 @@ The built-in assistant and local tools work without internet, imported model fil
 - Installed app list is limited to launcher-visible activities.
 - Android controls APK installer confirmation; app cannot silently bypass it.
 - Boot restore and long-running overlays remain subject to Android/OEM restrictions.
+
+## Floating bubble configuration update
+
+- Tap, double-tap, long-press, and configurable four-direction swipe gesture mapping.
+- Allowlisted actions route only to the app's own menu, offline assistant, media controls, notification privacy screen, PiP workspace, and bubble settings.
+- Swipe mappings default to disabled to preserve normal drag behaviour.
+- User-adjustable bubble size (80–140%) and opacity (40–100%); live appearance refresh is broadcast only within this app.
+- Gesture action validation falls back to safe defaults for invalid or stale stored values; arbitrary commands are never accepted.

@@ -63,3 +63,12 @@ Implemented in the current source: local notification privacy settings and app a
 Not marked as complete: real-device/OEM testing, TalkBack user testing, Play Console foreground-service review, AdMob production fill and publisher review, Firebase root-host app-ads.txt confirmation, Play Billing product/base-plan activation and backend purchase-token verification.
 
 A generative offline LLM is not the existing deterministic command router. It remains a separate module requiring model licensing, runtime integration, device RAM/storage/thermal testing and API 26+ compatibility evaluation. Ordinary apps cannot silently switch protected Wi-Fi/mobile-data settings or take privileged control over other apps; those actions must route through Android settings and user confirmation.
+
+## Implemented in the current bubble-controls update
+
+- Added configurable tap, double-tap, long-press and four-direction swipe mapping.
+- Added allowlisted routing to the app's own assistant, media, notification privacy, workspace and settings screens.
+- Added bubble size and opacity controls with live appearance refresh.
+- Added unit tests for safe gesture defaults, invalid stored actions, and swipe/drag coexistence.
+
+Still outstanding: long-running OEM/device validation, TalkBack interaction testing on physical devices, auto-hide/restore behaviour, multi-window positioning tests, and a full custom shortcut/favourites editor.
