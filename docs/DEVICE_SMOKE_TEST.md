@@ -230,3 +230,12 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Leave the activity and confirm sensor listeners stop; reopen and confirm readings resume.
 - [ ] Test on a device without an accelerometer (or an emulator configured without one) and confirm the UI states the sensor is unavailable rather than displaying a simulated value.
 - [ ] Repeat on Android 8/API 26 and record the model, sensor vendor and observed stability.
+
+
+## Stopwatch lap checks
+
+- [ ] Start stopwatch and record at least three laps; confirm each split reflects elapsed time since the prior lap.
+- [ ] Pause stopwatch; confirm lap recording is disabled and elapsed time remains stable.
+- [ ] Resume and record another lap; confirm split timing continues from the previous lap.
+- [ ] Reset; confirm elapsed time and all lap records are cleared.
+- [ ] Confirm elapsed timing uses monotonic elapsed-realtime and does not jump when device wall-clock time changes.

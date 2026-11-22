@@ -227,6 +227,8 @@ private fun StopwatchPanel() {
     var startedAt by remember { mutableLongStateOf(0L) }
     var accumulated by remember { mutableLongStateOf(0L) }
     var elapsed by remember { mutableLongStateOf(0L) }
+    var lastLapAt by remember { mutableLongStateOf(0L) }
+    val laps = remember { mutableStateListOf<Long>() }
 
     LaunchedEffect(running) {
         while (running) {
@@ -240,6 +242,7 @@ private fun StopwatchPanel() {
         Button(onClick = {
             if (!running) {
                 startedAt = SystemClock.elapsedRealtime()
+                lastLapAt = accumulated
                 running = true
             } else {
                 accumulated += SystemClock.elapsedRealtime() - startedAt
@@ -247,12 +250,29 @@ private fun StopwatchPanel() {
                 running = false
             }
         }) { Text(if (running) "Jeda" else "Mulai") }
+        OutlinedButton(
+            onClick = {
+                val total = accumulated + (if (running) SystemClock.elapsedRealtime() - startedAt else 0L)
+                val lap = (total - lastLapAt).coerceAtLeast(0L)
+                laps.add(0, lap)
+                lastLapAt = total
+            },
+            enabled = running
+        ) { Text("Putaran") }
         OutlinedButton(onClick = {
             running = false
             startedAt = 0L
             accumulated = 0L
             elapsed = 0L
+            lastLapAt = 0L
+            laps.clear()
         }) { Text("Reset") }
+    }
+    if (laps.isNotEmpty()) {
+        Text("PUTARAN", color = ToolCyan, fontSize = 12.sp)
+        laps.forEachIndexed { index, lap ->
+            Text("Putaran ${laps.size - index}: ${formatDuration(lap)}", color = Color.LightGray, fontSize = 12.sp)
+        }
     }
 }
 

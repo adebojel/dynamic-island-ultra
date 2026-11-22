@@ -190,3 +190,12 @@ Implemented:
 - Unit tests cover flat sample, a known 45-degree pitch sample and invalid sensor samples.
 
 Still outstanding: ruler/protractor hardware and display calibration, distance measurement, altimeter accuracy, sound/light meters with permission and hardware review, compass calibration, persistent reminders, multi-timer, stopwatch lap and clipboard tools. Physical-device sensor validation remains required.
+
+
+## Stopwatch lap recording
+
+Implemented in Smart Toolbox:
+- Records lap split durations while the monotonic stopwatch is running.
+- Lap records are shown newest-first and cleared only by Reset.
+- Lap capture is disabled while paused; no wall-clock timer is used for elapsed measurement.
+- The feature is session-local and is not persisted after closing the screen.

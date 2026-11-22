@@ -30,7 +30,7 @@ The built-in assistant and local tools work without internet, imported model fil
 
 - Local unit converter for length, mass, volume and temperature, including metric and common imperial units.
 - Counter with increment, decrement and reset.
-- Stopwatch based on Android's monotonic elapsed-realtime clock.
+- Stopwatch based on Android's monotonic elapsed-realtime clock, with recorded lap splits.
 - Countdown timer up to 24 hours and a 25-minute Pomodoro preset.
 - The toolbox is reachable from bubble category 09, a configurable gesture, or a Quick Favorite.
 - Conversion logic is a pure local module with unit tests; no permission or network dependency.
