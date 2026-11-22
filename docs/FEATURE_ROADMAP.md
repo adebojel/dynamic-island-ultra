@@ -179,3 +179,14 @@ Implemented in source:
 - Dashboard and Floating Bubble entry points.
 
 Still outstanding: screenshot and screen-recording workflows, flashlight/rotation/brightness/volume control surfaces, full accessibility user experience, TalkBack usability review and OEM validation. Protected settings must continue to use Android's own user-controlled settings surfaces.
+
+
+## Phase 1 Smart Toolbox sensor utility
+
+Implemented:
+- Two-axis spirit level (pitch and roll) from the actual accelerometer.
+- User-settable local zero reference and reset calibration.
+- Listener is registered while Smart Toolbox is resumed and removed on pause.
+- Unit tests cover flat sample, a known 45-degree pitch sample and invalid sensor samples.
+
+Still outstanding: ruler/protractor hardware and display calibration, distance measurement, altimeter accuracy, sound/light meters with permission and hardware review, compass calibration, persistent reminders, multi-timer, stopwatch lap and clipboard tools. Physical-device sensor validation remains required.

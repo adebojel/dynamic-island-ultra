@@ -127,3 +127,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Service must be enabled manually in Android Accessibility settings; the app cannot silently enable it.
 - XML configuration sets `canRetrieveWindowContent=false`; the event callback does not inspect or retain screen content. Every action is initiated by an explicit user tap.
 - Screenshot, screen recording, global volume/brightness sliders and flashlight toggles are not implemented by this service.
+
+
+### Smart Toolbox — accelerometer spirit level
+
+- Two-axis pitch/roll display derived from the device's actual accelerometer readings.
+- Live readings are registered only while SmartToolsActivity is resumed and unregistered on pause.
+- User can set the current physical device orientation as a local zero reference and reset the reference.
+- Unsupported devices show an explicit unavailable state; no simulated readings or network dependency.
+- Not a certified precision instrument; case shape, sensor bias, movement and device calibration affect accuracy.

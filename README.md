@@ -41,7 +41,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | App collection | Lists launcher-visible apps and launches selected apps |
 | Local notes | Saves notes in app-private storage |
 | Local calculator | Parses arithmetic expressions locally |
-| Smart Toolbox | Local unit conversion (length, mass, volume, temperature), counter, stopwatch, countdown timer and 25-minute Pomodoro preset |
+| Smart Toolbox | Local unit conversion, counter, stopwatch, countdown/Pomodoro timer and accelerometer-based two-axis spirit level with user calibration |
 | Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |

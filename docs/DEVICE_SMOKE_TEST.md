@@ -218,3 +218,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Confirm the service does not expose or read window text/content and no screen text is shown or stored by the module.
 - [ ] Disable the service in Android settings; return and confirm controls become disabled and no false success is shown.
 - [ ] Test with TalkBack enabled and across at least two OEM implementations.
+
+
+## Smart Toolbox spirit-level checks
+
+- [ ] Open Smart Toolbox → Spirit Level on a device with an accelerometer; confirm real readings arrive.
+- [ ] Keep the device flat and check pitch/roll near zero; record expected sensor bias.
+- [ ] Tilt the device on each axis and confirm the indicator moves in the corresponding direction.
+- [ ] Set the current position as zero and confirm the displayed relative angles return near zero.
+- [ ] Reset calibration and confirm the original gravity-based angle returns.
+- [ ] Leave the activity and confirm sensor listeners stop; reopen and confirm readings resume.
+- [ ] Test on a device without an accelerometer (or an emulator configured without one) and confirm the UI states the sensor is unavailable rather than displaying a simulated value.
+- [ ] Repeat on Android 8/API 26 and record the model, sensor vendor and observed stability.
