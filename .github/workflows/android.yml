@@ -215,7 +215,8 @@ jobs:
           name: dynamic-island-ultra-${{ env.VERSION_NAME }}-${{ steps.signing.outputs.ready == 'true' && 'release' || 'debug-preview' }}
           path: |
             dist/*
-            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/tests/testGithubDebugUnitTest/
+            app/build/reports/tests/testPlayDebugUnitTest/
           if-no-files-found: error
           retention-days: 30
 
