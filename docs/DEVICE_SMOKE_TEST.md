@@ -153,3 +153,14 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Turn Haptic feedback off and long-press; confirm no vibration occurs.
 - [ ] Turn Haptic feedback on and long-press; confirm the configured interaction feedback works.
 - [ ] Begin dragging then trigger ACTION_CANCEL; confirm the bubble returns to its original position without a delayed tap action.
+
+## Floating bubble auto-dim checks
+
+- [ ] Confirm auto-dim is disabled on a fresh installation/default preferences.
+- [ ] Enable auto-dim and leave the bubble untouched for eight seconds; confirm it dims but remains visible and touchable.
+- [ ] Tap the dimmed bubble; confirm its normal opacity and configured pulse style are restored immediately.
+- [ ] Move/drag the bubble; confirm the idle timer restarts after release.
+- [ ] Open the category menu; leave it open beyond eight seconds and confirm the bubble/menu does not dim.
+- [ ] Close the panel; confirm the eight-second idle timer starts again.
+- [ ] Disable auto-dim while the bubble is dimmed; confirm its normal appearance is restored.
+- [ ] With pulse style Off, repeat auto-dim and touch restoration; confirm the setting still works without an animator.

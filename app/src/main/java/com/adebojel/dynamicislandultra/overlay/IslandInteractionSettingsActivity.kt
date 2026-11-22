@@ -25,6 +25,7 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
             MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFF43E8FF))) {
                 var snap by remember { mutableStateOf(prefs.getBoolean("edge_docking", true)) }
                 var haptics by remember { mutableStateOf(prefs.getBoolean("haptic_enabled", false)) }
+                var autoDim by remember { mutableStateOf(prefs.getBoolean("auto_dim_enabled", false)) }
                 var bubbleSize by remember { mutableFloatStateOf(prefs.getFloat("bubble_size", 1f).coerceIn(0.8f, 1.4f)) }
                 var bubbleOpacity by remember { mutableFloatStateOf(prefs.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)) }
                 var tapAction by remember { mutableStateOf(BubbleGestureConfig.resolve("tap", prefs.getString("gesture_tap", null))) }
@@ -69,6 +70,17 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                         onCheckedChange = {
                             haptics = it
                             prefs.edit().putBoolean("haptic_enabled", it).apply()
+                        }
+                    )
+
+                    SettingSwitch(
+                        title = "Auto-dim setelah 8 detik",
+                        description = "Bubble meredup saat tidak disentuh, tetapi tetap terlihat dan dapat diketuk.",
+                        checked = autoDim,
+                        onCheckedChange = {
+                            autoDim = it
+                            prefs.edit().putBoolean("auto_dim_enabled", it).apply()
+                            refreshBubbleAppearance()
                         }
                     )
 

@@ -57,6 +57,17 @@ class FloatingIslandService : Service() {
     private var batteryText = ""
     private var pulseAnimator: ObjectAnimator? = null
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val autoDimTask = Runnable {
+        val preferences = getSharedPreferences("island", MODE_PRIVATE)
+        if (!BubbleAutoDimConfig.shouldDim(preferences.getBoolean("auto_dim_enabled", false), expanded, bubble != null)) {
+            return@Runnable
+        }
+        pulseAnimator?.cancel()
+        pulseAnimator = null
+        val opacity = preferences.getFloat("bubble_opacity", 1f).coerceIn(0.4f, 1f)
+        bubble?.animate()?.cancel()
+        bubble?.animate()?.alpha(BubbleAutoDimConfig.targetAlpha(opacity))?.setDuration(240L)?.start()
+    }
 
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -183,7 +194,7 @@ class FloatingIslandService : Service() {
         bubble?.text = "●  $status${latestText.take(38)}"
     }
 
-    private fun applyPremiumAppearance() {
+    private fun applyPremiumAppearance(scheduleDim: Boolean = true) {
         val view = bubble ?: return
         val accent = PremiumAccess.accentColor(this)
         val preferences = getSharedPreferences("island", MODE_PRIVATE)
@@ -199,7 +210,7 @@ class FloatingIslandService : Service() {
         pulseAnimator?.cancel()
         pulseAnimator = null
         val (lowAlpha, duration) = when (PremiumAccess.pulseStyle(this)) {
-            "off" -> { view.alpha = opacity; return }
+            "off" -> { view.alpha = opacity; if (scheduleDim) scheduleAutoDim(); return }
             "soft" -> 0.94f to 2300L
             "fast" -> 0.76f to 900L
             else -> 0.86f to 1450L
@@ -210,6 +221,21 @@ class FloatingIslandService : Service() {
             repeatCount = ValueAnimator.INFINITE
             start()
         }
+        if (scheduleDim) scheduleAutoDim()
+    }
+
+    private fun scheduleAutoDim() {
+        mainHandler.removeCallbacks(autoDimTask)
+        val preferences = getSharedPreferences("island", MODE_PRIVATE)
+        if (BubbleAutoDimConfig.shouldSchedule(preferences.getBoolean("auto_dim_enabled", false), expanded, bubble != null)) {
+            mainHandler.postDelayed(autoDimTask, BubbleAutoDimConfig.IDLE_DELAY_MS)
+        }
+    }
+
+    private fun revealBubbleForInteraction() {
+        mainHandler.removeCallbacks(autoDimTask)
+        bubble?.animate()?.cancel()
+        applyPremiumAppearance(scheduleDim = false)
     }
 
 
@@ -243,6 +269,7 @@ class FloatingIslandService : Service() {
             closePanel()
             return
         }
+        mainHandler.removeCallbacks(autoDimTask)
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -413,6 +440,7 @@ class FloatingIslandService : Service() {
         panel?.let { runCatching { windowManager.removeView(it) } }
         panel = null
         expanded = false
+        scheduleAutoDim()
     }
 
     private fun addSection(
@@ -537,6 +565,7 @@ class FloatingIslandService : Service() {
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    revealBubbleForInteraction()
                     downX = event.rawX
                     downY = event.rawY
                     startX = bubbleParams.x
@@ -600,6 +629,7 @@ class FloatingIslandService : Service() {
                         dispatchTap(view)
                     }
                     activeView = null
+                    scheduleAutoDim()
                     return true
                 }
                 MotionEvent.ACTION_CANCEL -> {
@@ -613,6 +643,7 @@ class FloatingIslandService : Service() {
                         runCatching { windowManager.updateViewLayout(bubble, bubbleParams) }
                     }
                     activeView = null
+                    scheduleAutoDim()
                     return true
                 }
             }

@@ -34,7 +34,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 
 | Module | Included behaviour |
 |---|---|
-| Dynamic Island | Draggable floating pill, soft pulse and saved position |
+| Dynamic Island | Draggable floating pill, soft pulse, saved position and optional visible auto-dim after 8 seconds of inactivity |
 | Battery | Live percentage/charging indicator while overlay is active |
 | Notification bridge & privacy | Local preview settings, hide content by default, app allowlist, secret/ongoing/group-summary filtering, and generic call status cards |
 | Assistive hub | Categorized Android settings and app shortcuts |
@@ -236,3 +236,7 @@ These controls are implemented in the existing overlay service and persist in ap
 ## Adaptive launcher icon
 
 The launcher artwork now uses a transparent adaptive foreground with a neon cyan/violet floating-island waveform and a separate dark background color. Both round and standard Android adaptive icon definitions share the same background resource, allowing launchers to apply their own icon masks.
+
+### Floating bubble auto-dim
+
+The floating bubble can optionally dim after 8 seconds without interaction. The dimmed bubble remains visible and touchable; this is not a system overlay hide/removal or a guarantee that Android/OEM power management will keep the service alive. Touching the bubble restores its normal appearance, and an expanded category panel is never dimmed.

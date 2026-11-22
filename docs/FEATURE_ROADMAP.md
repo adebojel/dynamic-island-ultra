@@ -122,3 +122,11 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - ACTION_CANCEL removes pending tap/long-press callbacks and restores the pre-drag coordinates.
 - Android CI run #133 passed both distribution test suites, signed builds, manifest separation, certificate validation, checksum generation and release publication.
 - Physical launcher-mask, drag-cancellation and haptic tests remain in docs/DEVICE_SMOKE_TEST.md.
+
+## Floating bubble auto-dim update
+
+- Added an opt-in eight-second inactivity dim control; default remains off.
+- Dimmed alpha remains non-zero and touchable. Touch restores the selected size, opacity and pulse style.
+- Expanded menu panels suspend dimming; closing a panel starts a fresh timer.
+- Added unit tests for disabled state, expanded state, detached bubble, delay and visible alpha floor.
+- Physical visibility, reachability and OLED/readability checks remain on the device checklist.

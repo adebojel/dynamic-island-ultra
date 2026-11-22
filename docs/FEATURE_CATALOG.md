@@ -80,3 +80,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Added a dedicated launcher background color for the Android adaptive icon; regular and round definitions share it.
 - Long-press haptic feedback respects the haptic preference.
 - ACTION_CANCEL removes delayed gesture callbacks and restores a drag to its original position.
+
+## Floating bubble inactivity dimming
+
+- Opt-in setting: “Auto-dim setelah 8 detik”, disabled by default.
+- After eight seconds without input, the bubble dims to a non-zero alpha and remains visible/touchable.
+- ACTION_DOWN restores the configured appearance; ACTION_UP/ACTION_CANCEL starts a fresh idle interval.
+- The category panel is not dimmed; closing it restarts the idle countdown.
+- Dimming cancels the pulse animator while idle and restarts the configured pulse when interacted with.
+- This is not full hide/auto-removal and does not promise immunity from Android/OEM service lifecycle controls.
