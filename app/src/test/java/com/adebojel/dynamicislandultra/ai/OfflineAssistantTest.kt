@@ -46,6 +46,14 @@ class OfflineAssistantTest {
     }
 
     @Test
+    fun updateCommandUsesDistributionNeutralWording() {
+        assertEquals(
+            "Membuka pemeriksa pembaruan resmi aplikasi.",
+            assistant.respond("cek update").text
+        )
+    }
+
+    @Test
     fun diagnosticsAreRunLocally() {
         assertEquals(OfflineAction.RunDiagnostics, assistant.respond("cek kesehatan aplikasi").action)
     }
