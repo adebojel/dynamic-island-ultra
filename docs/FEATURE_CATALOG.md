@@ -163,3 +163,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Reminder notifications use a dedicated channel and Android's notification permission state.
 - Timing is inexact and may be delayed by Doze/OEM policies; force-stop can suspend delivery until the app is opened again.
 - Reminder data is included in the encrypted local backup.
+
+
+## Clipboard History
+
+- User-triggered capture only: clipboard is read only after the Capture button is tapped.
+- Plain text only; URI/image/other clip payloads are not imported.
+- Up to 50 items are stored locally, with duplicate text moved to the newest position.
+- Supports copy back to the Android clipboard, individual deletion and clear-all.
+- Does not run a background clipboard monitor; the UI warns against storing passwords, OTPs or financial secrets.
+- Included in the encrypted local backup.

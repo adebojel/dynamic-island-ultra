@@ -275,3 +275,14 @@ Do not mark a section PASS until it has been exercised on a real device.
 
 - [ ] On Android 9/API 28+, tap Take Screenshot and verify Android's system screenshot action runs; confirm app code does not read the resulting image.
 - [ ] On Android 8/API 26–27, verify the screenshot action is not shown.
+
+
+## Clipboard History checks
+
+- [ ] Copy plain text from another app, open Clipboard History and tap Capture; confirm the text is stored.
+- [ ] Confirm no clipboard entry is read until the user presses Capture.
+- [ ] Copy an image/URI to clipboard and confirm the tool reports that it is not plain text rather than trying to read the content.
+- [ ] Copy an existing history item back to Android clipboard.
+- [ ] Confirm duplicate capture moves an entry to the newest position and history stays within 50 items.
+- [ ] Delete one entry and clear all entries; confirm changes persist after app restart.
+- [ ] Confirm encrypted backup/restore includes clipboard entries and the UI warns users not to store sensitive secrets.

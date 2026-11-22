@@ -49,6 +49,7 @@
         <activity android:name=".system.DeviceControlActivity" android:exported="false" />
         <activity android:name=".backup.BackupActivity" android:exported="false" />
         <activity android:name=".reminders.ReminderActivity" android:exported="false" />
+        <activity android:name=".clipboard.ClipboardHistoryActivity" android:exported="false" />
         <activity android:name=".floating.DocumentPreviewActivity" android:exported="false" />
         <activity android:name=".overlay.IslandInteractionSettingsActivity" android:exported="false" />
         <activity

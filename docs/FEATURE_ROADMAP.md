@@ -245,3 +245,15 @@ Implemented:
 - Adds Android AccessibilityService `GLOBAL_ACTION_TAKE_SCREENSHOT` to Global System Controls on API 28+.
 - The action runs only after a direct user tap and is performed by Android; app code does not read or retain screenshot pixels.
 - API 26–27 do not display the screenshot action.
+
+
+## Phase 1 Clipboard History
+
+Implemented:
+- On-demand capture of plain text from Android ClipboardManager.
+- Local, bounded 50-item history with duplicate de-duplication.
+- Copy, individual delete and clear-all actions.
+- No background clipboard monitoring or URI/image collection.
+- Clipboard history included in encrypted backup.
+
+Physical-device validation remains required for clipboard privacy indicators and OEM-specific behaviour.
