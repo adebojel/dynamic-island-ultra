@@ -348,9 +348,9 @@ private fun Dashboard(
         item { FeatureCard(Icons.Default.Apps, "Image & PDF preview", "Open and preview user-selected files locally", "Local", onDocuments) }
         item { FeatureCard(Icons.Default.Apps, "File Manager", "Browse, search, create folders, rename, share and delete within a folder you select", "SAF / Local", onFileManager) }
         item { FeatureCard(Icons.Default.Tune, "Global System Controls", "Home, Back, Recents, Notifications, Quick Settings, Power, Lock and Screenshot where supported", "Accessibility", onDeviceControls) }
-        item { FeatureCard(Icons.Default.Lock, "Encrypted Backup & Restore", "Password-protected local backup for notes, settings, bookmarks, reminders and clipboard", "AES-GCM", onBackup) }
-        item { FeatureCard(Icons.Default.Alarm, "Persistent Reminders", "Manage local reminders that survive normal app closure and reboot rescheduling", "Local", onReminders) }
-        item { FeatureCard(Icons.Default.ContentPaste, "Clipboard History", "Manually capture, copy and delete local text snippets; no background monitor", "On demand", onClipboard) }
+        item { FeatureCard(Icons.Default.Widgets, "Encrypted Backup & Restore", "Password-protected local backup for notes, settings, bookmarks, reminders and clipboard", "AES-GCM", onBackup) }
+        item { FeatureCard(Icons.Default.Bolt, "Persistent Reminders", "Manage local reminders that survive normal app closure and reboot rescheduling", "Local", onReminders) }
+        item { FeatureCard(Icons.Default.Calculate, "Clipboard History", "Manually capture, copy and delete local text snippets; no background monitor", "On demand", onClipboard) }
         item { FeatureCard(Icons.Default.Tune, "Device sensor kit", "Read supported sensors while this screen is active", "Local", onSensors) }
         item { FeatureCard(Icons.Default.Widgets, "Island interaction", "Edge docking and optional haptic feedback", "Settings", onIslandSettings) }
         item { Text("INTERNET & ONLINE FEATURES", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, letterSpacing = 2.sp) }
