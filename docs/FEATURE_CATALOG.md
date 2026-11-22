@@ -59,3 +59,10 @@ The built-in assistant and local tools work without internet, imported model fil
 - Swipe mappings default to disabled to preserve normal drag behaviour.
 - User-adjustable bubble size (80–140%) and opacity (40–100%); live appearance refresh is broadcast only within this app.
 - Gesture action validation falls back to safe defaults for invalid or stale stored values; arbitrary commands are never accepted.
+
+## Configurable bubble Quick Favorites
+
+- Four user-selectable shortcuts are displayed at the top of the bubble panel.
+- Available allowlisted actions: offline assistant, notes, calculator, installed apps, media controls, QR scanner, document preview, sensor kit, app-owned PiP workspace and Island settings.
+- Each slot persists in app-private preferences; invalid/stale values resolve to a safe default.
+- Favorites open only app-owned activities. They do not perform privileged Android actions or launch arbitrary commands.

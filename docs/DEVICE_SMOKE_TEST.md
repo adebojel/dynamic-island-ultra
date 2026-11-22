@@ -127,3 +127,12 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Enable TalkBack and verify the bubble description and settings controls are announced in a predictable focus order.
 
 **Expected:** only the allowlisted app-owned actions can be selected. No gesture may run arbitrary shell commands, silently grant permissions, or change protected system settings. Record any OEM-specific gesture timing issue as FAIL with a short recording.
+
+## Quick Favorites checks
+
+- [ ] Confirm the four default entries are AI, Notes, Calculator and Apps.
+- [ ] Change each slot independently in Island Interaction settings; reopen the bubble and confirm the updated shortcut order/labels.
+- [ ] Tap each favorite and confirm it opens the intended app-owned screen and the expanded bubble panel closes.
+- [ ] Restart the overlay service and confirm favorite configuration persists.
+- [ ] Store an invalid favorite preference in a test build and confirm the slot falls back to a safe default.
+- [ ] Turn on TalkBack and confirm every favorite exposes its full action label, not only its abbreviated visual label.

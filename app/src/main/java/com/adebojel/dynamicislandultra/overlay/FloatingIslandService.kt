@@ -240,9 +240,7 @@ class FloatingIslandService : Service() {
 
     private fun togglePanel() {
         if (expanded) {
-            panel?.let { runCatching { windowManager.removeView(it) } }
-            panel = null
-            expanded = false
+            closePanel()
             return
         }
 
@@ -260,6 +258,7 @@ class FloatingIslandService : Service() {
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
+        addFavoriteActions(content)
         addSection(content, "01  QUICK CONNECTIVITY", listOf(
             "Wi-Fi panel" to "wifi",
             "Internet connectivity" to "internet",
@@ -341,6 +340,79 @@ class FloatingIslandService : Service() {
         panel = root
         windowManager.addView(root, params)
         expanded = true
+    }
+
+
+    private fun addFavoriteActions(root: LinearLayout) {
+        root.addView(label("QUICK FAVORITES", 9f, true).apply {
+            setTextColor(Color.rgb(88, 220, 255))
+            setPadding(0, 12, 0, 7)
+        })
+        val preferences = getSharedPreferences("island", MODE_PRIVATE)
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+        repeat(BubbleFavoriteConfig.SLOT_COUNT) { slot ->
+            val key = BubbleFavoriteConfig.resolve(
+                slot,
+                preferences.getString("favorite_${slot + 1}", null)
+            )
+            val option = BubbleFavoriteConfig.optionFor(key)
+            val item = TextView(this).apply {
+                text = option.shortLabel
+                textSize = 9f
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+                minHeight = (46 * resources.displayMetrics.density).toInt()
+                background = rounded(
+                    Color.rgb(27, 39, 65),
+                    Color.rgb(70, 103, 155),
+                    13f,
+                    1
+                )
+                contentDescription = option.label
+                setOnClickListener {
+                    closePanel()
+                    launchFavoriteAction(option.key, option.label)
+                }
+            }
+            row.addView(item, LinearLayout.LayoutParams(0, -2, 1f).apply {
+                marginEnd = (5 * resources.displayMetrics.density).toInt()
+            })
+        }
+        root.addView(row)
+    }
+
+    private fun launchFavoriteAction(key: String, label: String) {
+        val intent = when (key) {
+            "assistant" -> Intent(this, OfflineAssistantActivity::class.java)
+            "notes" -> Intent(this, OfflineNotesActivity::class.java)
+            "calculator" -> Intent(this, OfflineCalculatorActivity::class.java)
+            "apps" -> Intent(this, InstalledAppsActivity::class.java)
+            "media" -> Intent(this, MediaControlsActivity::class.java)
+            "qr" -> Intent(this, QrScannerActivity::class.java)
+            "documents" -> Intent(this, DocumentPreviewActivity::class.java)
+            "sensors" -> Intent(this, SensorKitActivity::class.java)
+            "workspace" -> Intent(this, FloatingWorkspaceActivity::class.java)
+            "settings" -> Intent(this, IslandInteractionSettingsActivity::class.java)
+            else -> null
+        }
+        if (intent == null) {
+            Toast.makeText(this, "Favorite action is unavailable", Toast.LENGTH_SHORT).show()
+            return
+        }
+        runCatching {
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.onFailure {
+            Toast.makeText(this, "$label is not available on this device", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun closePanel() {
+        panel?.let { runCatching { windowManager.removeView(it) } }
+        panel = null
+        expanded = false
     }
 
     private fun addSection(

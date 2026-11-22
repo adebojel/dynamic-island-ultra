@@ -34,6 +34,10 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                 var swipeDownAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_down", prefs.getString("gesture_swipe_down", null))) }
                 var swipeLeftAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_left", prefs.getString("gesture_swipe_left", null))) }
                 var swipeRightAction by remember { mutableStateOf(BubbleGestureConfig.resolve("swipe_right", prefs.getString("gesture_swipe_right", null))) }
+                var favorite1 by remember { mutableStateOf(BubbleFavoriteConfig.resolve(0, prefs.getString("favorite_1", null))) }
+                var favorite2 by remember { mutableStateOf(BubbleFavoriteConfig.resolve(1, prefs.getString("favorite_2", null))) }
+                var favorite3 by remember { mutableStateOf(BubbleFavoriteConfig.resolve(2, prefs.getString("favorite_3", null))) }
+                var favorite4 by remember { mutableStateOf(BubbleFavoriteConfig.resolve(3, prefs.getString("favorite_4", null))) }
 
                 Column(
                     Modifier.fillMaxSize()
@@ -124,6 +128,30 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
                         saveGesture("swipe_right", it)
                     }
 
+
+                    Text("QUICK FAVORITES", color = Color(0xFF43E8FF), fontSize = 14.sp)
+                    Text(
+                        "Pilih empat pintasan yang selalu muncul di bagian atas menu bubble.",
+                        color = Color.LightGray,
+                        fontSize = 11.sp
+                    )
+                    FavoriteSettingRow("Slot favorit 1", favorite1) {
+                        favorite1 = it
+                        saveFavorite(0, it)
+                    }
+                    FavoriteSettingRow("Slot favorit 2", favorite2) {
+                        favorite2 = it
+                        saveFavorite(1, it)
+                    }
+                    FavoriteSettingRow("Slot favorit 3", favorite3) {
+                        favorite3 = it
+                        saveFavorite(2, it)
+                    }
+                    FavoriteSettingRow("Slot favorit 4", favorite4) {
+                        favorite4 = it
+                        saveFavorite(3, it)
+                    }
+
                     OutlinedButton(onClick = { finish() }, modifier = Modifier.fillMaxWidth()) {
                         Text("Selesai")
                     }
@@ -135,6 +163,12 @@ class IslandInteractionSettingsActivity : ComponentActivity() {
     private fun saveGesture(gesture: String, action: String) {
         getSharedPreferences("island", MODE_PRIVATE).edit()
             .putString("gesture_$gesture", BubbleGestureConfig.resolve(gesture, action))
+            .apply()
+    }
+
+    private fun saveFavorite(slot: Int, action: String) {
+        getSharedPreferences("island", MODE_PRIVATE).edit()
+            .putString("favorite_${slot + 1}", BubbleFavoriteConfig.resolve(slot, action))
             .apply()
     }
 
@@ -156,6 +190,35 @@ private fun SettingSwitch(
             Text(description, color = Color.LightGray, fontSize = 10.sp)
         }
         Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+
+@Composable
+private fun FavoriteSettingRow(
+    title: String,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(title, color = Color.White)
+        Box {
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(BubbleFavoriteConfig.optionFor(selected).label)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                BubbleFavoriteConfig.options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.label) },
+                        onClick = {
+                            onSelect(option.key)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 

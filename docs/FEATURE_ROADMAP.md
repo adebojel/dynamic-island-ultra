@@ -72,7 +72,7 @@ A generative offline LLM is not the existing deterministic command router. It re
 - Added bubble size and opacity controls with live appearance refresh.
 - Added unit tests for safe gesture defaults, invalid stored actions, and swipe/drag coexistence.
 
-Still outstanding: long-running OEM/device validation, TalkBack interaction testing on physical devices, auto-hide/restore behaviour, multi-window positioning tests, and a full custom shortcut/favourites editor.
+Still outstanding: long-running OEM/device validation, TalkBack interaction testing on physical devices, auto-hide/restore behaviour, multi-window positioning tests, and the full custom shortcut editor.
 
 ## External product and platform research snapshot — 22 November 2026
 
@@ -89,3 +89,10 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Qwen2.5 0.5B Instruct Q4_K_M GGUF is listed at about 398 MB, leaving essentially no room under the combined 400 MB package/model budget for the existing app, runtime, tokenizer, cache or updates.
 - For future GGUF experimentation, evaluate one runtime only (llama.cpp Android/NDK) against the actual target device, using an optional, user-managed model file. Do not add it to release builds until storage, peak RAM, CPU latency, temperature, battery, Indonesian command tests and offline isolation all pass.
 - LiteRT-LM is a separate runtime/model format; do not combine both engines without a measured need. Its integration guidance describes local .litertlm model files from hundreds of MB to several GB; evaluate it separately, not as an additional dependency in the current release.
+
+## Quick Favorites update
+
+- Added four configurable shortcut slots to the top of the floating bubble panel.
+- Added an allowlisted catalog of ten app-owned destinations, including offline notes/calculator, assistant, media, QR, document preview and sensor kit.
+- Added persistent slot configuration and unit tests for defaults, invalid keys and accessible labels.
+- The favorites row is not a third-party freeform window manager or privileged system action surface.
