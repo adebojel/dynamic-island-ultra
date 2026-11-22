@@ -142,12 +142,18 @@ private fun FileManagerScreen(
     var newFolderName by remember { mutableStateOf("") }
 
     val entries = remember(current?.uri, revision, query, sortNewest) {
-        current?.listFiles()?.filter { file ->
+        val folderFirst = compareBy<DocumentFile> { !it.isDirectory }
+        val matching = current?.listFiles()?.filter { file ->
             file.name.orEmpty().contains(query.trim(), ignoreCase = true)
-        }?.sortedWith(
-            compareBy<DocumentFile> { !it.isDirectory }
-                .thenBy { if (sortNewest) -it.lastModified() else it.name.orEmpty().lowercase() }
-        ).orEmpty()
+        }.orEmpty()
+        if (sortNewest) {
+            matching.sortedWith(
+                folderFirst.thenByDescending { it.lastModified() }
+                    .thenBy { it.name.orEmpty().lowercase() }
+            )
+        } else {
+            matching.sortedWith(folderFirst.thenBy { it.name.orEmpty().lowercase() })
+        }
     }
 
     Column(
