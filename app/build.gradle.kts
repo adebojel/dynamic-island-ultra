@@ -23,6 +23,17 @@ android {
         versionCode = buildVersionCode
         versionName = buildVersionName
     }
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("github") {
+            dimension = "distribution"
+            buildConfigField("boolean", "ENABLE_GITHUB_APK_UPDATER", "true")
+        }
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "ENABLE_GITHUB_APK_UPDATER", "false")
+        }
+    }
     signingConfigs {
         if (hasStableReleaseSigning) {
             create("stableRelease") {
