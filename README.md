@@ -155,7 +155,7 @@ APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
 
 The public policy pages and official website source are stored in `site/`.
 
-**GitHub Pages mirror:** initial activation still requires repository Settings → Pages → Build and deployment → Source → **GitHub Actions**. The Pages workflow previously failed because Pages was not enabled for this repository. After activation, run **Deploy Dynamic Island Ultra website** from Actions.
+**GitHub Pages mirror:** successfully deployed by [Pages workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026. GitHub completed Configure Pages, uploaded the site artifact, and deployed it to [the official project site](https://adebojel.github.io/dynamic-island-ultra/). The current environment could not independently resolve the `github.io` hostname, so open each policy link below on your Android phone before submitting it to Play Console or AdMob.
 
 - [Privacy Policy](https://adebojel.github.io/dynamic-island-ultra/privacy.html)
 - [Terms and Conditions](https://adebojel.github.io/dynamic-island-ultra/terms.html)
@@ -191,7 +191,7 @@ The release certificate SHA-256 is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425
 
 **Additional main-branch hardening committed on 22 November 2026:** UMP privacy-options completion now waits for the real SDK initialization callback instead of a fixed delay; adaptive banner requests reload on width changes without destroying and reusing the same view; and failed/disconnected BillingClient instances are closed. These source changes require the next Android CI run and physical-device smoke tests before they can be considered runtime-verified.
 
-**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and public website deployment. The GitHub Pages workflow has not deployed because Pages has not yet been enabled for this repository. Do not submit the reserved website URLs to Play Console or AdMob until deployment succeeds and every page is checked. AdMob app verification also requires a correctly hosted `app-ads.txt` at the developer website hostname root; the current project Pages subpath does not provide that root URL. A root-domain hosting solution and a verified AdMob app-ads.txt status are still required.
+**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment succeeded in run #6, but public reachability and page contents still need to be checked from a normal browser. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
 
 CI tests and APK assembly do not replace physical-device testing. The next device gate is to smoke-test overlay lifecycle, notification access, DuckDuckGo search/navigation and media playback, package-installer handoff, data retention across a signed update, and Android 8/9/10 plus current Android OEM variants.
 
