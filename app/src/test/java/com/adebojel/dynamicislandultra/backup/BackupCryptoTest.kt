@@ -19,6 +19,13 @@ class BackupCryptoTest {
         BackupCrypto.decrypt(encrypted, "different-password".toCharArray())
     }
 
+    @Test(expected = GeneralSecurityException::class)
+    fun rejectsTamperedCiphertext() {
+        val encrypted = BackupCrypto.encrypt("secret".toByteArray(), "strong-passphrase".toCharArray())
+        encrypted[encrypted.lastIndex] = (encrypted.last().toInt() xor 1).toByte()
+        BackupCrypto.decrypt(encrypted, "strong-passphrase".toCharArray())
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun rejectsShortPassword() {
         BackupCrypto.encrypt("data".toByteArray(), "short".toCharArray())

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.adebojel.dynamicislandultra.overlay.FloatingIslandService
+import com.adebojel.dynamicislandultra.reminders.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -110,7 +111,9 @@ class BackupActivity : ComponentActivity() {
                                     runCatching {
                                         stopService(Intent(this@BackupActivity, FloatingIslandService::class.java))
                                         getSharedPreferences("island", MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
+                                        ReminderScheduler.pending(this@BackupActivity).forEach { ReminderScheduler.cancel(this@BackupActivity, it.id) }
                                         BackupArchive.restore(this@BackupActivity, payload)
+                                        ReminderScheduler.rescheduleAll(this@BackupActivity)
                                     }.onSuccess {
                                         status = "Backup dipulihkan. Periksa kembali izin sistem dan mulai Island secara manual."
                                         Toast.makeText(this@BackupActivity, "Backup berhasil dipulihkan.", Toast.LENGTH_LONG).show()
@@ -137,7 +140,7 @@ class BackupActivity : ComponentActivity() {
             val result = runCatching {
                 withContext(Dispatchers.IO) {
                     val plain = BackupArchive.create(this@BackupActivity)
-                    val encrypted = BackupCrypto.encrypt(plain, password)
+                    val encrypted = try { BackupCrypto.encrypt(plain, password) } finally { plain.fill(0) }
                     val output = contentResolver.openOutputStream(uri, "wt")
                         ?: error("Penyimpanan tujuan tidak dapat dibuka.")
                     output.use { it.write(encrypted) }
