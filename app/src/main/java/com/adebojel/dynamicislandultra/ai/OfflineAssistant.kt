@@ -42,7 +42,7 @@ class OfflineAssistant {
             hasAny(query, "browser", "duckduckgo", "internet", "youtube", "buka web", "buka situs") ->
                 OfflineAssistantReply("Membuka DuckDuckGo Browser. Browser membutuhkan koneksi internet.", OfflineAction.OpenBrowser)
             hasAny(query, "update", "pembaruan", "versi terbaru") ->
-                OfflineAssistantReply("Membuka pemeriksa pembaruan resmi GitHub.", OfflineAction.OpenUpdateCenter)
+                OfflineAssistantReply("Membuka pemeriksa pembaruan resmi aplikasi.", OfflineAction.OpenUpdateCenter)
             hasAny(query, "baterai", "battery", "daya") ->
                 OfflineAssistantReply(
                     batteryPercent?.let { "Baterai perangkat saat ini $it%." }
