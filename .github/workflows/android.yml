@@ -87,7 +87,7 @@ jobs:
           grep -q '.enableAutoServiceReconnection()' "$BILLING_MANAGER"
           grep -q 'refreshStore(existingClient)' "$BILLING_MANAGER"
           DISCONNECT_HANDLER="$(sed -n '/override fun onBillingServiceDisconnected()/,/^[[:space:]]*}/p' "$BILLING_MANAGER")"
-          if grep -Eq 'endConnection|client = null' <<< "$DISCONNECT_HANDLER"; then
+          if grep -Eq 'billingClient\.endConnection|client[[:space:]]*=[[:space:]]*null' <<< "$DISCONNECT_HANDLER"; then
             echo "::error::Disconnected BillingClient must be retained for automatic reconnection."
             exit 1
           fi

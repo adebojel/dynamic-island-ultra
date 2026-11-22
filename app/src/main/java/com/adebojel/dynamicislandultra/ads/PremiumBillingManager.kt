@@ -104,7 +104,7 @@ object PremiumBillingManager {
                     billingAvailable = false
                     status = "Google Play terputus. Koneksi akan dipulihkan otomatis saat permintaan berikutnya."
                     Log.w(TAG, "Billing service disconnected; keeping client for automatic reconnection.")
-                    // Do not call endConnection() here: that would disable automatic reconnection.
+                    // Keep this client alive so Billing can restore its service connection.
                 }
             })
         }
