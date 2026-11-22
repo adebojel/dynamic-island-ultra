@@ -6,7 +6,7 @@
 - Notification preview bridge with privacy controls and app allowlisting; MediaSession playback controls; generic call activity card derived from notifications.
 - Floating toolbox additions: QR/barcode scanner, image/PDF preview and foreground-only sensor kit.
 - On-device voice command input when a local recognizer is exposed, speech read-out, edge docking and haptics.
-- Installed-app collection, private local notes, calculator and app-owned PiP workspace.
+- Installed-app collection, private local notes, calculator, app-owned PiP workspace and Smart Toolbox (unit converter, counter, stopwatch and countdown/Pomodoro timer).
 - Built-in offline command decision engine with arithmetic, feature routing and read-only diagnostics.
 - DuckDuckGo default browser with general HTTPS navigation and Desktop/Mobile mode.
 - Distribution split: `github` APK includes SHA-256-verified GitHub self-updates; `play` AAB excludes `REQUEST_INSTALL_PACKAGES` and routes updates through Google Play.
@@ -138,3 +138,10 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 - Open category panel pauses dimming; closing the panel restarts the idle interval.
 - Unit tests cover disabled state, menu exclusion, detached overlay, timeout and minimum visible alpha.
 - Physical OEM, sunlight readability and reachability checks remain outstanding.
+
+
+## Smart Toolbox delivery
+
+The main-line implementation exposes Smart Toolbox directly through the floating bubble and configurable gesture/favorite allowlists. Implemented locally: length/mass/volume/temperature conversions, counter, stopwatch and countdown timer/Pomodoro preset. Unit conversion has deterministic unit tests. It intentionally does not claim calibrated ruler/protractor or sound/light meter readings: those need device-specific calibration and real hardware validation.
+
+Still requiring separate implementation and/or device tests: persistent alarms/reminders after process death, multi-window third-party app overlays, clipboard history, encrypted backup/restore, bookmarks/history/private browser sessions, broad OCR/object recognition and a generative local LLM. These are not represented as completed features.

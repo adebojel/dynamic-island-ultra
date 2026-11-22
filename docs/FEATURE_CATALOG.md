@@ -26,6 +26,16 @@
 
 The built-in assistant and local tools work without internet, imported model files or AI API credentials. The built-in engine is not a generative LLM.
 
+## Smart Toolbox (floating bubble integration)
+
+- Local unit converter for length, mass, volume and temperature, including metric and common imperial units.
+- Counter with increment, decrement and reset.
+- Stopwatch based on Android's monotonic elapsed-realtime clock.
+- Countdown timer up to 24 hours and a 25-minute Pomodoro preset.
+- The toolbox is reachable from bubble category 09, a configurable gesture, or a Quick Favorite.
+- Conversion logic is a pure local module with unit tests; no permission or network dependency.
+- Timer/stopwatch are in-app session utilities, not a replacement for AlarmClock or persistent scheduled reminders.
+
 ## Internet-enabled modules
 
 - **DuckDuckGo browser:** DuckDuckGo default home/search; HTTPS address bar for general websites; Back/Forward/Reload/Home; Desktop/Mobile layout mode via User-Agent and viewport switching.

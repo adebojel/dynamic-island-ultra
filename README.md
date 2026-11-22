@@ -41,6 +41,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | App collection | Lists launcher-visible apps and launches selected apps |
 | Local notes | Saves notes in app-private storage |
 | Local calculator | Parses arithmetic expressions locally |
+| Smart Toolbox | Local unit conversion (length, mass, volume, temperature), counter, stopwatch, countdown timer and 25-minute Pomodoro preset |
 | Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
@@ -244,3 +245,14 @@ The floating bubble can optionally dim after 8 seconds without interaction. The 
 ### Floating bubble inactivity dimming
 
 Auto-dim is optional and disabled by default. When enabled, the bubble dims after eight seconds without touch but remains visible and interactive. Touch restores its configured appearance. An expanded category panel is never dimmed.
+
+
+## Smart Toolbox additions
+
+The floating bubble now includes a **Smart Toolbox** entry. It can also be assigned to a gesture or one of the four Quick Favorites. The toolbox currently contains:
+- Local unit conversion for length, mass, volume and temperature.
+- Increment/decrement counter.
+- Stopwatch using Android's monotonic elapsed-realtime clock.
+- Countdown timer with a 25-minute Pomodoro preset.
+
+These tools do not require network access or additional Android permissions. Timer and stopwatch are in-app session tools; they are not system alarms and are not guaranteed to keep notifying after the app is force-stopped. Physical-device validation is listed in `docs/DEVICE_SMOKE_TEST.md`.

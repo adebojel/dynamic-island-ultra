@@ -18,7 +18,8 @@ object BubbleGestureConfig {
         BubbleGestureOption("media", "Kontrol media"),
         BubbleGestureOption("notifications", "Pengaturan notifikasi"),
         BubbleGestureOption("workspace", "Floating workspace"),
-        BubbleGestureOption("settings", "Pengaturan bubble")
+        BubbleGestureOption("settings", "Pengaturan bubble"),
+        BubbleGestureOption("tools", "Buka Smart Toolbox")
     )
 
     private val defaults = mapOf(

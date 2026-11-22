@@ -164,3 +164,16 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Close the panel; confirm the eight-second idle timer starts again.
 - [ ] Disable auto-dim while the bubble is dimmed; confirm its normal appearance is restored.
 - [ ] With pulse style Off, repeat auto-dim and touch restoration; confirm the setting still works without an animator.
+
+
+## Smart Toolbox checks
+
+- [ ] Open Floating Island → category 09 Smart Toolbox; confirm the page opens and does not ask for new permissions.
+- [ ] Convert 1.25 m to 125 cm, 1 kg to 1,000 g, 1 L to 1,000 mL, and 32 °F to 0 °C.
+- [ ] Enter a decimal with comma and dot; verify conversion stays local and handles invalid input without crashing.
+- [ ] Counter: test increment, decrement below zero, and reset.
+- [ ] Stopwatch: start, pause, resume and reset; compare elapsed time with a physical clock.
+- [ ] Countdown: test pause/resume/reset, zero duration validation and Pomodoro 25-minute preset.
+- [ ] Assign Smart Toolbox to a gesture and each Quick Favorite slot; verify it launches only the app-owned toolbox.
+- [ ] Rotate the device and test large font/TalkBack focus order.
+- [ ] Background or force-stop the app during a countdown and record the observed behaviour; do not treat this in-app timer as a guaranteed alarm.

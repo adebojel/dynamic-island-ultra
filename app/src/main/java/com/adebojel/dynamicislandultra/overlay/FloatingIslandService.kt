@@ -40,6 +40,7 @@ import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
 import com.adebojel.dynamicislandultra.floating.QrScannerActivity
 import com.adebojel.dynamicislandultra.floating.SensorKitActivity
+import com.adebojel.dynamicislandultra.floating.SmartToolsActivity
 import com.adebojel.dynamicislandultra.floating.DocumentPreviewActivity
 import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettingsActivity
 import com.adebojel.dynamicislandultra.notifications.MediaControlsActivity
@@ -252,6 +253,7 @@ class FloatingIslandService : Service() {
             "notifications" -> launchBubbleActivity(NotificationPreviewSettingsActivity::class.java)
             "workspace" -> launchBubbleActivity(FloatingWorkspaceActivity::class.java)
             "settings" -> launchBubbleActivity(IslandInteractionSettingsActivity::class.java)
+            "tools" -> launchBubbleActivity(SmartToolsActivity::class.java)
             "none" -> Unit
         }
     }
@@ -333,6 +335,11 @@ class FloatingIslandService : Service() {
             "QR / barcode scanner" to "qr_scanner",
             "Image / PDF preview" to "document_preview",
             "Live sensor kit" to "sensor_kit"
+        ))
+        addSection(content, "09  SMART TOOLBOX", listOf(
+            "Converter, counter, stopwatch & timer" to "smart_tools",
+            "Unit converter" to "smart_tools",
+            "Pomodoro 25 menit" to "smart_tools"
         ))
 
         val scroll = ScrollView(this).apply {
@@ -423,6 +430,7 @@ class FloatingIslandService : Service() {
             "sensors" -> Intent(this, SensorKitActivity::class.java)
             "workspace" -> Intent(this, FloatingWorkspaceActivity::class.java)
             "settings" -> Intent(this, IslandInteractionSettingsActivity::class.java)
+            "tools" -> Intent(this, SmartToolsActivity::class.java)
             else -> null
         }
         if (intent == null) {
@@ -498,6 +506,7 @@ class FloatingIslandService : Service() {
                         "qr_scanner" -> Intent(this@FloatingIslandService, QrScannerActivity::class.java)
                         "document_preview" -> Intent(this@FloatingIslandService, DocumentPreviewActivity::class.java)
                         "sensor_kit" -> Intent(this@FloatingIslandService, SensorKitActivity::class.java)
+                        "smart_tools" -> Intent(this@FloatingIslandService, SmartToolsActivity::class.java)
                         else -> null
                     }
                     val intent = internalIntent ?: UtilityIntents.create(key, packageName)

@@ -23,7 +23,8 @@ object BubbleFavoriteConfig {
         BubbleFavoriteOption("documents", "Image / PDF preview", "FILES"),
         BubbleFavoriteOption("sensors", "Sensor kit", "SENSOR"),
         BubbleFavoriteOption("workspace", "Floating workspace", "PIP"),
-        BubbleFavoriteOption("settings", "Island settings", "SET")
+        BubbleFavoriteOption("settings", "Island settings", "SET"),
+        BubbleFavoriteOption("tools", "Smart Toolbox", "TOOLS")
     )
 
     private val defaults = listOf("assistant", "notes", "calculator", "apps")
