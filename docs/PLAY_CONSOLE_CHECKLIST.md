@@ -54,7 +54,7 @@ Because this package has already been distributed outside Google Play, check the
 - [ ] Verify the uploaded AAB came from the `play` flavor and the merged Play manifest does not contain `android.permission.REQUEST_INSTALL_PACKAGES`.
 - [ ] Confirm the Play flavor's update screen opens the Google Play listing and never downloads or installs GitHub APKs.
 - [ ] Complete the store listing, screenshots, app icon, feature graphic, content rating, target audience, and app access declarations.
-- [ ] Complete the Data safety form using the actual SDK disclosures and app behaviour. Do not guess that the app collects no data: AdMob/UMP and WebView interactions introduce third-party data processing.
+- [ ] Complete the Data safety form using the actual SDK disclosures and app behaviour. Do not guess that the app collects no data: AdMob/UMP and WebView interactions introduce third-party data processing. The app also queries a limited list of launchable installed apps (`ACTION_MAIN` + `CATEGORY_LAUNCHER`, no `QUERY_ALL_PACKAGES`) to display them locally; disclose this accurately as local processing and confirm the correct Play Console data-safety classification.
 - [ ] Open the deployed Privacy, Terms, Ads Disclosure, Premium, and Support pages in a normal browser/device and confirm content/navigation; deployment succeeded, but reachability could not be independently confirmed from this environment.
 - [ ] Provide the live Privacy Policy URL in Play Console only after the browser check.
 - [ ] Complete app review and test track requirements before public rollout.
