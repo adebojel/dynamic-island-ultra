@@ -43,6 +43,7 @@ The bundled offline decision engine does not import model weights and has no net
 - CI gate for API 26 minimum and offline-AI source isolation.
 - Repeatable signed `github` APK and `play` AAB builds with a stable private key.
 - Play merged manifest excludes `REQUEST_INSTALL_PACKAGES`; GitHub flavor alone contains it.
+- Play Console must review the `specialUse` foreground service declaration for the user-enabled floating island and the `SYSTEM_ALERT_WINDOW` special access.
 - APK hash, 400 MiB size, version monotonicity and release-asset verification.
 - Physical-device tests for in-place update and retained local data.
 - Memory, lifecycle, battery, crash and accessibility review.
