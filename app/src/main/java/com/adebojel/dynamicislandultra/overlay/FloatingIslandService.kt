@@ -55,6 +55,7 @@ import kotlin.math.abs
 
 class FloatingIslandService : Service() {
     private lateinit var windowManager: WindowManager
+    private lateinit var miniWindows: AppMiniWindowManager
     private var bubble: TextView? = null
     private var panel: View? = null
     private lateinit var bubbleParams: WindowManager.LayoutParams
@@ -130,6 +131,7 @@ class FloatingIslandService : Service() {
         createChannel()
         startForeground(4100, buildNotification())
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        miniWindows = AppMiniWindowManager(this, windowManager)
         registerAppReceiver(notificationReceiver, IntentFilter(ACTION_NOTIFICATION_PREVIEW))
         registerAppReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         registerAppReceiver(appearanceReceiver, IntentFilter(ACTION_APPEARANCE_CHANGED))
@@ -330,7 +332,10 @@ class FloatingIslandService : Service() {
             "Floating workspace (PiP)" to "workspace",
             "Offline notes" to "notes",
             "Offline calculator" to "local_calculator",
-            "File manager (folder pilihan)" to "file_manager"
+            "File manager (folder pilihan)" to "file_manager",
+            "Mini floating notes" to "mini_notes",
+            "Mini floating calculator" to "mini_calculator",
+            "Mini floating timer" to "mini_timer"
         ))
         addSection(content, "07  OFFLINE INTELLIGENCE", listOf(
             "Offline utility assistant" to "offline_assistant",
@@ -506,6 +511,17 @@ class FloatingIslandService : Service() {
                 )
                 contentDescription = name
                 setOnClickListener {
+                    val miniKind = when (key) {
+                        "mini_notes" -> MiniWindowKind.NOTES
+                        "mini_calculator" -> MiniWindowKind.CALCULATOR
+                        "mini_timer" -> MiniWindowKind.TIMER
+                        else -> null
+                    }
+                    if (miniKind != null) {
+                        closePanel()
+                        miniWindows.open(miniKind)
+                        return@setOnClickListener
+                    }
                     val internalIntent = when (key) {
                         "installed_apps" -> Intent(this@FloatingIslandService, InstalledAppsActivity::class.java)
                         "workspace" -> Intent(this@FloatingIslandService, FloatingWorkspaceActivity::class.java)
@@ -760,6 +776,7 @@ class FloatingIslandService : Service() {
         pulseAnimator = null
         bubble?.let { runCatching { windowManager.removeView(it) } }
         panel?.let { runCatching { windowManager.removeView(it) } }
+        if (::miniWindows.isInitialized) miniWindows.closeAll()
         bubble = null
         panel = null
         super.onDestroy()

@@ -286,3 +286,18 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Confirm duplicate capture moves an entry to the newest position and history stays within 50 items.
 - [ ] Delete one entry and clear all entries; confirm changes persist after app restart.
 - [ ] Confirm encrypted backup/restore includes clipboard entries and the UI warns users not to store sensitive secrets.
+
+
+## App-owned Floating Window Manager checks
+
+- [ ] Start Island with overlay permission and open Mini Notes from Floating Bubble → My Floating Apps.
+- [ ] Open Mini Calculator and Mini Timer as separate windows; confirm all windows are independently visible and touchable.
+- [ ] Drag each window by its title bar and confirm the body controls still receive input.
+- [ ] Minimize and restore each window; confirm size and tool state remain consistent.
+- [ ] Toggle compact/large size; confirm each window stays within screen bounds in portrait and landscape.
+- [ ] Open a fifth window; confirm a safe maximum-four message appears and no existing window disappears.
+- [ ] Write a note, close/reopen the mini note window, and confirm its text is saved.
+- [ ] Start a mini timer, close the window and confirm the timer is canceled without a stale callback.
+- [ ] Stop the Floating Island service; confirm every mini window is removed and no overlay leaks remain.
+- [ ] Confirm mini notes are included in encrypted backup; confirm active timers are not restored.
+- [ ] Repeat under TalkBack and on Android 8/API 26 plus at least one current OEM device.

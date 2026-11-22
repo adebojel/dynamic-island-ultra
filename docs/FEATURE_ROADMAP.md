@@ -257,3 +257,16 @@ Implemented:
 - Clipboard history included in encrypted backup.
 
 Physical-device validation remains required for clipboard privacy indicators and OEM-specific behaviour.
+
+
+## Phase 1 app-owned mini windows
+
+Implemented in source:
+- AppMiniWindowManager owns up to four simultaneous `TYPE_APPLICATION_OVERLAY` windows.
+- Mini Notes, four-operation Calculator and a 1–240-minute countdown Timer.
+- Each window supports title-bar drag, minimize/restore, compact/large resize preset and close.
+- Notes are locally persisted and included in encrypted backup; active mini timers are canceled on window close/service stop.
+- Unit tests cover calculator arithmetic, invalid operators and divide-by-zero.
+- No third-party app embedding or unsupported freeform-window claim.
+
+Still outstanding: snap-to-edge/grid, per-window opacity/priority, mini browser/PDF/media windows, multiple independent note documents, keyboard/IME regression and physical-device overlay/OEM tests.

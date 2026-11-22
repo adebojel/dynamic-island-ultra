@@ -50,7 +50,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
 | Image/PDF preview | Android document picker and local image/first-page PDF preview |
-| File Manager | User-selected SAF folder browsing, search, alphabetical/recent sorting, create folder, open, share, rename and delete; no broad storage permission |\n| Encrypted Backup | Password-derived AES-256-GCM encrypted export/import of selected app-local preferences, notes, browser library, notification privacy and reminders; excludes purchases and OS permissions |\n| Persistent Reminders | Up to 30 local reminders scheduled with AlarmManager; survive app process closure and are re-scheduled after reboot, subject to Android Doze and notification permissions |\n| Clipboard History | Explicit user-triggered capture of plain-text clipboard entries, up to 50 locally stored items with copy/delete/clear; no background polling |
+| File Manager | User-selected SAF folder browsing, search, alphabetical/recent sorting, create folder, open, share, rename and delete; no broad storage permission |\n| Encrypted Backup | Password-derived AES-256-GCM encrypted export/import of selected app-local preferences, notes, browser library, notification privacy and reminders; excludes purchases and OS permissions |\n| Persistent Reminders | Up to 30 local reminders scheduled with AlarmManager; survive app process closure and are re-scheduled after reboot, subject to Android Doze and notification permissions |\n| Clipboard History | Explicit user-triggered capture of plain-text clipboard entries, up to 50 locally stored items with copy/delete/clear; no background polling |\n| Floating Window Manager | Up to four app-owned mini windows for Notes, Calculator and Timer with drag, minimize/restore, resize preset and close |
 | Sensor kit | Live supported sensors while the screen is foregrounded; listeners stop on pause |
 | Voice assistance | Android 12+ on-device recognition when available, explicit mic permission and device speech read-out |
 
@@ -282,3 +282,8 @@ Island Interaction settings now include a local HSV accent editor (hue, saturati
 ### Global screenshot action
 
 The optional Accessibility Service offers a user-triggered system screenshot action on Android 9/API 28 and newer. The app only calls the Android global action after the user taps the control; it does not retrieve, inspect or save screen contents itself.
+
+
+## App-owned Floating Window Manager
+
+The bubble panel can open up to four app-owned overlay mini windows: Notes, a four-operation calculator, and a countdown timer. Each window has a draggable title bar, minimize/restore, compact/large size toggle and close action. Notes are saved locally and included in encrypted backup. Mini timers are session-only and stop when their window closes or the foreground service stops. These are app-owned tools; they do not embed third-party apps or bypass Android freeform-window limitations.

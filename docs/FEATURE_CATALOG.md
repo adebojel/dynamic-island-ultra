@@ -173,3 +173,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Supports copy back to the Android clipboard, individual deletion and clear-all.
 - Does not run a background clipboard monitor; the UI warns against storing passwords, OTPs or financial secrets.
 - Included in the encrypted local backup.
+
+
+## App-owned Floating Window Manager
+
+- Up to four simultaneous app-owned mini windows using Android `TYPE_APPLICATION_OVERLAY`.
+- Available tools: local notes (auto-saved), four-operation calculator and countdown timer (1–240 minutes).
+- Window header supports drag, minimize/restore, compact/large size preset and close.
+- Windows are created only from the running floating service after Android overlay permission is granted.
+- Stopping the foreground Island service closes all mini windows; Notes persist locally and are included in encrypted backup, while active mini timers are session-only.
+- Does not embed or force third-party applications into freeform windows.
