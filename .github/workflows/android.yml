@@ -83,6 +83,7 @@ jobs:
           grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
           grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
           grep -q 'billing:9.1.0' app/build.gradle.kts
+          grep -q 'val ready = canRequestAds' app/src/main/java/com/adebojel/dynamicislandultra/ads/AdsSdkManager.kt
           BILLING_MANAGER="app/src/main/java/com/adebojel/dynamicislandultra/ads/PremiumBillingManager.kt"
           grep -q '.enableAutoServiceReconnection()' "$BILLING_MANAGER"
           grep -q 'refreshStore(existingClient)' "$BILLING_MANAGER"
