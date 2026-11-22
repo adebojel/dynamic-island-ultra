@@ -112,9 +112,16 @@ The standard prepaid durations do not include exactly 2 weeks, 3 weeks, or 2 yea
 
 ## Website activation
 
-- [ ] Open repository Settings → Pages.
-- [ ] Under Build and deployment, set Source to **GitHub Actions**.
-- [ ] Run “Deploy Dynamic Island Ultra website” from the Actions tab.
-- [ ] Open and check Privacy, Terms, Ads Disclosure, Premium, and Support pages.
-- [ ] Only then use the privacy URL in Play Console and AdMob.
+- [x] GitHub Pages configured with Source = **GitHub Actions**.
+- [x] Deployment succeeded in [workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026.
+- [ ] Open and check the live Privacy, Terms, Ads Disclosure, Premium, and Support URLs from a normal browser/device. The deployment workflow confirms deployment, but this environment could not independently resolve the `github.io` hostname.
+- [ ] Use the privacy URL in Play Console and AdMob only after confirming the page opens and the policy content is accurate.
+
+Intended deployed URLs:
+- Home: https://adebojel.github.io/dynamic-island-ultra/
+- Privacy: https://adebojel.github.io/dynamic-island-ultra/privacy.html
+- Terms: https://adebojel.github.io/dynamic-island-ultra/terms.html
+- Ads disclosure: https://adebojel.github.io/dynamic-island-ultra/ads.html
+- Premium: https://adebojel.github.io/dynamic-island-ultra/premium.html
+- Support: https://adebojel.github.io/dynamic-island-ultra/support.html
 
