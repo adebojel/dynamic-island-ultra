@@ -22,9 +22,10 @@ The built-in assistant and local tools work without internet, imported model fil
 ## Internet-enabled modules
 
 - **DuckDuckGo browser:** DuckDuckGo default home/search; HTTPS address bar for general websites; Back/Forward/Reload/Home; Desktop/Mobile layout mode via User-Agent and viewport switching.
-- **GitHub Update Center:** checks the latest project release, downloads APK and metadata, verifies SHA-256, then opens Android's package installer.
-- **Future AdMob:** network permissions are ready, but Google Mobile Ads SDK, publisher App ID/ad-unit IDs, UMP consent handling and privacy disclosures are not yet installed.
-- Manifest declares `INTERNET` and `ACCESS_NETWORK_STATE`; these are normal Android install-time permissions. Cleartext HTTP remains disabled.
+- **GitHub Update Center (GitHub flavor only):** checks the latest project release, downloads APK and metadata, verifies SHA-256, then opens Android's package installer.
+- **Google Play update route (Play flavor):** opens the Play Store listing; the Play variant does not include the package-install permission or GitHub self-updater path.
+- **AdMob/UMP:** Google Mobile Ads Next-Gen, publisher App ID/ad units, UMP consent flow, privacy options, Banner, Native Advanced, Rewarded and Rewarded Interstitial are integrated. Live serving remains dependent on publisher configuration, app review/eligibility, consent and inventory.
+- Shared manifest declares `INTERNET` and `ACCESS_NETWORK_STATE`; these are normal Android install-time permissions. `REQUEST_INSTALL_PACKAGES` is declared only by `app/src/github/AndroidManifest.xml`, never by the Play flavor. Cleartext HTTP remains disabled.
 - CI prevents the built-in `ai/` code package from adding network clients or endpoints.
 
 ## Android compatibility and release
@@ -33,7 +34,7 @@ The built-in assistant and local tools work without internet, imported model fil
 - Compile/target SDK: 36.
 - Release `versionCode` comes from the monotonically increasing GitHub Actions run number.
 - Each signed main build increments the patch release tag from the latest successful `v0.0.N` (v0.0.0 → v0.0.1 → v0.0.2).
-- Stable release signing secrets are required for update-compatible GitHub assets.
+- Stable release signing secrets are required for the signed GitHub APK and Play AAB; both production flavors use the same application ID and stable release key.
 - APK checksum and release metadata accompany signed releases.
 
 ## Platform boundaries
