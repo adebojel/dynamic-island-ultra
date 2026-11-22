@@ -15,9 +15,9 @@ This checklist records the app's current release configuration and the remaining
 
 ## Latest verified CI release
 
-- Latest signed release: [v0.0.5](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.5), published 22 November 2026.
-- Android version code: `119`.
-- CI: [run #119 — completed successfully](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44990455088).
+- Latest signed release: [v0.0.6](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.6), published 22 November 2026.
+- Android version code: `124`.
+- CI: [run #124 — completed successfully](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991068309).
 - Release assets: signed `app-release.apk`, signed `app-release.aab`, both SHA-256 files, and `release-info.json`.
 - APK and AAB signatures verified successfully; their certificate SHA-256 values match: `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`.
 - This CI verification is not a substitute for physical-device installation, Play Console review, Play Billing testing, AdMob production eligibility, or a successful public website deployment.
@@ -33,7 +33,7 @@ Each signed GitHub release should attach:
 
 **Upload only the AAB built from `bundlePlayRelease` to Play Console, not the APK**, for a new Play app. New Play apps use Play App Signing. The stable JKS already used to sign the APK is the upload key candidate. The CI must verify that the Play AAB and GitHub APK share the same certificate SHA-256.
 
-**Do not upload the old v0.0.3 AAB.** It predates the product-flavor split and includes `REQUEST_INSTALL_PACKAGES` used by the GitHub self-updater. The current v0.0.5 AAB was built from the `play` flavor in the successfully verified [CI run #119](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44990455088); CI checked the merged Play APK manifest and confirmed the installer permission is absent. Use the v0.0.5 `app-release.aab` for the Play Console upload step below.
+**Do not upload the old v0.0.3 AAB.** It predates the product-flavor split and includes `REQUEST_INSTALL_PACKAGES` used by the GitHub self-updater. The current v0.0.6 AAB was built from the `play` flavor in the successfully verified [CI run #124](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991068309); CI checked the merged Play APK manifest and confirmed the installer permission is absent. Use the v0.0.6 `app-release.aab` for the Play Console upload step below.
 
 Because this package has already been distributed outside Google Play, check the Android developer verification/package registration flow during app creation. If Play Console asks to prove package ownership, use the original stable signing keystore and its matching certificate. The SHA-256 fingerprint verified by CI is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. Never replace the JKS or upload the private file to the repository.
 
@@ -49,7 +49,7 @@ Because this package has already been distributed outside Google Play, check the
 - [ ] Create the app in Play Console with exact package `com.adebojel.dynamicislandultra`.
 - [ ] Add a public developer contact email to the Play listing. This is still needed; do not invent one in the policy pages.
 - [ ] Enroll in Play App Signing. The stable JKS is already the release/upload key used by GitHub CI. **Choose the app-signing-key option carefully:** the APK currently installed from GitHub is signed by this stable certificate. If the goal is an in-place update from that APK to the Play Store build, select the option to use/provide the same existing app-signing key when Play Console offers it before the first rollout. If Play App Signing uses a different Google-generated app-signing key, Play-distributed APKs will have a different signer and cannot update the GitHub-signed installation in place; a one-time uninstall/reinstall may be required. The upload key and app-signing key have different roles—do not assume that setting the upload key alone preserves the final APK certificate.
-- [ ] Upload [v0.0.5 `app-release.aab`](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.5/app-release.aab) from the Play flavor.
+- [ ] Upload [v0.0.6 `app-release.aab`](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.6/app-release.aab) from the Play flavor.
 - [ ] Verify app signing, package name, version code, target SDK, and generated device APKs.
 - [ ] Verify the uploaded AAB came from the `play` flavor and the merged Play manifest does not contain `android.permission.REQUEST_INSTALL_PACKAGES`.
 - [ ] Confirm the Play flavor's update screen opens the Google Play listing and never downloads or installs GitHub APKs.
@@ -136,7 +136,7 @@ The standard prepaid durations do not include exactly 2 weeks, 3 weeks, or 2 yea
 ## Website activation
 
 - [x] GitHub Pages configured with Source = **GitHub Actions**.
-- [x] Deployment succeeded in [workflow run #6](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026.
+- [x] Deployment succeeded in [workflow run #10](https://github.com/adebojel/dynamic-island-ultra/actions/runs/44991324924)(https://github.com/adebojel/dynamic-island-ultra/actions/runs/44989672233) on 22 November 2026.
 - [ ] Open and check the live Privacy, Terms, Ads Disclosure, Premium, and Support URLs from a normal browser/device. The deployment workflow confirms deployment, but this environment could not independently resolve the `github.io` hostname.
 - [ ] Use the privacy URL in Play Console and AdMob only after confirming the page opens and the policy content is accurate.
 
