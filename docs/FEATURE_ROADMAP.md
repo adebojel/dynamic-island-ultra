@@ -30,6 +30,13 @@
 
 The bundled offline decision engine does not import model weights and has no network access. It remains clearly distinguished from a generative LLM. A future on-device generative model needs license, runtime, model-size, RAM, CPU/GPU and Android 8+ compatibility review; no such capability will be advertised until genuinely implemented and measured.
 
+## Current monetization state
+
+- AdMob/UMP SDK and publisher IDs are integrated; debug uses Google's official test units and signed release uses production units. Production fill and account eligibility are not yet independently verified.
+- Premium cosmetic themes, pulse speed, island size and compact layout are implemented. Paid subscription offers require the Play Console product/base plans to exist and become active.
+- The GitHub Pages policy site is source-complete but deployment must succeed before its URLs are used in Play Console or AdMob. AdMob app-ads.txt requires a file at the developer hostname root, not only the project Pages subpath.
+- Current paid entitlement is client-side Billing only; add secure backend purchase-token verification before account-synced or transferable entitlement.
+
 ## Release gates
 
 - Unit/instrumentation and UI tests.
