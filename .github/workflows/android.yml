@@ -118,11 +118,31 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: gradle --no-daemon --stacktrace assembleGithubRelease bundlePlayRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+        run: gradle --no-daemon --stacktrace assembleGithubRelease assemblePlayRelease bundlePlayRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
 
       - name: Build debug preview APK
         if: steps.signing.outputs.ready != 'true'
         run: gradle --no-daemon --stacktrace assembleGithubDebug assemblePlayDebug -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+
+      - name: Verify merged installer permissions for both release flavors
+        if: steps.signing.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAPT="${ANDROID_HOME}/build-tools/36.0.0/aapt"
+          GITHUB_APK="app/build/outputs/apk/github/release/app-github-release.apk"
+          PLAY_APK="app/build/outputs/apk/play/release/app-play-release.apk"
+          test -x "$AAPT"
+          test -s "$GITHUB_APK"
+          test -s "$PLAY_APK"
+          "$AAPT" dump permissions "$GITHUB_APK" | tee "$RUNNER_TEMP/github-permissions.txt"
+          "$AAPT" dump permissions "$PLAY_APK" | tee "$RUNNER_TEMP/play-permissions.txt"
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$RUNNER_TEMP/github-permissions.txt"
+          if grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$RUNNER_TEMP/play-permissions.txt"; then
+            echo "::error::Play flavor must not request REQUEST_INSTALL_PACKAGES."
+            exit 1
+          fi
+          echo "Merged permissions passed: GitHub APK has installer permission; Play APK does not."
 
       - name: Verify stable release APK signature
         if: steps.signing.outputs.ready == 'true'
