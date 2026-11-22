@@ -205,3 +205,11 @@ The built-in assistant and local tools work without internet, imported model fil
 - Export a selected file or directory tree to ZIP through Android's document destination picker.
 - ZIP traversal is capped at 32 folder levels and 5,000 entries; unsafe path separators and duplicate archive paths are rejected.
 - Recursive folder copy/move and ZIP extraction are not implemented.
+
+
+## Hardware & display controls
+
+- Media volume slider controls Android `AudioManager.STREAM_MUSIC`.
+- Flashlight checks for a flash-capable camera and uses `CameraManager.setTorchMode`. The runtime CAMERA permission is requested only after the user taps the flashlight control. Camera hardware/flash is marked optional; no preview or camera capture session is started.
+- System brightness and auto-rotation use `Settings.System`; both require the user to grant Android's special Modify System Settings access. Controls remain disabled until that grant is detected.
+- Current system values are refreshed when the activity resumes. Device/OEM failures are surfaced rather than reported as success.

@@ -101,8 +101,15 @@ jobs:
           grep -q 'createOnDeviceSpeechRecognizer' app/src/main/java/com/adebojel/dynamicislandultra/ai/OfflineAssistantActivity.kt
           grep -q 'android.permission.RECORD_AUDIO' app/src/main/AndroidManifest.xml
           if grep -q 'android.permission.CAMERA' app/src/main/AndroidManifest.xml; then
-            echo "::error::Google Code Scanner must not add app camera permission."
-            exit 1
+            grep -q 'android.hardware.camera.*android:required="false"' app/src/main/AndroidManifest.xml
+            grep -q 'android.hardware.camera.flash.*android:required="false"' app/src/main/AndroidManifest.xml
+            grep -q 'cameraPermission.launch(Manifest.permission.CAMERA)' app/src/main/java/com/adebojel/dynamicislandultra/system/DeviceControlActivity.kt
+            grep -q 'cameraManager.setTorchMode' app/src/main/java/com/adebojel/dynamicislandultra/system/DeviceControlActivity.kt
+            if grep -RInE 'CameraDevice|CameraCaptureSession|openCamera\(' app/src/main/java/com/adebojel/dynamicislandultra; then
+              echo "::error::Camera capture APIs are not permitted by the flashlight-only camera permission exception."
+              exit 1
+            fi
+            echo "Camera permission is limited to a user-triggered flashlight with runtime consent; camera hardware is optional."
           fi
           if grep -RInE 'java\.net\.|okhttp|retrofit|ktor|HttpURLConnection|https?://' app/src/main/java/com/adebojel/dynamicislandultra/ai; then
             echo "::error::The built-in AI module must remain local-only and must not contain network clients or endpoints."

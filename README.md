@@ -38,7 +38,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Battery | Live percentage/charging indicator while overlay is active |
 | Notification bridge & privacy | Local preview settings, hide content by default, app allowlist, secret/ongoing/group-summary filtering, and generic call status cards |
 | Assistive hub | Categorized Android settings and app shortcuts |
-| Global System Controls | User-triggered Home, Back, Recents, Notifications, Quick Settings, Power, Lock and Screenshot where supported by the Android Accessibility API |
+| Global System Controls | User-triggered Home, Back, Recents, Notifications, Quick Settings, Power, Lock and Screenshot; media volume; flashlight; brightness and auto-rotation with required Android consent |
 | App collection | Lists launcher-visible apps and launches selected apps |
 | Local notes | Saves notes in app-private storage |
 | Local calculator | Parses arithmetic expressions locally |
@@ -292,3 +292,8 @@ The optional Accessibility Service offers a user-triggered system screenshot act
 ## App-owned Floating Window Manager
 
 The bubble panel can open up to four app-owned overlay mini windows: Notes, a four-operation calculator, and a countdown timer. Each window has a draggable title bar, minimize/restore, compact/large size toggle and close action. Notes are saved locally and included in encrypted backup. Mini timers are session-only and stop when their window closes or the foreground service stops. These are app-owned tools; they do not embed third-party apps or bypass Android freeform-window limitations.
+
+
+### Hardware and display controls
+
+Global System Controls also provides a media-stream volume slider, a flashlight toggle (camera permission is requested only when the user activates it), and system brightness/auto-rotation after the user grants Android's special Modify System Settings access. Camera hardware is optional and the app does not open a camera preview or capture images. No protected setting or runtime permission is silently enabled.

@@ -298,3 +298,15 @@ Implemented in source:
 - ZIP traversal is bounded to 32 levels and 5,000 entries.
 
 Remaining: recursive folder copy/move, ZIP extraction, PDF merge/split/compress/annotate, document editing and real provider/OEM regression tests.
+
+
+## Phase 1 hardware/display controls
+
+Implemented in source:
+- Media stream volume slider.
+- Flashlight toggle through CameraManager, with runtime CAMERA permission only after an explicit user action; camera and flash hardware remain optional and no image capture/preview is implemented.
+- System brightness and auto-rotation controls gated by Android Modify System Settings special access.
+- Scrollable layout for smaller devices.
+- Android CI policy permits CAMERA only for this constrained flashlight implementation and rejects camera capture APIs.
+
+Physical-device tests are still required for camera-permission denial, competing camera/torch clients, brightness/rotation OEM behaviour and Android 8 compatibility.

@@ -325,3 +325,16 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] ZIP a nested folder tree and verify relative paths and contents.
 - [ ] Test the 32-level and 5,000-entry limits; confirm failures are reported safely.
 - [ ] Test at least one cloud-backed SAF provider and one local storage provider.
+
+
+## Hardware & display controls
+
+- [ ] Adjust the media volume slider and confirm it changes only the media stream.
+- [ ] On a flash-capable device, tap Flashlight and confirm CAMERA runtime permission is requested only then.
+- [ ] Grant CAMERA and verify torch on/off; deny CAMERA and confirm a safe explanation with no crash.
+- [ ] On a device without flash hardware, confirm the control is disabled and camera permission is not requested.
+- [ ] Open Modify System Settings from the app and grant the special access manually.
+- [ ] Adjust brightness and auto-rotation, leave and return to the activity, and verify the displayed values refresh from Android.
+- [ ] Deny special access and confirm brightness/rotation controls stay disabled.
+- [ ] Confirm the app never starts a camera preview or image capture session.
+- [ ] Test small-screen scrolling and portrait/landscape on Android 8/API 26 and a current OEM device.
