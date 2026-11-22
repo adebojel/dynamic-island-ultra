@@ -66,7 +66,13 @@ jobs:
           grep -q 'minSdk = 26' app/build.gradle.kts
           grep -q 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
           grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml
-          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml
+          if grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml; then
+            echo "::error::APK install permission must not appear in the shared manifest."
+            exit 1
+          fi
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/github/AndroidManifest.xml
+          grep -q 'ENABLE_GITHUB_APK_UPDATER' app/build.gradle.kts
+          grep -q 'openPlayStoreUpdates' app/src/main/java/com/adebojel/dynamicislandultra/MainActivity.kt
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
           grep -q 'ads-mobile-sdk:1.7.0' app/build.gradle.kts
           grep -q 'user-messaging-platform:4.0.0' app/build.gradle.kts
@@ -80,8 +86,8 @@ jobs:
           fi
           echo "Android 8+ support and local-AI isolation checks passed. Internet is available to app features; AI stays offline by design."
 
-      - name: Run offline assistant and local policy tests
-        run: gradle --no-daemon --stacktrace testDebugUnitTest -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+      - name: Run Android unit tests for both distribution flavors
+        run: gradle --no-daemon --stacktrace testGithubDebugUnitTest testPlayDebugUnitTest -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
 
       - name: Prepare stable release signing key
         id: signing
@@ -112,7 +118,7 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: gradle --no-daemon --stacktrace assembleRelease bundleRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
+        run: gradle --no-daemon --stacktrace assembleGithubRelease bundlePlayRelease -PVERSION_CODE="$VERSION_CODE" -PVERSION_NAME="$VERSION_NAME"
 
       - name: Build debug preview APK
         if: steps.signing.outputs.ready != 'true'
@@ -123,7 +129,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK="app/build/outputs/apk/release/app-release.apk"
+          APK="app/build/outputs/apk/github/release/app-github-release.apk"
           APKSIGNER="${ANDROID_HOME}/build-tools/36.0.0/apksigner"
           test -x "$APKSIGNER"
           "$APKSIGNER" verify --verbose --print-certs "$APK" | tee "$RUNNER_TEMP/apk-signature.txt"
@@ -155,7 +161,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           if [[ "$SIGNING_READY" == "true" ]]; then
-            SOURCE_APK="app/build/outputs/apk/release/app-release.apk"
+            SOURCE_APK="app/build/outputs/apk/github/release/app-github-release.apk"
             APK_NAME="app-release.apk"
           else
             SOURCE_APK="app/build/outputs/apk/debug/app-debug.apk"
@@ -172,7 +178,7 @@ jobs:
           cp "$SOURCE_APK" "dist/$APK_NAME"
           sha256sum "dist/$APK_NAME" > "dist/$APK_NAME.sha256"
           if [[ "$SIGNING_READY" == "true" ]]; then
-            SOURCE_AAB="app/build/outputs/bundle/release/app-release.aab"
+            SOURCE_AAB="app/build/outputs/bundle/playRelease/app-play-release.aab"
             test -s "$SOURCE_AAB"
             AAB_SIZE_BYTES="$(stat -c%s "$SOURCE_AAB")"
             if (( AAB_SIZE_BYTES > MAX_BYTES )); then
@@ -187,6 +193,9 @@ jobs:
             "versionName": "$VERSION_NAME",
             "versionCode": $VERSION_CODE,
             "minSdk": 26,
+            "apkFlavor": "github",
+            "bundleFlavor": "play",
+            "playFlavorExcludesRequestInstallPackages": true,
             "apk": "app-release.apk",
             "sha256Asset": "app-release.apk.sha256",
             "bundle": "app-release.aab",
@@ -223,14 +232,17 @@ jobs:
             - Android minimum: 8.0 Oreo / API 26.
             - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
             - The built-in assistant and local tools remain offline.
-            - Signed APK and Android App Bundle (AAB), both SHA-256 checksums, and release-info.json are attached. AAB is the Play Console upload artifact.
+            - GitHub APK variant includes the SHA-256-verified GitHub self-updater for sideloaded distribution.
+            - Play AAB variant excludes REQUEST_INSTALL_PACKAGES and sends users to Google Play for updates.
+            - Signed APK and Android App Bundle (AAB), both SHA-256 checksums, and release-info.json are attached. Upload only the Play-flavor AAB to Play Console.
             - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.
             - App-wide network permissions are enabled; the offline assistant remains local-only.
             - Google Mobile Ads Next-Gen and UMP are integrated. Debug builds use Google's official test units; signed release builds use the publisher's production IDs.
             - Banner and Native Advanced are confined to Bonus & Premium. Rewarded formats require direct user action and grant a 24-hour cosmetic Premium unlock.
             - Google Play Billing queries subscription product diu_premium; localized price and offers are read from Google Play.
-            - Install/update is handed to Android's package installer; user confirmation may be required.
-            - This APK is self-signed with the project's stable release key, not Google Play certified.
+            - The GitHub APK updater hands installation to Android's package installer after SHA-256 validation and user consent.
+            - The Play flavor receives updates through Google Play and does not declare REQUEST_INSTALL_PACKAGES.
+            - The GitHub APK is self-signed with the project's stable release key, not Google Play certified.
           files: |
             dist/app-release.apk
             dist/app-release.apk.sha256
