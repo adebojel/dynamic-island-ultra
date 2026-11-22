@@ -24,13 +24,13 @@ Each signed GitHub release should attach:
 
 **Upload the AAB to Play Console, not the APK**, for a new Play app. New Play apps use Play App Signing. The stable JKS already used to sign the APK is the upload key candidate. The CI verifies that the AAB and APK share the same certificate SHA-256.
 
-Because this package has already been distributed outside Google Play, check the Android developer verification/package registration flow during app creation. If Play Console asks to prove package ownership, use the original stable signing keystore and its matching certificate; never replace it or upload the private JKS to the repository.
+Because this package has already been distributed outside Google Play, check the Android developer verification/package registration flow during app creation. If Play Console asks to prove package ownership, use the original stable signing keystore and its matching certificate. The SHA-256 fingerprint verified by CI is `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`. Never replace the JKS or upload the private file to the repository.
 
 ## Play Console setup
 
 - [ ] Create the app in Play Console with exact package `com.adebojel.dynamicislandultra`.
 - [ ] Add a public developer contact email to the Play listing. This is still needed; do not invent one in the policy pages.
-- [ ] Enroll in Play App Signing and preserve the stable JKS as the upload key.
+- [ ] Enroll in Play App Signing. The stable JKS is already the release/upload key used by GitHub CI. **Choose the app-signing-key option carefully:** the APK currently installed from GitHub is signed by this stable certificate. If the goal is an in-place update from that APK to the Play Store build, select the option to use/provide the same existing app-signing key when Play Console offers it before the first rollout. If Play App Signing uses a different Google-generated app-signing key, Play-distributed APKs will have a different signer and cannot update the GitHub-signed installation in place; a one-time uninstall/reinstall may be required. The upload key and app-signing key have different roles—do not assume that setting the upload key alone preserves the final APK certificate.
 - [ ] Upload the latest `app-release.aab` from GitHub Releases.
 - [ ] Verify app signing, package name, version code, target SDK, and generated device APKs.
 - [ ] Complete the store listing, screenshots, app icon, feature graphic, content rating, target audience, and app access declarations.
