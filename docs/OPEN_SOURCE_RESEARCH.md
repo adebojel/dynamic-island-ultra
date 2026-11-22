@@ -49,29 +49,6 @@ For GGUF experiments, evaluate one Android runtime at a time; llama.cpp is the c
 - [NotificationListenerService](https://developer.android.com/reference/android/service/notification/NotificationListenerService) requires the declared protected binding permission and user approval in system settings.
 - [Picture-in-Picture](https://developer.android.com/develop/ui/views/picture-in-picture) only applies to activities that explicitly support PiP. It does not permit this app to force arbitrary third-party apps into windows.
 
-## GitHub candidates and concepts
-
-| Repository | Research use | License notes |
-|---|---|---|
-| [Islet](https://github.com/dylanneve1/islet) | Dynamic Island, notification, media and cutout design | Apache-2.0 license file verified; review selected commit/dependencies |
-| [SmartIsland](https://github.com/agupta07505/SmartIsland) | Battery, timers, media, call and notification concepts | GPL-3.0 file verified; derivative use needs copyleft compliance |
-| [Aura Island](https://github.com/Sensui-moksha/Aura-Island) | Overlay, gesture and glass/animation patterns | GPL-3.0 file verified; review obligations before integration |
-| [Overlay PowerToys](https://github.com/8bitgentleman/OverlayPowerToys) | Overlay mini-tools, notes, calculator and drawing concepts | Verify license at exact commit before copying |
-| [Sparrow](https://github.com/ilhan-gunduz/Sparrow) | Offline assistant/launcher design ideas | Verify license and Android applicability |
-| [PocketLLM](https://github.com/CaviraOSS/PocketLLM) | Local LLM size, quantization and runtime exploration | Verify software and model terms before adoption |
-| [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM) | Google on-device LLM runtime for Android | Preserve upstream license/NOTICE; model terms are separate |
-| [Droidtools](https://github.com/Velocity081/droidtools) | Dynamic island and edge-bar concepts | Repository describes MIT; root license was not independently verified |
-| [Droidbubble](https://github.com/Shikateki/Dynamic-island) | Media, recording and progress cards | License status unverified |
-| [IslandOne](https://github.com/richyrach/IslandOne) | Media, notification and battery concepts | License status unverified |
-| [DigiIsland](https://github.com/JensonVivish/dynamicisland) | Media/call/charging concepts | License status unverified |
-
-## Android platform constraints
-
-- [Android Picture-in-Picture](https://developer.android.com/develop/ui/views/picture-in-picture): Android-managed PiP applies to activities that declare/support PiP. An app cannot force arbitrary third-party apps into PiP or create unlimited PiP windows.
-- [Package visibility](https://developer.android.com/training/package-visibility): a narrow launcher intent query avoids unrestricted QUERY_ALL_PACKAGES.
-- [Foreground services](https://developer.android.com/develop/background-work/services/foreground-services): overlay and foreground service lifecycle remain subject to Android background-start and user-visible requirements.
-- [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM): local inference runtime. Model files remain separate and require their own storage/RAM/license checks.
-
 ## Network-enabled application policy
 
 - The app declares INTERNET and ACCESS_NETWORK_STATE for browser, integrated AdMob/UMP and Google Play Billing. The built-in assistant stays offline by architecture and CI policy.
