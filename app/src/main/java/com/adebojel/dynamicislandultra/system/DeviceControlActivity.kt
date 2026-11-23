@@ -75,9 +75,9 @@ class DeviceControlActivity : ComponentActivity() {
                     onEnable = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
                     onAction = ::performAction,
                     onRequestWriteSettings = ::requestWriteSettings,
-                    onBrightnessChange = ::setBrightness,
-                    onAutoRotateChange = ::setAutoRotate,
-                    onVolumeChange = ::setMediaVolume,
+                    onBrightnessChange = ::applyScreenBrightness,
+                    onAutoRotateChange = ::applyAutoRotate,
+                    onVolumeChange = ::applyMediaVolume,
                     onTorchToggle = ::toggleTorch
                 )
             }
@@ -115,7 +115,7 @@ class DeviceControlActivity : ComponentActivity() {
         }
     }
 
-    private fun setBrightness(value: Int) {
+    private fun applyScreenBrightness(value: Int) {
         if (!Settings.System.canWrite(this)) {
             requestWriteSettings()
             return
@@ -132,7 +132,7 @@ class DeviceControlActivity : ComponentActivity() {
         else Toast.makeText(this, "Brightness tidak dapat diubah pada perangkat ini.", Toast.LENGTH_LONG).show()
     }
 
-    private fun setAutoRotate(enabled: Boolean) {
+    private fun applyAutoRotate(enabled: Boolean) {
         if (!Settings.System.canWrite(this)) {
             requestWriteSettings()
             return
@@ -148,7 +148,7 @@ class DeviceControlActivity : ComponentActivity() {
         else Toast.makeText(this, "Pengaturan rotasi ditolak oleh perangkat.", Toast.LENGTH_LONG).show()
     }
 
-    private fun setMediaVolume(value: Int) {
+    private fun applyMediaVolume(value: Int) {
         val safe = value.coerceIn(0, maxMediaVolume)
         runCatching {
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, safe, AudioManager.FLAG_SHOW_UI)
