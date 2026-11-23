@@ -398,3 +398,12 @@ Still requiring physical evidence:
 - Traversal is bounded to 5,000 entries and 32 levels; destination-inside-source is rejected.
 - Existing items are not overwritten and failed partial copies are cleaned up best-effort.
 - Provider-specific SAF behaviour remains part of final Android/OEM QA.
+
+
+## Media Equalizer Studio and Dual Audio Routing — implementation update
+
+- Added a best-effort output-mix Equalizer using Android AudioEffect session 0, with device-reported bands/range, built-in tonal presets, editable custom curve, persistent enable state and preamp through LoudnessEnhancer when supported.
+- Added current output-device category detection and a shortcut to Android Bluetooth settings.
+- Added transparent dual-audio guidance for attempting handset calls plus Bluetooth media by disabling the headset Phone calls profile while retaining Media audio, where supported.
+- Explicitly does not claim universal EQ for third-party MediaSession players or forced cellular/WhatsApp call routing. MediaSession does not expose another app's private PCM stream/session ID; Telecom/OEM policy owns system-managed calls.
+- Unit tests cover preset curve logic and gain bounds. Android output-effect availability, audible response, Bluetooth profile behaviour, audio focus and call routing require physical-device tests.

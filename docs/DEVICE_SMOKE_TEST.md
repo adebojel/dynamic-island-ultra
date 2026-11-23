@@ -52,6 +52,12 @@ This checklist is for a real Android device. CI success does not replace these c
 
 - [ ] Play media in a compatible app with Notification Access enabled; inspect metadata, artwork and controls.
 - [ ] Test play/pause, skip and seek only where the player exposes those actions.
+- [ ] Open Media Controls > Equalizer Studio; check whether the device accepts output-mix effects, toggle EQ, compare Flat/Bass Boost/Vocal presets and verify band sliders respond.
+- [ ] Change a band and preamp, leave and reopen Media Controls, and verify the saved curve and enable state are restored.
+- [ ] Repeat EQ checks with built-in speaker, wired headset, USB audio and Bluetooth A2DP where available; record any output path where the OEM bypasses or rejects the effect.
+- [ ] Open Dual Audio Routing; verify detected output categories and Bluetooth settings shortcut.
+- [ ] With Bluetooth earbuds connected, inspect the earbuds' Android Bluetooth settings. If separate Phone calls and Media audio toggles exist, disable Phone calls but keep Media audio; test a cellular call and a WhatsApp call while media is playing. Record whether calls use handset/earpiece and whether media pauses/ducks; do not expect the app to force this route.
+- [ ] Re-enable the headset Phone calls profile and confirm Android returns to its normal call routing. Test wired headset and speakerphone selection using the system call UI.
 - [ ] Scan a QR code and barcode; inspect local result and confirm only user-approved HTTPS links open.
 - [ ] Select an image/PDF with Android's document picker and verify local preview.
 - [ ] Open Sensor Kit; check readings update and stop after leaving the screen.

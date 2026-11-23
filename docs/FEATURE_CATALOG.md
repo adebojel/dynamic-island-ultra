@@ -286,3 +286,20 @@ The built-in assistant and local tools work without internet, imported model fil
 - Destination-inside-source transfers are rejected to prevent recursive self-copy.
 - Existing destination names are never overwritten; any partial destination tree is rolled back when a copy fails.
 - Move deletes the source only after the destination copy completes; if the provider refuses source deletion, the completed copy is retained and the limitation is reported.
+
+
+## Media Equalizer Studio
+
+- Best-effort Android global output-mix Equalizer (audio session 0); device implementations may reject global effects or bypass them on some output paths.
+- Uses the band's count and gain range reported by the current device; offers Flat, Bass Boost, Treble, Vocal, Rock, Jazz, Classical and Custom curves.
+- Saves enabled state, preamp and custom band levels in app-private preferences.
+- Uses Android LoudnessEnhancer for a bounded preamp/gain stage when supported; no claim of a hardware limiter or guaranteed clipping prevention is made.
+- No third-party DSP dependency or audio capture/recording is added.
+- MediaSession metadata/transport controls do not provide another app's PCM data or private AudioSessionId, so universal per-app EQ cannot be guaranteed.
+
+## Dual Audio Routing guidance
+
+- Displays output-device categories currently reported by Android (speaker, earpiece, wired, USB and Bluetooth media/communication).
+- Provides a shortcut to Android Bluetooth settings and explains the user-controlled workaround: disable a headset's Phone calls profile while keeping Media audio enabled, if the headset exposes these toggles.
+- This is guidance, not an automatic call router. Cellular and Telecom-managed third-party calls remain under Android/Telecom/OEM control; the app does not claim to force cellular or WhatsApp call routing.
+- System audio focus may still pause or duck music during an incoming or active call.

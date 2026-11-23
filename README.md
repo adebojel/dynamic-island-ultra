@@ -48,7 +48,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
 | DuckDuckGo browser | HTTPS navigation, Desktop/Mobile mode, searchable/renameable/deletable local bookmarks, capped local history, restorable standard-mode tabs and an in-app DownloadManager history with search/open/share/delete controls |
 | GitHub update center (GitHub flavor only) | Checks the latest project release, downloads the signed APK and SHA-256 file, verifies the hash, then opens Android's installer |
-| Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
+| Media session & Equalizer Studio | Metadata/artwork and transport controls for supported MediaSessions; best-effort Android output-mix EQ with device-supported bands, presets, saved custom curve, preamp and output-device detection |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
 | Image/PDF preview | Android document picker and local image/first-page PDF preview |
 | File Manager | User-selected SAF folder browsing, search, sorting, folder creation, open/share/rename/delete, recursive file/folder copy/move to another selected folder (bounded to 5,000 items and 32 levels) and ZIP export/extraction; no broad storage permission |
@@ -58,6 +58,13 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Floating Window Manager | Up to four app-owned mini windows for Notes, Calculator and Timer with drag, minimize/restore, resize preset and close |
 | Sensor kit | Live supported sensors while the screen is foregrounded; listeners stop on pause |
 | Voice assistance | Android 12+ on-device recognition when available, explicit mic permission and device speech read-out |
+
+### Audio processing and call/media routing limitations
+
+- Equalizer Studio attaches Android audio effects to output session 0 when the device audio-effect implementation supports it. Supported band count/range is device-specific; preset curves and custom levels are stored locally. Preamp uses Android LoudnessEnhancer where available. This is best-effort and is not guaranteed to affect every third-party player or OEM output path.
+- MediaSession transport controls do not expose another app's PCM stream or private AudioSessionId. A third-party app cannot promise universal equalization of all other apps.
+- Dual Audio Routing displays detected output categories and opens Android Bluetooth settings. Where a headset exposes separate profile toggles, users may disable its Phone calls profile while leaving Media audio enabled to attempt handset calls plus Bluetooth media. Android may still pause/duck media; results depend on the headset, Android release and OEM.
+- Dynamic Island Ultra does not forcibly reroute cellular or WhatsApp calls. Public communication-device routing is intended for the app's own VoIP session; Telecom controls system-managed calls.
 
 ## Internet access, AdMob and Premium
 
