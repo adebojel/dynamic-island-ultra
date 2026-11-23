@@ -277,3 +277,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Standard-mode HTTPS tab URLs and active tab index are persisted locally and restored, with a hard cap of eight tabs.
 - Private browsing does not persist URLs or tabs; entering private mode clears the saved standard session.
 - DownloadManager continues to own transfer execution; the app does not implement a second downloader or request broad storage access.
+
+
+## File Manager recursive transfer
+
+- Copy and move support both files and complete folder trees using the selected Storage Access Framework trees.
+- Recursive transfers are capped at 5,000 entries and 32 directory levels.
+- Destination-inside-source transfers are rejected to prevent recursive self-copy.
+- Existing destination names are never overwritten; any partial destination tree is rolled back when a copy fails.
+- Move deletes the source only after the destination copy completes; if the provider refuses source deletion, the completed copy is retained and the limitation is reported.

@@ -390,3 +390,11 @@ Still requiring physical evidence:
 - ZIP creation and bounded ZIP extraction are implemented in FileManagerOperations; older Phase 1 backlog entries are historical snapshots, not current missing features.
 - Browser bookmark search/rename/delete is implemented; only the in-app download history and crash recovery gaps described in earlier snapshots are superseded by this update.
 - Firebase project setup/hosting and Google Play Console configuration remain deliberately deferred to the user's separate final-stage session.
+
+
+## File Manager recursive transfer — implementation update
+
+- Recursive folder copy/move is implemented alongside existing file transfer.
+- Traversal is bounded to 5,000 entries and 32 levels; destination-inside-source is rejected.
+- Existing items are not overwritten and failed partial copies are cleaned up best-effort.
+- Provider-specific SAF behaviour remains part of final Android/OEM QA.

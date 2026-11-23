@@ -15,6 +15,8 @@ class FileManagerOperationsTest {
     @Test fun zipBoundsAreExplicit() {
         assertEquals(5_000, FileManagerOperations.MAX_ZIP_ENTRIES)
         assertEquals(32, FileManagerOperations.MAX_ZIP_DEPTH)
+        assertEquals(5_000, FileManagerOperations.MAX_COPY_ENTRIES)
+        assertEquals(32, FileManagerOperations.MAX_COPY_DEPTH)
         assertTrue(FileManagerOperations.MAX_EXTRACTED_BYTES > 0)
         assertTrue(FileManagerOperations.MAX_EXTRACTED_FILE_BYTES <= FileManagerOperations.MAX_EXTRACTED_BYTES)
     }

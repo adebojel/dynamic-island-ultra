@@ -135,10 +135,6 @@ class FileManagerActivity : ComponentActivity() {
     }
 
     private fun requestTransfer(source: DocumentFile, move: Boolean) {
-        if (!source.isFile) {
-            Toast.makeText(this, "Salin/pindahkan saat ini hanya tersedia untuk file. Folder dapat diekspor sebagai ZIP.", Toast.LENGTH_LONG).show()
-            return
-        }
         pendingTransfer = source
         pendingMove = move
         destinationPicker.launch(selectedRoot?.uri)

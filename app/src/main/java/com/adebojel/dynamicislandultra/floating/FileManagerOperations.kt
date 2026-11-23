@@ -12,6 +12,8 @@ import java.util.zip.ZipOutputStream
 internal object FileManagerOperations {
     const val MAX_ZIP_ENTRIES = 5_000
     const val MAX_ZIP_DEPTH = 32
+    const val MAX_COPY_ENTRIES = 5_000
+    const val MAX_COPY_DEPTH = 32
     const val MAX_EXTRACTED_BYTES = 536_870_912L
     const val MAX_EXTRACTED_FILE_BYTES = 268_435_456L
 
@@ -21,26 +23,75 @@ internal object FileManagerOperations {
         destination: DocumentFile,
         move: Boolean
     ): String {
-        require(source.isFile && source.canRead()) { "File sumber tidak dapat dibaca." }
+        require((source.isFile || source.isDirectory) && source.canRead()) {
+            "Sumber tidak dapat dibaca."
+        }
         require(destination.isDirectory && destination.canWrite()) { "Folder tujuan tidak dapat ditulisi." }
-        val name = source.name?.takeIf { FileManagerRules.isValidName(it) }
-            ?: error("Nama file sumber tidak valid.")
-        require(destination.findFile(name) == null) { "Nama file sudah ada di folder tujuan." }
-        val mime = source.type ?: resolver.getType(source.uri) ?: "application/octet-stream"
-        val target = destination.createFile(mime, name)
-            ?: error("Penyedia penyimpanan menolak pembuatan file.")
+        require(source.uri != destination.uri) { "Sumber dan tujuan tidak boleh sama." }
+        if (source.isDirectory) require(!containsUri(source, destination.uri)) {
+            "Folder tujuan tidak boleh berada di dalam folder sumber."
+        }
+
+        val created = mutableListOf<DocumentFile>()
+        var entries = 0
+        fun copyNode(node: DocumentFile, parent: DocumentFile, depth: Int) {
+            require(depth <= MAX_COPY_DEPTH) {
+                "Struktur folder melebihi batas $MAX_COPY_DEPTH tingkat."
+            }
+            require(++entries <= MAX_COPY_ENTRIES) {
+                "Transfer melebihi batas $MAX_COPY_ENTRIES item."
+            }
+            val name = node.name?.takeIf { FileManagerRules.isValidName(it) }
+                ?: error("Nama item sumber tidak valid.")
+            require(parent.findFile(name) == null) { "Nama item sudah ada di folder tujuan: $name" }
+
+            if (node.isDirectory) {
+                val target = parent.createDirectory(name)
+                    ?: error("Penyedia penyimpanan menolak pembuatan folder: $name")
+                created.add(target)
+                node.listFiles().forEach { child -> copyNode(child, target, depth + 1) }
+            } else if (node.isFile) {
+                require(node.canRead()) { "File sumber tidak dapat dibaca: $name" }
+                val mime = node.type ?: resolver.getType(node.uri) ?: "application/octet-stream"
+                val target = parent.createFile(mime, name)
+                    ?: error("Penyedia penyimpanan menolak pembuatan file: $name")
+                created.add(target)
+                val input = resolver.openInputStream(node.uri) ?: error("File sumber tidak dapat dibuka: $name")
+                val output = resolver.openOutputStream(target.uri, "wt")
+                    ?: error("File tujuan tidak dapat ditulis: $name")
+                input.use { sourceStream -> output.use { targetStream -> sourceStream.copyTo(targetStream) } }
+            } else {
+                error("Jenis item tidak didukung: $name")
+            }
+        }
+
         try {
-            val input = resolver.openInputStream(source.uri) ?: error("File sumber tidak dapat dibuka.")
-            val output = resolver.openOutputStream(target.uri, "wt") ?: error("File tujuan tidak dapat ditulis.")
-            input.use { sourceStream -> output.use { targetStream -> sourceStream.copyTo(targetStream) } }
+            copyNode(source, destination, 0)
         } catch (failure: Throwable) {
-            target.delete()
+            created.asReversed().forEach { runCatching { it.delete() } }
             throw failure
         }
+
         if (move && !source.delete()) {
-            return "File disalin, tetapi file asli tidak dapat dihapus oleh penyedia penyimpanan."
+            return "Salinan berhasil, tetapi penyedia penyimpanan tidak mengizinkan penghapusan sumber."
         }
-        return if (move) "File berhasil dipindahkan." else "File berhasil disalin."
+        return if (move) "Folder/file berhasil dipindahkan." else "Folder/file berhasil disalin."
+    }
+
+    private fun containsUri(root: DocumentFile, targetUri: android.net.Uri): Boolean {
+        var visited = 0
+        fun visit(node: DocumentFile, depth: Int): Boolean {
+            require(depth <= MAX_COPY_DEPTH) {
+                "Struktur sumber terlalu dalam untuk memvalidasi tujuan."
+            }
+            require(++visited <= MAX_COPY_ENTRIES) {
+                "Folder sumber terlalu besar untuk memvalidasi tujuan dengan aman."
+            }
+            if (node.uri == targetUri) return true
+            if (!node.isDirectory) return false
+            return node.listFiles().any { child -> visit(child, depth + 1) }
+        }
+        return visit(root, 0)
     }
 
     fun createZip(resolver: ContentResolver, source: DocumentFile, output: OutputStream): Int {

@@ -51,7 +51,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |
 | Image/PDF preview | Android document picker and local image/first-page PDF preview |
-| File Manager | User-selected SAF folder browsing, search, sorting, folder creation, open/share/rename/delete, file copy/move to another selected folder and ZIP export; no broad storage permission |
+| File Manager | User-selected SAF folder browsing, search, sorting, folder creation, open/share/rename/delete, recursive file/folder copy/move to another selected folder (bounded to 5,000 items and 32 levels) and ZIP export/extraction; no broad storage permission |
 | Encrypted Backup | Password-derived AES-256-GCM encrypted export/import of selected app-local preferences, notes, browser library, notification privacy and reminders; excludes purchases and OS permissions |
 | Persistent Reminders | Up to 30 local reminders scheduled with AlarmManager; survive app process closure and are re-scheduled after reboot, subject to Android Doze and notification permissions |
 | Clipboard History | Explicit user-triggered capture of plain-text clipboard entries, up to 50 locally stored items with copy/delete/clear; no background polling |
@@ -266,7 +266,7 @@ These tools do not require network access or additional Android permissions. Tim
 
 ## File Manager — scoped local storage
 
-The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Copy/move, ZIP export and bounded ZIP extraction are available through user-selected SAF folders; PDF editing and full document editing remain separate backlog items.
+The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Recursive file/folder copy/move (bounded to 5,000 items and 32 levels), ZIP export and bounded ZIP extraction are available through user-selected SAF folders; PDF editing and full document editing remain separate backlog items.
 
 
 ### Browser library and downloads
