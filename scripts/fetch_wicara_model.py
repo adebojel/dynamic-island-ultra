@@ -42,7 +42,8 @@ def main() -> None:
             timeout=60
         ) as response:
             model_card = response.read().decode("utf-8")
-        if not re.search(r"licenses*:s*apache[- ]2.0", model_card, re.IGNORECASE):
+        normalized_card = "".join(model_card.lower().split())
+        if "license:apache-2.0" not in normalized_card:
             raise RuntimeError("Upstream model card no longer declares Apache-2.0.")
 
     matches = [item for item in info.get("siblings", []) if item.get("rfilename") == FILENAME]
@@ -99,8 +100,7 @@ def main() -> None:
             "license": "MIT"
         }
     }
-    METADATA_PATH.write_text(json.dumps(metadata, indent=2) + "
-", encoding="utf-8")
+    METADATA_PATH.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     print(json.dumps(metadata, indent=2))
     print(f"Verified GGUF: {actual_size} bytes; SHA-256 {actual_sha}")
 

@@ -1,12 +1,8 @@
 name: Deploy official website and app-ads.txt to Firebase Hosting
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'site/**'
-      - 'firebase.json'
-      - '.github/workflows/firebase-hosting.yml'
+  # Firebase Hosting is deferred to the final distribution phase.
+  # This workflow may be started manually only; Phase 2 pushes do not deploy.
   workflow_dispatch:
 
 permissions:
