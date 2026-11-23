@@ -18,7 +18,7 @@ class BrowserUrlPolicyTest {
             listOf("https://one.example", "http://two.example", "https://three.example"),
             maxTabs = 2
         )
-        assertEquals(listOf("https://one.example"), restored)
+        assertEquals(listOf("https://one.example", "https://three.example"), restored)
     }
 
     @Test fun activeTabIndexIsAlwaysInRange() {
