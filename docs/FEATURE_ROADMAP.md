@@ -19,7 +19,7 @@
 
 - Version v0.0.11 adds accessible accordion navigation for the eight bubble categories and closes the floating panel before a category action launches.
 
-- Latest signed release: [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13), Android versionCode 134.
+- Latest signed release at the time of the original Phase 1 snapshot: [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13), Android versionCode 134.
 - [Android CI run #134](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45019191147) passed both flavor unit-test suites, signed APK/AAB assembly, installer permission separation, stable certificate verification, checksum generation, artifact upload and release publication.
 - Release asset metadata reports a signed APK of 19,108,214 bytes and Play AAB of 18,646,482 bytes; each has a SHA-256 sidecar.
 - Version v0.0.10 adds four configurable Quick Favorites at the top of the floating bubble, with ten allowlisted app-owned shortcuts and persistent local preferences.
@@ -34,11 +34,11 @@
 4. AdMob production readiness: publish UMP privacy messages, complete app review/eligibility, publish root-host app-ads.txt, verify production ad serving without self-clicking, and audit placement/frequency compliance.
 5. Full app-owned floating mini-window manager, radial/favourites menu, custom shortcut editor and complete theme editor.
 6. Broader TalkBack, dynamic text scaling, high-contrast and keyboard-navigation validation.
-7. Optional generative on-device LLM remains a separate module requiring model licence, runtime, RAM/storage and Android 8+ hardware evaluation.
+7. Wicara offline LLM is now packaged; remaining work is ARM64 emulator runtime testing plus physical Android 8+/OEM, RAM, battery and thermal validation.
 
 ## AI scope
 
-The bundled offline decision engine does not import model weights and has no network access. It remains clearly distinguished from a generative LLM. A future on-device generative model needs license, runtime, model-size, RAM, CPU/GPU and Android 8+ compatibility review; no such capability will be advertised until genuinely implemented and measured.
+The deterministic offline command engine remains separate from the bundled Wicara generative LLM. Wicara is packaged as a verified GGUF asset, runs through pinned llama.cpp JNI on ARM64 CPU, and has no cloud inference path. Its small size does not make it a reliable reasoning engine; factual, RAM, latency, battery and thermal behaviour still require device validation.
 
 ## Current monetization state
 
@@ -66,7 +66,7 @@ Implemented in the current source: local notification privacy settings and app a
 
 Not marked as complete: real-device/OEM testing, TalkBack user testing, Play Console foreground-service review, AdMob production fill and publisher review, Firebase root-host app-ads.txt confirmation, Play Billing product/base-plan activation and backend purchase-token verification.
 
-A generative offline LLM is not the existing deterministic command router. It remains a separate module requiring model licensing, runtime integration, device RAM/storage/thermal testing and API 26+ compatibility evaluation. Ordinary apps cannot silently switch protected Wi-Fi/mobile-data settings or take privileged control over other apps; those actions must route through Android settings and user confirmation.
+A generative offline LLM is distinct from the deterministic command router. Wicara is now integrated as a separate local module; real-device RAM/storage/thermal measurements and API 26+ non-AI compatibility still require validation. Ordinary apps cannot silently switch protected Wi-Fi/mobile-data settings or take privileged control over other apps; those actions must route through Android settings and user confirmation.
 
 ## Implemented in the current bubble-controls update
 
@@ -87,10 +87,10 @@ Still outstanding: long-running OEM/device validation, TalkBack interaction test
 
 ## Local model feasibility snapshot — 22 November 2026
 
-- Current assistant remains an offline deterministic intent/rule engine, not a generative LLM.
+- Before the Phase 2 Wicara implementation, the assistant was an offline deterministic intent/rule engine without a generative LLM.
 - SmolLM2 360M Instruct Q4_K_M GGUF is listed at about 271 MB and Apache-2.0, but its model card says it primarily understands and generates English. It is therefore not accepted as the Indonesian assistant model without language-quality evaluation.
 - Qwen2.5 0.5B Instruct Q4_K_M GGUF is listed at about 398 MB, leaving essentially no room under the combined 400 MB package/model budget for the existing app, runtime, tokenizer, cache or updates.
-- For future GGUF experimentation, evaluate one runtime only (llama.cpp Android/NDK) against the actual target device, using an optional, user-managed model file. Do not add it to release builds until storage, peak RAM, CPU latency, temperature, battery, Indonesian command tests and offline isolation all pass.
+- Phase 2 subsequently selected Wicara Q8_0 with llama.cpp and bundled it through CI. Physical storage, peak RAM, CPU latency, temperature, battery, Indonesian output quality and offline-only inference still need measured validation.
 - LiteRT-LM is a separate runtime/model format; do not combine both engines without a measured need. Its integration guidance describes local .litertlm model files from hundreds of MB to several GB; evaluate it separately, not as an additional dependency in the current release.
 
 ## Quick Favorites update

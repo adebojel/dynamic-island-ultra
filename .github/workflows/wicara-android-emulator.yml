@@ -64,13 +64,18 @@ jobs:
       - name: Assemble GitHub debug app and instrumentation APK
         run: gradle --no-daemon --stacktrace assembleGithubDebug assembleGithubDebugAndroidTest -PVERSION_CODE=1 -PVERSION_NAME=emulator-qa
 
+      - name: Stage Android emulator test APKs
+        run: |
+          set -euo pipefail
+          mkdir -p qa-apks
+          cp app/build/outputs/apk/github/debug/app-github-debug.apk qa-apks/app-github-debug.apk
+          cp app/build/outputs/apk/androidTest/github/debug/app-github-debug-androidTest.apk qa-apks/app-github-debug-androidTest.apk
+
       - name: Upload Android emulator test APKs
         uses: actions/upload-artifact@v4
         with:
           name: wicara-arm64-emulator-apks
-          path: |
-            app/build/outputs/apk/github/debug/app-github-debug.apk
-            app/build/outputs/apk/androidTest/github/debug/app-github-debug-androidTest.apk
+          path: qa-apks/*.apk
           if-no-files-found: error
           retention-days: 3
 

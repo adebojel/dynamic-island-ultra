@@ -3,9 +3,9 @@
 ## CI-verifiable gates
 
 - [ ] Hugging Face model revision is a 40-character immutable commit.
-- [ ] Upstream model card declares Apache-2.0 and the artifact exposes an LFS SHA-256 digest.
+- [ ] Upstream model card declares Apache-2.0 and the Hugging Face Hub HEAD metadata exposes a valid X-Linked-Etag/ETag file SHA-256.
 - [ ] Downloaded GGUF is no larger than 100,000,000 bytes, has valid GGUF magic and matches exact upstream size/hash.
-- [ ] Model asset and metadata are present in APK/AAB.
+- [ ] Model asset and metadata are present in APK/AAB; release-info.json parses as valid JSON.
 - [ ] APK/AAB plus a second model-size allowance stays below 400 MiB.
 - [ ] llama.cpp is pinned and compiled for ARM64.
 - [ ] ARMv7 includes explicit unsupported-runtime behaviour and remains non-AI installable.

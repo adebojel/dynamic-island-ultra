@@ -316,7 +316,7 @@ Screen recording uses the Android MediaProjection consent dialog and a user-sele
 
 ## Wicara — bundled Indonesian offline AI
 
-Wicara uses the Q8_0 GGUF model bundled into the APK/AAB at build time. GitHub Actions fetches the official Hugging Face artifact at an immutable upstream revision, verifies the published LFS SHA-256 and GGUF header, enforces the 100,000,000-byte model ceiling, and records revision/size/hash in release metadata. The model is not committed to Git and users never import or select a file.
+Wicara uses the Q8_0 GGUF model bundled into the APK/AAB at build time. GitHub Actions fetches the official Hugging Face artifact at an immutable upstream revision, verifies the published LFS SHA-256 and GGUF header, enforces the 100,000,000-byte model ceiling, and records revision/size/hash in release metadata. The model is not committed to Git and users never import or select a file. The Android release workflow also parses the generated release-info.json before it can publish.
 
 - Runtime: llama.cpp pinned to 2d8a32502909ca065c41c4cf5f2fb1c427c047fc, built with Android NDK/CMake for ARM64 CPU inference.
 - ARMv7 devices retain the rest of the app; Wicara explains that generative inference requires ARM64.

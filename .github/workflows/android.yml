@@ -310,8 +310,10 @@ jobs:
               "commit": os.environ["GITHUB_SHA"],
               "model": json.loads(os.environ["MODEL_METADATA"])
           }
-          Path("dist/release-info.json").write_text(json.dumps(info, indent=2) + "\\n")
+          Path("dist/release-info.json").write_text(json.dumps(info, indent=2) + "\n")
           PY
+          python -m json.tool dist/release-info.json > /dev/null
+
             echo "release=true" >> "$GITHUB_OUTPUT"
           else
             echo "release=false" >> "$GITHUB_OUTPUT"
