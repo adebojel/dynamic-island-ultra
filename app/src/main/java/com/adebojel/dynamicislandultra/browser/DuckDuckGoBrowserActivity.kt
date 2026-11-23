@@ -142,7 +142,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         control("Reload") { browser?.reload() }
         control("Home") { browser?.loadUrl(DUCKDUCKGO_HOME) }
         modeButton = control("Mobile", 1.2f) { toggleDesktopMode() }
-        updateModeLabel()
+        modeButton.text = if (desktopMode) "Desktop ✓" else "Mobile"
 
         val library = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -312,10 +312,10 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
     private fun showTabs() {
         val labels = tabs.mapIndexed { index, tab ->
             val marker = if (tab.id == activeTabId) "● " else ""
-            "$marker\${index + 1}. \${tab.title}\n\${tab.webView.url.orEmpty().take(72)}"
+            "$marker${index + 1}. ${tab.title}\n${tab.webView.url.orEmpty().take(72)}"
         }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle(if (privateMode) "Tab privat (\${tabs.size}/$MAX_TABS)" else "Tab (\${tabs.size}/$MAX_TABS)")
+            .setTitle(if (privateMode) "Tab privat (${tabs.size}/$MAX_TABS)" else "Tab (${tabs.size}/$MAX_TABS)")
             .setItems(labels) { _, which -> tabs.getOrNull(which)?.let { switchTab(it.id) } }
             .setPositiveButton("Tab baru") { _, _ -> createTab(true) }
             .setNegativeButton("Tutup", null)
@@ -392,7 +392,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             (getSystemService(DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
             Toast.makeText(this, "Unduhan dimulai: $filename", Toast.LENGTH_LONG).show()
         }.onFailure {
-            Toast.makeText(this, "Unduhan gagal dimulai: \${it.message ?: "kesalahan sistem"}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Unduhan gagal dimulai: ${it.message ?: "kesalahan sistem"}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -458,7 +458,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         }
         val labels = Array(entries.length()) { index ->
             val item = entries.optJSONObject(index) ?: JSONObject()
-            "\${item.optString("title", "Halaman")}\n\${item.optString("url")}"
+            "${item.optString("title", "Halaman")}\n${item.optString("url")}"
         }
         val dialog = AlertDialog.Builder(this)
             .setTitle(title)
