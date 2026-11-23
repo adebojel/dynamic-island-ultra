@@ -258,3 +258,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - ARM64 runs the llama.cpp CPU runtime. ARMv7 builds contain an explicit unsupported-runtime stub and preserve non-AI functionality.
 - Wicara unloads when the assistant screen is left. Context, generation length and CPU threads are bounded.
 - The model is experimental and has limited factual/reasoning reliability.
+
+
+## Browser bookmark management
+
+- Bookmark list supports title and URL search.
+- Selecting a bookmark exposes Open, Rename and Delete actions.
+- Rename rejects blank names and caps labels at 100 characters.
+- Delete requires an explicit confirmation.
+- Bookmark actions are unavailable during private browsing; bookmarks remain in app-private local storage.

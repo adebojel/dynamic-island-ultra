@@ -271,7 +271,7 @@ The File Manager uses Android's Storage Access Framework. The user selects a fol
 
 ### Browser library and downloads
 
-The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Browser supports up to eight WebView tabs. Private mode disables cookie acceptance, DOM storage, local history/bookmarks and downloads; switching modes clears WebView cookies and web storage to avoid mixing sessions. A full bookmark/download management editor remains planned work.
+The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Bookmarks can be searched by title/URL, renamed and deleted with confirmation. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Browser supports up to eight WebView tabs. Private mode disables cookie acceptance, DOM storage, local history/bookmarks and downloads; switching modes clears WebView cookies and web storage to avoid mixing sessions. An in-app download-history editor remains planned work.
 
 
 ## Global Android navigation controls

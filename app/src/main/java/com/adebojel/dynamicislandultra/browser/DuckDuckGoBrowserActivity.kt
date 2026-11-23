@@ -451,6 +451,10 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             Toast.makeText(this, "Riwayat dan bookmark tidak tersedia dalam mode privat.", Toast.LENGTH_SHORT).show()
             return
         }
+        if (key == KEY_BOOKMARKS) {
+            showBookmarkManager()
+            return
+        }
         val entries = readEntries(key)
         if (entries.length() == 0) {
             Toast.makeText(this, "Belum ada data $title.", Toast.LENGTH_SHORT).show()
@@ -475,6 +479,99 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
             }
         }
         dialog.show()
+    }
+
+    private fun showBookmarkManager(query: String = "") {
+        val entries = readEntries(KEY_BOOKMARKS)
+        val filtered = (0 until entries.length()).mapNotNull { index ->
+            entries.optJSONObject(index)?.let { index to it }
+        }.filter { (_, item) ->
+            val haystack = item.optString("title") + " " + item.optString("url")
+            haystack.contains(query.trim(), ignoreCase = true)
+        }
+        if (filtered.isEmpty()) {
+            Toast.makeText(this, if (query.isBlank()) "Belum ada bookmark." else "Bookmark tidak ditemukan.", Toast.LENGTH_SHORT).show()
+            if (query.isNotBlank()) showBookmarkSearch()
+            return
+        }
+        val labels = filtered.map { (_, item) ->
+            "${item.optString("title", "Halaman")}\n${item.optString("url")}"
+        }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Bookmark (${filtered.size})")
+            .setItems(labels) { _, which ->
+                val originalIndex = filtered[which].first
+                val item = readEntries(KEY_BOOKMARKS).optJSONObject(originalIndex) ?: return@setItems
+                val url = item.optString("url")
+                AlertDialog.Builder(this)
+                    .setTitle(item.optString("title", "Bookmark"))
+                    .setItems(arrayOf("Buka halaman", "Ubah nama", "Hapus bookmark")) { _, action ->
+                        when (action) {
+                            0 -> if (url.startsWith("https://", true)) browser?.loadUrl(url)
+                            1 -> renameBookmark(originalIndex, item)
+                            2 -> deleteBookmark(originalIndex)
+                        }
+                    }
+                    .setNegativeButton("Tutup", null)
+                    .show()
+            }
+            .setNeutralButton("Cari") { _, _ -> showBookmarkSearch() }
+            .setPositiveButton("Selesai", null)
+            .show()
+    }
+
+    private fun showBookmarkSearch() {
+        val input = EditText(this).apply {
+            hint = "Judul atau alamat HTTPS"
+            setSingleLine(true)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Cari bookmark")
+            .setView(input)
+            .setPositiveButton("Cari") { _, _ -> showBookmarkManager(input.text.toString()) }
+            .setNeutralButton("Semua") { _, _ -> showBookmarkManager() }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun renameBookmark(index: Int, item: JSONObject) {
+        val input = EditText(this).apply {
+            setText(item.optString("title"))
+            setSelection(text.length)
+            setSingleLine(true)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Ubah nama bookmark")
+            .setView(input)
+            .setPositiveButton("Simpan") { _, _ ->
+                val title = input.text.toString().trim().take(100)
+                if (title.isBlank()) {
+                    Toast.makeText(this, "Nama bookmark tidak boleh kosong.", Toast.LENGTH_SHORT).show()
+                } else {
+                    val entries = readEntries(KEY_BOOKMARKS)
+                    entries.optJSONObject(index)?.put("title", title)
+                    getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_BOOKMARKS, entries.toString()).apply()
+                    Toast.makeText(this, "Nama bookmark diperbarui.", Toast.LENGTH_SHORT).show()
+                    showBookmarkManager()
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun deleteBookmark(index: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus bookmark?")
+            .setMessage("Bookmark ini akan dihapus dari penyimpanan perangkat.")
+            .setNegativeButton("Batal", null)
+            .setPositiveButton("Hapus") { _, _ ->
+                val entries = readEntries(KEY_BOOKMARKS)
+                if (index in 0 until entries.length()) entries.remove(index)
+                getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_BOOKMARKS, entries.toString()).apply()
+                Toast.makeText(this, "Bookmark dihapus.", Toast.LENGTH_SHORT).show()
+                showBookmarkManager()
+            }
+            .show()
     }
 
     private fun toggleDesktopMode() {
