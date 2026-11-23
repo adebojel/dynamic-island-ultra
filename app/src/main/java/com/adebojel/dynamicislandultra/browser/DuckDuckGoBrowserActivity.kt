@@ -35,24 +35,23 @@ import org.json.JSONObject
 internal object BrowserUrlPolicy {
     private const val HOME = "https://duckduckgo.com/"
     private const val SEARCH = "https://duckduckgo.com/?q="
+    private val schemePattern = Regex("^([A-Za-z][A-Za-z0-9+.-]*):")
 
     fun resolve(rawInput: String): String? {
         val input = rawInput.trim()
         if (input.isEmpty()) return HOME
-        val explicit = Uri.parse(input)
-        val scheme = explicit.scheme?.lowercase()
+        val scheme = schemePattern.find(input)?.groupValues?.getOrNull(1)?.lowercase()
         if (scheme == "https") return input
-        if (scheme == "http") return explicit.buildUpon().scheme("https").build().toString()
-        val looksLikeHost = input.contains('.') && !input.contains(' ') &&
-            !input.startsWith("javascript:", true) &&
-            !input.startsWith("file:", true) &&
-            !input.startsWith("content:", true)
+        if (scheme == "http") return input.replaceFirst(Regex("^http:", RegexOption.IGNORE_CASE), "https:")
+        val looksLikeHost = scheme == null && input.contains('.') && !input.contains(' ')
         return if (looksLikeHost) "https://$input"
         else SEARCH + URLEncoder.encode(input, Charsets.UTF_8.name())
     }
 
-    fun isAllowedWebScheme(url: String?): Boolean =
-        Uri.parse(url.orEmpty()).scheme?.lowercase() in setOf("https", "http")
+    fun isAllowedWebScheme(url: String?): Boolean {
+        val scheme = schemePattern.find(url.orEmpty())?.groupValues?.getOrNull(1)?.lowercase()
+        return scheme == "https" || scheme == "http"
+    }
 }
 
 private data class BrowserTab(val id: Int, val webView: WebView, var title: String = "Tab baru")
