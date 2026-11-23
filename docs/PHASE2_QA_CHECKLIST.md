@@ -30,7 +30,7 @@ Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AA
 
 ## ARM64 Android emulator integration/UI tests
 
-- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support.
+- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support, with the Compose BOM applied to both app and androidTest configurations.
 - [ ] API 30 ARM64 emulator boots on the Apple Silicon GitHub-hosted macOS runner.
 - [ ] With Wi-Fi and mobile data disabled, the packaged model is provisioned and its SHA-256/GGUF checks pass.
 - [ ] llama.cpp loads the actual packaged model, generates a non-empty local response and unloads cleanly.
@@ -38,4 +38,4 @@ Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AA
 - [ ] Compose assistant screen displays the Aktifkan AI and Batalkan controls.
 - [ ] Emulator workflow is green for the exact current main commit.
 
-**Boundary:** an ARM64 emulator result does not claim physical OEM, Android 8/API 26, sustained thermal, battery or screen-reader validation. Those remain separately tracked.
+**Boundary:** the first instrumentation build exposed a missing Compose BOM on the androidTest configuration; the BOM is now explicitly applied to both app and androidTest dependencies. Recheck this gate on the corrected workflow. An ARM64 emulator result does not claim physical OEM, Android 8/API 26, sustained thermal, battery or screen-reader validation. Those remain separately tracked.
