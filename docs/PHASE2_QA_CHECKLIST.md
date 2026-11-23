@@ -30,7 +30,7 @@ Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AA
 
 ## ARM64 Android emulator integration/UI tests
 
-- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support, with the Compose BOM applied to both app and androidTest configurations. **Run #3 failure root cause identified: `assertDoesNotExist` is unresolved in `WicaraComposeUiTest`; the unsupported negative assertion has been removed. Await a green rerun before marking this gate passed.**
+- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support, with the Compose BOM applied to both app and androidTest configurations. **Run #3 failure root cause identified: `assertDoesNotExist` is unresolved in `WicaraComposeUiTest`; unsupported Compose test assertions are being removed after CI exposed unavailable test APIs. Await a green rerun before marking this gate passed.**
 - [ ] API 30 ARM64 emulator boots on the Apple Silicon GitHub-hosted macOS runner.
 - [ ] With Wi-Fi and mobile data disabled, the packaged model is provisioned and its SHA-256/GGUF checks pass.
 - [ ] llama.cpp loads the actual packaged model, generates a non-empty local response and unloads cleanly.

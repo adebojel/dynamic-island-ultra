@@ -369,7 +369,7 @@ Implemented in source and CI pipeline:
 - Native mutex, Kotlin mutex and cancellation callback serialize model load, inference and unload.
 - Deterministic command routing is prioritized over generative inference; model context/output/thread budgets are limited.
 - Unit tests cover prompt template, model size limit, GGUF header, SHA-256 and assistant routing.
-- A separate ARM64 Android API 30 emulator workflow builds instrumentation APKs, disables network access and exercises packaged model provisioning, native inference, unload/reload and the Compose activation UI. The initial compile failure caused by a missing test-configuration Compose BOM was fixed in Gradle. Emulator workflow run #3 failed because `assertDoesNotExist` was unresolved in the Compose UI test. The unsupported negative assertion has been removed; rerun is required before emulator execution is considered passed.
+- A separate ARM64 Android API 30 emulator workflow builds instrumentation APKs, disables network access and exercises packaged model provisioning, native inference, unload/reload and the Compose activation UI. The initial compile failure caused by a missing test-configuration Compose BOM was fixed in Gradle. Emulator workflow run #3 failed because `assertDoesNotExist` was unresolved in the Compose UI test. Unsupported Compose UI test assertions were removed after the next CI run identified another unresolved assertion API; rerun is required before emulator execution is considered passed.
 
 Still requiring physical evidence:
 - Runtime correctness, latency and output quality on actual ARM64 phones (emulator inference is not a device benchmark).
