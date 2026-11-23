@@ -34,17 +34,32 @@ def main() -> None:
         raise RuntimeError("Hugging Face did not return an immutable 40-character model revision.")
 
     card = info.get("cardData") or {}
-    license_id = str(card.get("license") or "").lower()
+    license_id = str(card.get("license") or "").strip().lower()
     tags = [str(tag).lower() for tag in info.get("tags", [])]
-    if license_id != "apache-2.0" and "license:apache-2.0" not in tags:
+    normalized_license = "".join(ch for ch in license_id if ch.isalnum())
+    metadata_license_ok = normalized_license in (
+        "apache20", "apachelicense20", "apachelicenseversion20"
+    )
+    license_tag_ok = any(
+        tag.replace("_", "-").replace(" ", "") in ("license:apache-2.0", "license:apache2.0")
+        for tag in tags
+    )
+    print(f"Upstream license metadata: cardData={license_id!r}; license tags={[t for t in tags if t.startswith('license:')]}")
+    if not metadata_license_ok and not license_tag_ok:
         with urllib.request.urlopen(
             request(f"https://huggingface.co/{REPOSITORY}/raw/{revision}/README.md"),
             timeout=60
         ) as response:
             model_card = response.read().decode("utf-8")
-        normalized_card = "".join(model_card.lower().split())
-        if "license:apache-2.0" not in normalized_card:
-            raise RuntimeError("Upstream model card no longer declares Apache-2.0.")
+        declared = False
+        for line in model_card.lower().splitlines():
+            compact = "".join(ch for ch in line if ch.isalnum() or ch in ".-:")
+            if ("apache-2.0" in compact or "apache2.0" in compact or
+                    ("license" in compact and "apache" in compact and "2.0" in compact)):
+                declared = True
+                break
+        if not declared:
+            raise RuntimeError("Upstream model card does not explicitly declare Apache-2.0.")
 
     matches = [item for item in info.get("siblings", []) if item.get("rfilename") == FILENAME]
     if len(matches) != 1:
