@@ -148,6 +148,9 @@ Java_com_adebojel_dynamicislandultra_ai_WicaraNative_nativeGenerate(
     } else {
         sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
         if (sampler != nullptr) {
+            // Match the upstream Wicara Modelfile sampling configuration.
+            llama_sampler_chain_add(sampler, llama_sampler_init_penalties(
+                    llama_vocab_n_tokens(vocab), 64, 1.15f, 0.0f, 0.0f));
             llama_sampler_chain_add(sampler, llama_sampler_init_top_k(40));
             llama_sampler_chain_add(sampler, llama_sampler_init_top_p(0.9f, 1));
             llama_sampler_chain_add(sampler, llama_sampler_init_temp(0.7f));
@@ -156,6 +159,7 @@ Java_com_adebojel_dynamicislandultra_ai_WicaraNative_nativeGenerate(
             for (int step = 0; step < max_out && !g_cancelled.load(); ++step) {
                 const llama_token token = llama_sampler_sample(sampler, ctx, -1);
                 if (llama_vocab_is_eog(vocab, token)) break;
+                llama_sampler_accept(sampler, token);
                 char piece[512];
                 int32_t bytes = llama_token_to_piece(vocab, token, piece, sizeof(piece), 0, true);
                 if (bytes < 0) {

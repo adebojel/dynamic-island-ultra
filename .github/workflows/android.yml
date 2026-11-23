@@ -85,6 +85,9 @@ jobs:
           grep -q 'LLAMA_CPP_COMMIT = "2d8a32502909ca065c41c4cf5f2fb1c427c047fc"' scripts/fetch_wicara_model.py
           grep -q 'WicaraModelStore.prepare' app/src/main/java/com/adebojel/dynamicislandultra/ai/WicaraEngine.kt
           grep -q 'nativeGenerate' app/src/main/java/com/adebojel/dynamicislandultra/ai/WicaraNative.java
+          grep -q 'llama_sampler_init_penalties' app/src/main/cpp/wicara_jni.cpp
+          grep -q 'llama_sampler_accept' app/src/main/cpp/wicara_jni.cpp
+          grep -q 'aiUnloading' app/src/main/java/com/adebojel/dynamicislandultra/ai/OfflineAssistantActivity.kt
           grep -q 'noCompress += "gguf"' app/build.gradle.kts
           test -s app/src/main/assets/models/wicara-56m-chat-q8_0.gguf
           test -s app/src/main/assets/wicara-model-metadata.json

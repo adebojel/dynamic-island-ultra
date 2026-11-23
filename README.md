@@ -321,7 +321,7 @@ Wicara uses the Q8_0 GGUF model bundled into the APK/AAB at build time. GitHub A
 - Runtime: llama.cpp pinned to 2d8a32502909ca065c41c4cf5f2fb1c427c047fc, built with Android NDK/CMake for ARM64 CPU inference.
 - ARMv7 devices retain the rest of the app; Wicara explains that generative inference requires ARM64.
 - Wicara loads only after the user taps Aktifkan AI and is cancelled/unloaded when the assistant screen is left.
-- Context: 512 tokens; output: up to 96 tokens; native CPU threads: 2.
+- Context: 512 tokens; output: up to 96 tokens; native CPU threads: 2. Sampling follows upstream Wicara settings (temperature 0.7, top-p 0.9, top-k 40, repeat penalty 1.15).
 - Arithmetic, Android controls and diagnostics stay deterministic and do not depend on the LLM.
 - This is a very small experimental model, not a reliable reasoning engine; verify important facts and never treat it as an authoritative source.
 

@@ -49,6 +49,7 @@ import kotlinx.coroutines.runBlocking
 class OfflineAssistantActivity : ComponentActivity() {
     private lateinit var wicaraEngine: WicaraEngine
     private var onAssistantScreenLeaving: (() -> Unit)? = null
+    private var onAssistantScreenUnloadCompleted: (() -> Unit)? = null
     private var speechRecognizer: SpeechRecognizer? = null
     private var speechOutput: TextToSpeech? = null
     private var ttsReady = false
@@ -74,6 +75,7 @@ class OfflineAssistantActivity : ComponentActivity() {
                 var aiEnabled by remember { mutableStateOf(false) }
                 var aiLoading by remember { mutableStateOf(false) }
                 var aiGenerating by remember { mutableStateOf(false) }
+                var aiUnloading by remember { mutableStateOf(false) }
                 var aiStatus by remember {
                     mutableStateOf(
                         if (WicaraEngine.isSupported()) "Wicara offline siap diaktifkan."
@@ -83,17 +85,26 @@ class OfflineAssistantActivity : ComponentActivity() {
                 val aiScope = rememberCoroutineScope()
                 onAssistantScreenLeaving = {
                     aiEnabled = false
+                    aiUnloading = true
                     aiStatus = "Wicara dinonaktifkan karena layar asisten ditinggalkan."
                 }
+                onAssistantScreenUnloadCompleted = { aiUnloading = false }
                 fun toggleWicara() {
-                    if (aiLoading || aiGenerating) return
+                    if (aiLoading || aiGenerating || aiUnloading) return
                     if (aiEnabled) {
                         aiEnabled = false
+                        aiUnloading = true
                         wicaraEngine.cancel()
                         aiStatus = "Melepas model Wicara dari memori..."
                         aiScope.launch {
-                            runCatching { wicaraEngine.unload() }
-                            aiStatus = "Wicara dimatikan. Model dilepas dari memori."
+                            try {
+                                wicaraEngine.unload()
+                                aiStatus = "Wicara dimatikan. Model dilepas dari memori."
+                            } catch (error: Exception) {
+                                aiStatus = error.message ?: "Gagal melepas model Wicara."
+                            } finally {
+                                aiUnloading = false
+                            }
                         }
                     } else {
                         aiLoading = true
@@ -189,11 +200,12 @@ class OfflineAssistantActivity : ComponentActivity() {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(
                             onClick = { toggleWicara() },
-                            enabled = !aiLoading && !aiGenerating && WicaraEngine.isSupported(),
+                            enabled = !aiLoading && !aiGenerating && !aiUnloading && WicaraEngine.isSupported(),
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(when {
                                 aiLoading -> "Memuat AI..."
+                                aiUnloading -> "Mematikan AI..."
                                 aiEnabled -> "Nonaktifkan AI"
                                 else -> "Aktifkan AI"
                             })
@@ -342,7 +354,13 @@ class OfflineAssistantActivity : ComponentActivity() {
         if (::wicaraEngine.isInitialized) {
             wicaraEngine.cancel()
             onAssistantScreenLeaving?.invoke()
-            Thread({ runBlocking { wicaraEngine.unload() } }, "Wicara-model-unload").apply {
+            Thread({
+                try {
+                    runBlocking { wicaraEngine.unload() }
+                } finally {
+                    runOnUiThread { onAssistantScreenUnloadCompleted?.invoke() }
+                }
+            }, "Wicara-model-unload").apply {
                 isDaemon = true
                 start()
             }
@@ -353,7 +371,13 @@ class OfflineAssistantActivity : ComponentActivity() {
     override fun onDestroy() {
         if (::wicaraEngine.isInitialized) {
             wicaraEngine.cancel()
-            Thread({ runBlocking { wicaraEngine.unload() } }, "Wicara-model-destroy").apply {
+            Thread({
+                try {
+                    runBlocking { wicaraEngine.unload() }
+                } finally {
+                    runOnUiThread { onAssistantScreenUnloadCompleted?.invoke() }
+                }
+            }, "Wicara-model-destroy").apply {
                 isDaemon = true
                 start()
             }
