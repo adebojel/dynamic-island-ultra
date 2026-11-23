@@ -78,7 +78,8 @@ class DeviceControlActivity : ComponentActivity() {
                     onBrightnessChange = ::applyScreenBrightness,
                     onAutoRotateChange = ::applyAutoRotate,
                     onVolumeChange = ::applyMediaVolume,
-                    onTorchToggle = ::toggleTorch
+                    onTorchToggle = ::toggleTorch,
+                    onOpenScreenRecorder = { startActivity(Intent(this, ScreenRecorderActivity::class.java)) }
                 )
             }
         }
@@ -223,7 +224,8 @@ private fun DeviceControlScreen(
     onBrightnessChange: (Int) -> Unit,
     onAutoRotateChange: (Boolean) -> Unit,
     onVolumeChange: (Int) -> Unit,
-    onTorchToggle: () -> Unit
+    onTorchToggle: () -> Unit,
+    onOpenScreenRecorder: () -> Unit
 ) {
     val actions = buildList {
         add("Home" to AccessibilityService.GLOBAL_ACTION_HOME)
@@ -264,6 +266,9 @@ private fun DeviceControlScreen(
         }
         Divider()
         Text("HARDWARE & DISPLAY", color = ControlCyan, fontSize = 14.sp)
+        OutlinedButton(onClick = onOpenScreenRecorder, modifier = Modifier.fillMaxWidth()) {
+            Text("Screen Recorder • MP4")
+        }
         Button(onClick = onTorchToggle, enabled = torchAvailable, modifier = Modifier.fillMaxWidth()) {
             Text(if (torchOn) "Matikan Flashlight" else "Nyalakan Flashlight")
         }

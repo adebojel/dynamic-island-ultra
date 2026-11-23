@@ -239,3 +239,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Switching between standard and private mode clears WebView cookies and WebStorage before creating a clean new tab; existing open tabs are closed.
 - Standard mode retains local HTTPS bookmarks, capped history and Android DownloadManager integration.
 - Private mode does not promise anonymity from websites, network providers or Android system services.
+
+
+## Screen Recorder
+
+- Starts only after Android's MediaProjection system consent dialog is approved by the user.
+- Exports an MP4 file through Android's Create Document picker.
+- Uses a dedicated foreground service with the `mediaProjection` service type and a persistent Stop notification.
+- Video-only capture; no microphone/audio recording permission or audio track is requested.
+- Android may stop the projection at any time; service cleanup releases recorder, virtual display and projection resources.

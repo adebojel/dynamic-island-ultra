@@ -343,3 +343,16 @@ Implemented in source:
 - URL policy extracted into unit-testable helper; non-web URI schemes are rejected by the WebView client and HTTP is upgraded to HTTPS.
 
 Still outstanding: full bookmark CRUD/search screen, full in-app download history manager, per-tab crash recovery, Android WebView/OEM lifecycle tests and physical-device QA.
+
+
+## Phase 1 user-consented screen recorder
+
+Implemented in source:
+- MediaProjection consent dialog initiated by an explicit Start button.
+- User-selected MP4 output URI via Android document picker.
+- Dedicated mediaProjection foreground service with ongoing Stop notification.
+- Video-only capture at up to the current display resolution, nominal 30 fps / 5 Mbps.
+- No audio or microphone capture permission is added.
+- App stops and releases MediaRecorder, VirtualDisplay, MediaProjection and file descriptor on stop/error/system termination.
+
+Physical-device tests remain required for OEM capture restrictions, rotation, display-size encoder support, notification permission, low-storage and Android 8 compatibility.

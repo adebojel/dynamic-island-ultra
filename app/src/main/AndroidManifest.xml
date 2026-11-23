@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
     <queries>
         <intent>
@@ -51,6 +52,7 @@
         <activity android:name=".floating.SmartToolsActivity" android:exported="false" />
         <activity android:name=".floating.FileManagerActivity" android:exported="false" />
         <activity android:name=".system.DeviceControlActivity" android:exported="false" />
+        <activity android:name=".system.ScreenRecorderActivity" android:exported="false" />
         <activity android:name=".backup.BackupActivity" android:exported="false" />
         <activity android:name=".reminders.ReminderActivity" android:exported="false" />
         <activity android:name=".clipboard.ClipboardHistoryActivity" android:exported="false" />
@@ -96,6 +98,10 @@
             <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/global_action_accessibility_service" />
         </service>
+        <service
+            android:name=".system.ScreenRecordingService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
         <service
             android:name=".overlay.FloatingIslandService"
             android:exported="false"

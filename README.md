@@ -307,3 +307,8 @@ Mini Notes, Mini Calculator and Mini Timer can also be assigned to any of the fo
 ### Multi-tab and private browsing
 
 The browser supports up to eight independent WebView tabs in one activity, with tab switching and close-current-tab controls. Private mode applies to the whole browser session: cookies and DOM storage are disabled, local history/bookmarks and downloads are blocked, and switching between standard/private mode clears WebView cookies and web storage. This intentionally starts the new mode with a clean website session; it does not preserve a signed-in website session across the transition.
+
+
+### Screen Recorder
+
+Screen recording uses the Android MediaProjection consent dialog and a user-selected MP4 destination. A mediaProjection foreground service displays a persistent Stop notification. The recorder captures video only; it does not request microphone/audio recording permission and never starts capture silently.

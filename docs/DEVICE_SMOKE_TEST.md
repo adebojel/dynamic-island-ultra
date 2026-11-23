@@ -371,3 +371,15 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Exit private mode; confirm a clean standard session opens and no private tabs or state are restored.
 - [ ] Confirm switching modes clears WebView cookie and web storage state as documented.
 - [ ] Test rotation, background/foreground, back navigation, long pages and multiple tabs on Android 8/API 26 and a current OEM device.
+
+
+## User-consented Screen Recorder checks
+
+- [ ] Open Screen Recorder and confirm nothing records before the Android Screen Capture consent is approved.
+- [ ] Deny the consent dialog; verify no service or MP4 recording starts.
+- [ ] Approve capture and choose an MP4 file destination through Android's document picker.
+- [ ] Confirm the ongoing foreground notification appears with a Stop action.
+- [ ] Record screen motion for at least 10 seconds, stop from the notification, and verify the saved MP4 plays with synchronized video.
+- [ ] Confirm no audio or microphone permission is requested and no audio is recorded.
+- [ ] Trigger Android's stop/lock/system interruption and confirm recorder resources close without a crash.
+- [ ] Test rotation, low storage, notification permission denied, Android 8/API 26 and current Android/OEM versions.
