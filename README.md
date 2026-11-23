@@ -271,7 +271,7 @@ The File Manager uses Android's Storage Access Framework. The user selects a fol
 
 ### Browser library and downloads
 
-The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Multiple independent tabs, private browsing sessions, and a full bookmark/download management editor remain planned work.
+The browser stores bookmarks and up to 100 recent HTTPS visits in app-private preferences. Downloads are handed to Android DownloadManager and stored in the app-specific external Downloads directory; no broad storage permission is requested. The browser does not bypass TLS errors or permit active-content schemes outside HTTP/HTTPS. Browser supports up to eight WebView tabs. Private mode disables cookie acceptance, DOM storage, local history/bookmarks and downloads; switching modes clears WebView cookies and web storage to avoid mixing sessions. A full bookmark/download management editor remains planned work.
 
 
 ## Global Android navigation controls
@@ -302,3 +302,8 @@ Global System Controls also provides a media-stream volume slider, a flashlight 
 ### Floating Window Manager Quick Favorites
 
 Mini Notes, Mini Calculator and Mini Timer can also be assigned to any of the four Quick Favorite slots. Mini windows snap to the nearest horizontal screen edge after dragging and their position is clamped within the display bounds. The manager remains limited to four app-owned windows.
+
+
+### Multi-tab and private browsing
+
+The browser supports up to eight independent WebView tabs in one activity, with tab switching and close-current-tab controls. Private mode applies to the whole browser session: cookies and DOM storage are disabled, local history/bookmarks and downloads are blocked, and switching between standard/private mode clears WebView cookies and web storage. This intentionally starts the new mode with a clean website session; it does not preserve a signed-in website session across the transition.

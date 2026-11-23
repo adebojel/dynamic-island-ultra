@@ -332,3 +332,14 @@ Implemented in source:
 - Unit tests cover malicious path rejection and extraction bounds.
 
 Still outstanding: PDF merge/split/compress/annotate, complete document editing and SAF provider/OEM regression tests.
+
+
+## Phase 1 browser tab and private session update
+
+Implemented in source:
+- Up to eight independent WebView tabs; create, switch and close current tab.
+- Whole-session private mode; cookie acceptance and DOM storage are disabled, cache is no-cache, and history/bookmarks/downloads are blocked.
+- Entering/leaving private mode clears WebView cookies and web storage and closes existing tabs before opening a clean session.
+- URL policy extracted into unit-testable helper; non-web URI schemes are rejected by the WebView client and HTTP is upgraded to HTTPS.
+
+Still outstanding: full bookmark CRUD/search screen, full in-app download history manager, per-tab crash recovery, Android WebView/OEM lifecycle tests and physical-device QA.

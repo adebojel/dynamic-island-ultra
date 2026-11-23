@@ -357,3 +357,17 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Test duplicate paths and destination files that already exist; confirm no overwrite occurs.
 - [ ] Test archive entry, depth, per-file and total output limits; confirm errors are reported and partial output cleanup is attempted.
 - [ ] Test a read-only/cloud SAF provider and confirm failure does not crash the File Manager.
+
+
+## Browser tabs and private mode checks
+
+- [ ] Create multiple tabs up to the eight-tab limit; confirm each keeps its own URL and in-tab back/forward navigation.
+- [ ] Switch between tabs and confirm the selected WebView is visible and address/title update correctly.
+- [ ] Close the current tab; confirm another tab becomes active. Close the last tab and confirm a fresh home tab is created.
+- [ ] Attempt to create a ninth tab; confirm a maximum-tabs message and no active tab is lost.
+- [ ] Enter private mode; confirm all existing tabs close and a clean private tab opens.
+- [ ] In private mode, visit HTTPS pages and confirm persistent history/bookmark stores are not changed.
+- [ ] Confirm cookie acceptance and DOM storage are disabled in private mode and downloads/bookmarks/history controls do not store data.
+- [ ] Exit private mode; confirm a clean standard session opens and no private tabs or state are restored.
+- [ ] Confirm switching modes clears WebView cookie and web storage state as documented.
+- [ ] Test rotation, background/foreground, back navigation, long pages and multiple tabs on Android 8/API 26 and a current OEM device.

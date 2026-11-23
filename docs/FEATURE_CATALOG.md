@@ -229,3 +229,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Bounds extraction to 5,000 entries, 32 path levels, 256 MiB per file and 512 MiB total output.
 - Refuses to overwrite existing destination files; on failure, best-effort deletes files/folders created by that extraction attempt.
 - Extraction is local and provider-scoped; SAF providers may still reject writes or deletes.
+
+
+## Browser tabs and private mode
+
+- Up to eight independent WebView tabs with create, list/switch and close-current-tab actions.
+- Each tab retains its own WebView navigation history while it remains open.
+- Private mode applies to the full browser activity, not per-tab: cookies and DOM storage are disabled, cache uses no-cache mode, bookmarks/history/downloads are blocked, and private pages are not recorded to persistent history.
+- Switching between standard and private mode clears WebView cookies and WebStorage before creating a clean new tab; existing open tabs are closed.
+- Standard mode retains local HTTPS bookmarks, capped history and Android DownloadManager integration.
+- Private mode does not promise anonymity from websites, network providers or Android system services.
