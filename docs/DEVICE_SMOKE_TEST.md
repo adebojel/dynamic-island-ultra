@@ -383,3 +383,19 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Confirm no audio or microphone permission is requested and no audio is recorded.
 - [ ] Trigger Android's stop/lock/system interruption and confirm recorder resources close without a crash.
 - [ ] Test rotation, low storage, notification permission denied, Android 8/API 26 and current Android/OEM versions.
+
+
+## Wicara offline model and runtime (Phase 2)
+
+- [ ] Disable Wi-Fi and mobile data before opening the assistant.
+- [ ] Confirm release-info.json contains Wicara source revision, size, SHA-256 and llama.cpp commit.
+- [ ] Tap Aktifkan AI; verify the bundled asset is copied into app-private storage with no file picker/import prompt.
+- [ ] Confirm activation fails clearly if model metadata, size, GGUF header or SHA-256 is invalid.
+- [ ] Ask a short Indonesian conversational question and verify a response with the network disabled.
+- [ ] Ask an arithmetic question and confirm the deterministic calculator handles it without Wicara.
+- [ ] Cancel active generation; confirm it stops and the screen stays responsive.
+- [ ] Leave the assistant; confirm model unload, then reopen and activate it again.
+- [ ] On 32-bit ARM, confirm non-AI features remain available and Wicara explicitly reports unsupported runtime.
+- [ ] Record PSS, CPU, battery, temperature, model load time and tokens/second using docs/MODEL_BENCHMARK_PROTOCOL.md.
+
+Expected: Wicara runs locally, is bundled, bounded and best-effort. No cloud fallback occurs. Its output is not an authoritative factual or reasoning source.

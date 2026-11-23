@@ -43,7 +43,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Local notes | Saves notes in app-private storage |
 | Local calculator | Parses arithmetic expressions locally |
 | Smart Toolbox | Local unit conversion, counter, stopwatch with lap recording, countdown/Pomodoro timer and accelerometer-based two-axis spirit level with user calibration |
-| Built-in offline assistant | Local command decision engine, calculator routing and feature/device diagnostics; no imported model, API key or cloud AI |
+| Built-in offline assistant | Deterministic commands, calculator/system actions and diagnostics plus optional bundled Wicara local generation on ARM64; no model import, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
 | DuckDuckGo browser | HTTPS navigation, Desktop/Mobile mode, local bookmarks, capped local history and DownloadManager-backed HTTPS downloads |
@@ -312,3 +312,17 @@ The browser supports up to eight independent WebView tabs in one activity, with 
 ### Screen Recorder
 
 Screen recording uses the Android MediaProjection consent dialog and a user-selected MP4 destination. A mediaProjection foreground service displays a persistent Stop notification. The recorder captures video only; it does not request microphone/audio recording permission and never starts capture silently.
+
+
+## Wicara — bundled Indonesian offline AI
+
+Wicara uses the Q8_0 GGUF model bundled into the APK/AAB at build time. GitHub Actions fetches the official Hugging Face artifact at an immutable upstream revision, verifies the published LFS SHA-256 and GGUF header, enforces the 100,000,000-byte model ceiling, and records revision/size/hash in release metadata. The model is not committed to Git and users never import or select a file.
+
+- Runtime: llama.cpp pinned to 2d8a32502909ca065c41c4cf5f2fb1c427c047fc, built with Android NDK/CMake for ARM64 CPU inference.
+- ARMv7 devices retain the rest of the app; Wicara explains that generative inference requires ARM64.
+- Wicara loads only after the user taps Aktifkan AI and is cancelled/unloaded when the assistant screen is left.
+- Context: 512 tokens; output: up to 96 tokens; native CPU threads: 2.
+- Arithmetic, Android controls and diagnostics stay deterministic and do not depend on the LLM.
+- This is a very small experimental model, not a reliable reasoning engine; verify important facts and never treat it as an authoritative source.
+
+See docs/WICARA_MODEL.md, docs/MODEL_BENCHMARK_PROTOCOL.md, THIRD_PARTY_LICENSES.md and docs/PHASE2_QA_CHECKLIST.md.

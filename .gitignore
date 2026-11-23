@@ -9,3 +9,7 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+
+# CI-fetched runtime/model binaries are deliberately excluded from Git
+/third_party/llama.cpp/
+/app/src/main/assets/models/*.gguf

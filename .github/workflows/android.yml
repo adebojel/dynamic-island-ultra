@@ -30,6 +30,23 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
 
+      - name: Checkout pinned llama.cpp source
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 2d8a32502909ca065c41c4cf5f2fb1c427c047fc
+          path: third_party/llama.cpp
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python for verified Wicara provisioning
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch and verify official Wicara GGUF
+        run: python scripts/fetch_wicara_model.py
+
       - name: Determine next patch release version
         shell: bash
         run: |
@@ -52,7 +69,7 @@ jobs:
           packages: ''
 
       - name: Install stable Android API 36 platform and build tools
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Install Gradle 9.9.1
         uses: gradle/actions/setup-gradle@v4
@@ -64,6 +81,13 @@ jobs:
         run: |
           set -euo pipefail
           grep -q 'minSdk = 26' app/build.gradle.kts
+          grep -q 'ndkVersion = "27.2.12479018"' app/build.gradle.kts
+          grep -q 'LLAMA_CPP_COMMIT = "2d8a32502909ca065c41c4cf5f2fb1c427c047fc"' scripts/fetch_wicara_model.py
+          grep -q 'WicaraModelStore.prepare' app/src/main/java/com/adebojel/dynamicislandultra/ai/WicaraEngine.kt
+          grep -q 'nativeGenerate' app/src/main/java/com/adebojel/dynamicislandultra/ai/WicaraNative.java
+          grep -q 'noCompress += "gguf"' app/build.gradle.kts
+          test -s app/src/main/assets/models/wicara-56m-chat-q8_0.gguf
+          test -s app/src/main/assets/wicara-model-metadata.json
           grep -q 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
           grep -q 'android.permission.ACCESS_NETWORK_STATE' app/src/main/AndroidManifest.xml
           if grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' app/src/main/AndroidManifest.xml; then
@@ -175,6 +199,31 @@ jobs:
           fi
           echo "Merged permissions passed: GitHub APK has installer permission; Play APK does not."
 
+      - name: Verify bundled Wicara model, JNI ABIs and package budget
+        if: steps.signing.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/github/release/app-github-release.apk"
+          AAB="app/build/outputs/bundle/playRelease/app-play-release.aab"
+          MODEL="app/src/main/assets/models/wicara-56m-chat-q8_0.gguf"
+          MODEL_BYTES="$(stat -c%s "$MODEL")"
+          APK_BYTES="$(stat -c%s "$APK")"
+          AAB_BYTES="$(stat -c%s "$AAB")"
+          MAX_MODEL_BYTES=100000000
+          MAX_PACKAGE_BYTES=$((400 * 1024 * 1024))
+          (( MODEL_BYTES > 0 && MODEL_BYTES <= MAX_MODEL_BYTES ))
+          (( APK_BYTES + MODEL_BYTES <= MAX_PACKAGE_BYTES ))
+          (( AAB_BYTES + MODEL_BYTES <= MAX_PACKAGE_BYTES ))
+          unzip -l "$APK" | grep -q 'assets/models/wicara-56m-chat-q8_0.gguf'
+          unzip -l "$APK" | grep -q 'assets/wicara-model-metadata.json'
+          unzip -l "$APK" | grep -q 'lib/arm64-v8a/libwicara_jni.so'
+          unzip -l "$APK" | grep -q 'lib/armeabi-v7a/libwicara_jni.so'
+          unzip -l "$AAB" | grep -q 'base/assets/models/wicara-56m-chat-q8_0.gguf'
+          unzip -l "$AAB" | grep -q 'base/lib/arm64-v8a/libwicara_jni.so'
+          unzip -l "$AAB" | grep -q 'base/lib/armeabi-v7a/libwicara_jni.so'
+          echo "Wicara payload verified: model=$MODEL_BYTES bytes, APK=$APK_BYTES bytes, AAB=$AAB_BYTES bytes."
+
       - name: Verify stable release APK signature
         if: steps.signing.outputs.ready == 'true'
         shell: bash
@@ -220,10 +269,11 @@ jobs:
           fi
           test -s "$SOURCE_APK"
           SIZE_BYTES="$(stat -c%s "$SOURCE_APK")"
+          MODEL_BYTES="$(stat -c%s app/src/main/assets/models/wicara-56m-chat-q8_0.gguf)"
           MAX_BYTES=$((400 * 1024 * 1024))
-          echo "APK size: $SIZE_BYTES bytes"
-          if (( SIZE_BYTES > MAX_BYTES )); then
-            echo "::error::APK exceeds the 400 MiB project budget."
+          echo "APK size: $SIZE_BYTES bytes; bundled model: $MODEL_BYTES bytes"
+          if (( MODEL_BYTES > 100000000 || SIZE_BYTES + MODEL_BYTES > MAX_BYTES )); then
+            echo "::error::APK plus private model allowance exceeds the project budget."
             exit 1
           fi
           cp "$SOURCE_APK" "dist/$APK_NAME"
@@ -232,28 +282,33 @@ jobs:
             SOURCE_AAB="app/build/outputs/bundle/playRelease/app-play-release.aab"
             test -s "$SOURCE_AAB"
             AAB_SIZE_BYTES="$(stat -c%s "$SOURCE_AAB")"
-            if (( AAB_SIZE_BYTES > MAX_BYTES )); then
-              echo "::error::AAB exceeds the 400 MiB project budget."
+            if (( AAB_SIZE_BYTES + MODEL_BYTES > MAX_BYTES )); then
+              echo "::error::AAB plus private model allowance exceeds the project budget."
               exit 1
             fi
             cp "$SOURCE_AAB" dist/app-release.aab
             sha256sum dist/app-release.aab > dist/app-release.aab.sha256
-            cat > dist/release-info.json <<EOF
-          {
-            "packageName": "com.adebojel.dynamicislandultra",
-            "versionName": "$VERSION_NAME",
-            "versionCode": $VERSION_CODE,
-            "minSdk": 26,
-            "apkFlavor": "github",
-            "bundleFlavor": "play",
-            "playFlavorExcludesRequestInstallPackages": true,
-            "apk": "app-release.apk",
-            "sha256Asset": "app-release.apk.sha256",
-            "bundle": "app-release.aab",
-            "bundleSha256Asset": "app-release.aab.sha256",
-            "commit": "$GITHUB_SHA"
+            MODEL_METADATA="$(cat app/src/main/assets/wicara-model-metadata.json)" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          info = {
+              "packageName": "com.adebojel.dynamicislandultra",
+              "versionName": os.environ["VERSION_NAME"],
+              "versionCode": int(os.environ["VERSION_CODE"]),
+              "minSdk": 26,
+              "apkFlavor": "github",
+              "bundleFlavor": "play",
+              "playFlavorExcludesRequestInstallPackages": True,
+              "apk": "app-release.apk",
+              "sha256Asset": "app-release.apk.sha256",
+              "bundle": "app-release.aab",
+              "bundleSha256Asset": "app-release.aab.sha256",
+              "commit": os.environ["GITHUB_SHA"],
+              "model": json.loads(os.environ["MODEL_METADATA"])
           }
-          EOF
+          Path("dist/release-info.json").write_text(json.dumps(info, indent=2) + "\\n")
+          PY
             echo "release=true" >> "$GITHUB_OUTPUT"
           else
             echo "release=false" >> "$GITHUB_OUTPUT"
@@ -283,6 +338,9 @@ jobs:
 
             - Android minimum: 8.0 Oreo / API 26.
             - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
+            - Wicara GGUF is bundled in the APK/AAB; release-info.json records the verified upstream revision, size and SHA-256.
+            - llama.cpp is pinned and built for ARM64 CPU inference; ARMv7 keeps non-AI features with an explicit unsupported message.
+            - Wicara prompt inference stays on-device; there is no cloud AI, API key or manual model import.
             - The built-in assistant and local tools remain offline.
             - GitHub APK variant includes the SHA-256-verified GitHub self-updater for sideloaded distribution.
             - Play AAB variant excludes REQUEST_INSTALL_PACKAGES and sends users to Google Play for updates.

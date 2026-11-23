@@ -356,3 +356,21 @@ Implemented in source:
 - App stops and releases MediaRecorder, VirtualDisplay, MediaProjection and file descriptor on stop/error/system termination.
 
 Physical-device tests remain required for OEM capture restrictions, rotation, display-size encoder support, notification permission, low-storage and Android 8 compatibility.
+
+
+## Phase 2 — Wicara offline AI integration
+
+Implemented in source and CI pipeline:
+- Build pipeline resolves an immutable Hugging Face revision, verifies the upstream LFS SHA-256, GGUF magic and 100,000,000-byte ceiling.
+- APK/AAB package the model and provenance metadata; weights remain outside Git.
+- llama.cpp is pinned to 2d8a32502909ca065c41c4cf5f2fb1c427c047fc and built through Android NDK/CMake for ARM64.
+- ARMv7 receives an explicit no-inference stub, preserving non-AI features.
+- App-private model provisioning verifies size, SHA-256 and GGUF header before the runtime memory-maps the model.
+- Native mutex, Kotlin mutex and cancellation callback serialize model load, inference and unload.
+- Deterministic command routing is prioritized over generative inference; model context/output/thread budgets are limited.
+- Unit tests cover prompt template, model size limit, GGUF header, SHA-256 and assistant routing.
+
+Still requiring physical evidence:
+- Runtime correctness and output quality on ARM64 devices.
+- Actual load time, PSS/RAM, battery drain, temperature, CPU load, tokens/second and thermal throttling.
+- Android 8/API 26, ARMv7, OEM overlay/lifecycle, TalkBack and signed update installation.

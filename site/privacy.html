@@ -3,4 +3,9 @@
   <p>Microphone access is requested only after the user activates voice input. The app uses an on-device speech recognizer only where Android reports one available; it does not silently switch to a cloud recognizer. Availability depends on Android version and installed language models.</p>
   <p>Sensor readings are used while Sensor Kit is open and listeners stop when the screen is paused. Images and PDFs are selected through Android's document picker and previewed locally. QR/barcode scanning delegates to Google Play services Code Scanner; the app does not request camera permission for that feature.</p>
 </section>
+<section class="wrap legal">
+  <h2>Wicara AI offline</h2>
+  <p>Model Wicara GGUF disertakan di dalam paket aplikasi dan berjalan secara lokal pada perangkat ARM64. Saat pertama diaktifkan, aplikasi menyalin model ke penyimpanan privat dan memverifikasi ukuran, header GGUF, serta SHA-256. Prompt percakapan Wicara diproses di perangkat; modul ini tidak mengirim prompt ke server AI, tidak memakai API key, dan tidak memiliki fallback AI cloud. Kalkulator, kontrol Android, serta diagnostik tetap diproses oleh kode lokal deterministik. Model sangat kecil dan dapat memberikan jawaban keliru.</p>
+  <p>Wicara dimuat hanya saat pengguna mengaktifkannya dan dilepas ketika layar asisten ditinggalkan. Pengguna dapat menghapus data aplikasi untuk menghapus salinan privat model.</p>
+</section>
 </body></html>

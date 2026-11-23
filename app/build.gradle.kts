@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val llamaCppDir = rootProject.projectDir.resolve("third_party/llama.cpp")
 val buildVersionCode = providers.gradleProperty("VERSION_CODE").orNull?.toIntOrNull() ?: 1
 val buildVersionName = providers.gradleProperty("VERSION_NAME").orNull ?: "0.0.0"
 val releaseStorePath = System.getenv("RELEASE_KEYSTORE_PATH")
@@ -16,12 +17,34 @@ val hasStableReleaseSigning = listOf(
 android {
     namespace = "com.adebojel.dynamicislandultra"
     compileSdk = 36
+    ndkVersion = "27.2.12479018"
     defaultConfig {
         applicationId = "com.adebojel.dynamicislandultra"
         minSdk = 26
         targetSdk = 36
         versionCode = buildVersionCode
         versionName = buildVersionName
+        ndk {
+            abiFilters += setOf("arm64-v8a", "armeabi-v7a")
+        }
+        externalNativeBuild {
+            cmake {
+                arguments += listOf(
+                    "-DLLAMA_CPP_DIR=" + llamaCppDir.absolutePath,
+                    "-DLLAMA_BUILD_IS_DEV=OFF",
+                    "-DLLAMA_BUILD_COMMON=OFF",
+                    "-DLLAMA_BUILD_TESTS=OFF",
+                    "-DLLAMA_BUILD_EXAMPLES=OFF",
+                    "-DLLAMA_BUILD_TOOLS=OFF",
+                    "-DLLAMA_BUILD_SERVER=OFF",
+                    "-DLLAMA_BUILD_APP=OFF",
+                    "-DLLAMA_OPENSSL=OFF",
+                    "-DGGML_OPENMP=OFF",
+                    "-DGGML_LLAMAFILE=OFF",
+                    "-DGGML_NATIVE=OFF"
+                )
+            }
+        }
     }
     flavorDimensions += "distribution"
     productFlavors {
@@ -65,7 +88,19 @@ android {
         compose = true
         buildConfig = true
     }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+    androidResources {
+        noCompress += "gguf"
+    }
     packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
         resources.excludes += setOf(
             "/META-INF/{AL2.0,LGPL2.1}",
             "META-INF/LICENSE*",
@@ -91,5 +126,6 @@ dependencies {
     implementation("com.android.billingclient:billing:9.1.0")
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     testImplementation("junit:junit:4.13.2")
 }

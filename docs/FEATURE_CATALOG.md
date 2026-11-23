@@ -248,3 +248,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Uses a dedicated foreground service with the `mediaProjection` service type and a persistent Stop notification.
 - Video-only capture; no microphone/audio recording permission or audio track is requested.
 - Android may stop the projection at any time; service cleanup releases recorder, virtual display and projection resources.
+
+
+## Wicara offline AI (Phase 2)
+
+- Explicit Aktifkan AI action loads the packaged Wicara Q8_0 model from app-private storage only after size, GGUF header and SHA-256 checks.
+- Unknown conversational prompts may be sent to Wicara. Calculator, Android system actions and diagnostics stay in deterministic local code.
+- The model is bundled by CI, never user-imported and never sent to a cloud model.
+- ARM64 runs the llama.cpp CPU runtime. ARMv7 builds contain an explicit unsupported-runtime stub and preserve non-AI functionality.
+- Wicara unloads when the assistant screen is left. Context, generation length and CPU threads are bounded.
+- The model is experimental and has limited factual/reasoning reliability.

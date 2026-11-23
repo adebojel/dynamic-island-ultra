@@ -43,14 +43,19 @@ import com.adebojel.dynamicislandultra.notifications.NotificationPreviewSettings
 import com.adebojel.dynamicislandultra.overlay.IslandInteractionSettingsActivity
 import com.adebojel.dynamicislandultra.system.UtilityIntents
 import java.util.Locale
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class OfflineAssistantActivity : ComponentActivity() {
+    private lateinit var wicaraEngine: WicaraEngine
+    private var onAssistantScreenLeaving: (() -> Unit)? = null
     private var speechRecognizer: SpeechRecognizer? = null
     private var speechOutput: TextToSpeech? = null
     private var ttsReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        wicaraEngine = WicaraEngine(applicationContext)
         speechOutput = TextToSpeech(this) { status ->
             ttsReady = status == TextToSpeech.SUCCESS
             if (ttsReady) speechOutput?.language = Locale("id", "ID")
@@ -66,6 +71,47 @@ class OfflineAssistantActivity : ComponentActivity() {
                     mutableStateOf("Suara offline memerlukan Android 12+ dan layanan/model lokal yang tersedia.")
                 }
                 val engine = remember { OfflineAssistant() }
+                var aiEnabled by remember { mutableStateOf(false) }
+                var aiLoading by remember { mutableStateOf(false) }
+                var aiGenerating by remember { mutableStateOf(false) }
+                var aiStatus by remember {
+                    mutableStateOf(
+                        if (WicaraEngine.isSupported()) "Wicara offline siap diaktifkan."
+                        else "Wicara generatif membutuhkan perangkat ARM64; fitur lain tetap tersedia."
+                    )
+                }
+                val aiScope = rememberCoroutineScope()
+                onAssistantScreenLeaving = {
+                    aiEnabled = false
+                    aiStatus = "Wicara dinonaktifkan karena layar asisten ditinggalkan."
+                }
+                fun toggleWicara() {
+                    if (aiLoading || aiGenerating) return
+                    if (aiEnabled) {
+                        aiEnabled = false
+                        wicaraEngine.cancel()
+                        aiStatus = "Melepas model Wicara dari memori..."
+                        aiScope.launch {
+                            runCatching { wicaraEngine.unload() }
+                            aiStatus = "Wicara dimatikan. Model dilepas dari memori."
+                        }
+                    } else {
+                        aiLoading = true
+                        aiStatus = "Memverifikasi model dan memuat runtime lokal ARM64..."
+                        aiScope.launch {
+                            try {
+                                wicaraEngine.load()
+                                aiEnabled = true
+                                aiStatus = "Wicara aktif. Percakapan diproses sepenuhnya di perangkat."
+                            } catch (error: Exception) {
+                                aiEnabled = false
+                                aiStatus = error.message ?: "Wicara tidak dapat diaktifkan."
+                            } finally {
+                                aiLoading = false
+                            }
+                        }
+                    }
+                }
                 val requestMic = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
                 ) { granted ->
@@ -78,6 +124,28 @@ class OfflineAssistantActivity : ComponentActivity() {
                 fun execute(command: String) {
                     if (command.isBlank()) return
                     val reply = engine.respond(command)
+                    if (reply.shouldAskWicara) {
+                        if (!aiEnabled) {
+                            history = history + "Anda: $command" +
+                                "Ultra: Aktifkan Wicara untuk percakapan lokal. Tidak ada AI cloud."
+                            input = ""
+                            return
+                        }
+                        if (aiGenerating) return
+                        history = history + "Anda: $command" + "Ultra: Wicara sedang memproses secara lokal..."
+                        input = ""
+                        aiGenerating = true
+                        aiScope.launch {
+                            try {
+                                history = history + "Ultra: ${wicaraEngine.generate(command)}"
+                            } catch (error: Exception) {
+                                history = history + "Ultra: ${error.message ?: "Inferensi Wicara gagal."}"
+                            } finally {
+                                aiGenerating = false
+                            }
+                        }
+                        return
+                    }
                     history = history + "Anda: $command" + "Ultra: ${reply.text}"
                     input = ""
                     when (reply.action) {
@@ -115,9 +183,27 @@ class OfflineAssistantActivity : ComponentActivity() {
                 ) {
                     Text("BUILT-IN OFFLINE ASSISTANT", color = Color(0xFF43E8FF), fontSize = 16.sp)
                     Text(
-                        "Asisten utilitas lokal, bukan LLM generatif. Voice input hanya ditawarkan ketika recognizer on-device tersedia.",
+                        "Perintah Android, kalkulator dan diagnostik dijalankan secara deterministik. Wicara menangani percakapan umum secara lokal.",
                         color = Color.LightGray, fontSize = 11.sp
                     )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = { toggleWicara() },
+                            enabled = !aiLoading && !aiGenerating && WicaraEngine.isSupported(),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(when {
+                                aiLoading -> "Memuat AI..."
+                                aiEnabled -> "Nonaktifkan AI"
+                                else -> "Aktifkan AI"
+                            })
+                        }
+                        TextButton(
+                            onClick = { wicaraEngine.cancel(); aiStatus = "Permintaan pembatalan dikirim." },
+                            enabled = aiGenerating
+                        ) { Text("Batalkan") }
+                    }
+                    Text(aiStatus, color = Color.LightGray, fontSize = 10.sp)
                     LazyColumn(
                         Modifier.weight(1f).fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -252,7 +338,26 @@ class OfflineAssistantActivity : ComponentActivity() {
             .onFailure { Toast.makeText(this, "Tidak dapat membuka alat tersebut", Toast.LENGTH_SHORT).show() }
     }
 
+    override fun onStop() {
+        if (::wicaraEngine.isInitialized) {
+            wicaraEngine.cancel()
+            onAssistantScreenLeaving?.invoke()
+            Thread({ runBlocking { wicaraEngine.unload() } }, "Wicara-model-unload").apply {
+                isDaemon = true
+                start()
+            }
+        }
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        if (::wicaraEngine.isInitialized) {
+            wicaraEngine.cancel()
+            Thread({ runBlocking { wicaraEngine.unload() } }, "Wicara-model-destroy").apply {
+                isDaemon = true
+                start()
+            }
+        }
         releaseRecognizer()
         speechOutput?.stop()
         speechOutput?.shutdown()

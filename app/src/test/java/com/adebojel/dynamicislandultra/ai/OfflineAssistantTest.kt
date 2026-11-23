@@ -91,6 +91,20 @@ class OfflineAssistantTest {
     }
 
     @Test
+    fun unknownConversationIsEligibleOnlyForLocalWicara() {
+        val reply = assistant.respond("Ceritakan ide untuk mengatur hari saya")
+        assertNull(reply.action)
+        org.junit.Assert.assertTrue(reply.shouldAskWicara)
+    }
+
+    @Test
+    fun deterministicArithmeticDoesNotInvokeWicara() {
+        val reply = assistant.respond("2 + 2")
+        assertEquals("Hasil: 4", reply.text)
+        org.junit.Assert.assertFalse(reply.shouldAskWicara)
+    }
+
+    @Test
     fun unknownCommandDoesNotCreateExternalAction() {
         assertNull(assistant.respond("buatkan lagu").action)
     }

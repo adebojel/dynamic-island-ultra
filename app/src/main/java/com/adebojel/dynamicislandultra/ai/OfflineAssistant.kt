@@ -5,7 +5,8 @@ import java.util.Locale
 
 data class OfflineAssistantReply(
     val text: String,
-    val action: OfflineAction? = null
+    val action: OfflineAction? = null,
+    val shouldAskWicara: Boolean = false
 )
 
 sealed interface OfflineAction {
@@ -35,8 +36,8 @@ sealed interface OfflineAction {
  * A deterministic, on-device utility assistant. No network, API keys, telemetry,
  * external inference endpoint, or remote LLM is used.
  *
- * This is an offline command assistant, not a generative LLM. The modular
- * interface can later accept a separately installed local model runtime.
+ * Deterministic commands, arithmetic and Android actions stay outside the LLM.
+ * Unknown conversational prompts may be handled by the bundled local Wicara runtime.
  */
 class OfflineAssistant {
     fun respond(input: String, batteryPercent: Int? = null): OfflineAssistantReply {
@@ -96,7 +97,8 @@ class OfflineAssistant {
                 )
             else ->
                 OfflineAssistantReply(
-                    "Perintah belum dikenali. Coba: baterai, buka Wi-Fi, daftar aplikasi, Smart Toolbox, stopwatch, kalkulator, atau bantuan."
+                    "Perintah belum dikenali. Coba: baterai, buka Wi-Fi, daftar aplikasi, Smart Toolbox, stopwatch, kalkulator, atau bantuan.",
+                    shouldAskWicara = true
                 )
         }
     }
