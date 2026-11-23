@@ -26,3 +26,16 @@
 ## Evidence baseline
 
 Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AAB build, signatures, checksums and release publication. That run did not contain a GGUF/JNI runtime and is not evidence of generative AI. Populate this page with the new workflow run, release SHA-256 and physical test records only after those checks exist. Never mark an untested OEM or physical metric as passed.
+
+
+## ARM64 Android emulator integration/UI tests
+
+- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support.
+- [ ] API 30 ARM64 emulator boots on the Apple Silicon GitHub-hosted macOS runner.
+- [ ] With Wi-Fi and mobile data disabled, the packaged model is provisioned and its SHA-256/GGUF checks pass.
+- [ ] llama.cpp loads the actual packaged model, generates a non-empty local response and unloads cleanly.
+- [ ] Model reload after unload succeeds.
+- [ ] Compose assistant screen displays the Aktifkan AI and Batalkan controls.
+- [ ] Emulator workflow is green for the exact current main commit.
+
+**Boundary:** an ARM64 emulator result does not claim physical OEM, Android 8/API 26, sustained thermal, battery or screen-reader validation. Those remain separately tracked.

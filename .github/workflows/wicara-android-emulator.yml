@@ -1,0 +1,135 @@
+name: Wicara ARM64 Emulator Integration and UI QA
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'scripts/fetch_wicara_model.py'
+      - '.github/workflows/wicara-android-emulator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wicara-emulator-main-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-instrumentation:
+    name: Build instrumented APKs and bundled model
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned llama.cpp
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 2d8a32502909ca065c41c4cf5f2fb1c427c047fc
+          path: third_party/llama.cpp
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch and verify Wicara GGUF
+        run: python scripts/fetch_wicara_model.py
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ''
+
+      - name: Install platform, NDK and CMake
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Install Gradle 9.9.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.9.1'
+
+      - name: Assemble GitHub debug app and instrumentation APK
+        run: gradle --no-daemon --stacktrace assembleGithubDebug assembleGithubDebugAndroidTest -PVERSION_CODE=1 -PVERSION_NAME=emulator-qa
+
+      - name: Upload Android emulator test APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: wicara-arm64-emulator-apks
+          path: |
+            app/build/outputs/apk/github/debug/app-github-debug.apk
+            app/build/outputs/apk/androidTest/github/debug/app-github-debug-androidTest.apk
+          if-no-files-found: error
+          retention-days: 3
+
+  arm64-emulator:
+    name: Run offline Wicara and Compose UI tests on ARM64 emulator
+    needs: build-instrumentation
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - name: Download instrumented APKs
+        uses: actions/download-artifact@v4
+        with:
+          name: wicara-arm64-emulator-apks
+          path: qa-apks
+
+      - name: Boot Android 11 ARM64 emulator and run offline instrumentation
+        uses: reactivecircus/android-emulator-runner@v2.34.0
+        with:
+          api-level: 30
+          target: google_apis
+          arch: arm64-v8a
+          profile: pixel_5
+          cores: 3
+          ram-size: 3072M
+          heap-size: 512M
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu host -noaudio -no-boot-anim -camera-back none -camera-front none
+          disable-animations: true
+          emulator-boot-timeout: 900
+          script: |
+            set -euo pipefail
+            adb install -r qa-apks/app-github-debug.apk
+            adb install -r qa-apks/app-github-debug-androidTest.apk
+
+            # Exercise Wicara while radios are disabled; the model/runtime has no network path.
+            adb shell settings put global airplane_mode_on 1
+            adb shell am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true
+            adb shell svc wifi disable || true
+            adb shell svc data disable || true
+
+            TEST_COMPONENT="$(adb shell pm list instrumentation | tr -d '\r' | sed -n 's/^instrumentation:\([^ ]*\).*/\1/p' | grep 'dynamicislandultra' | head -n 1)"
+            if [[ -z "$TEST_COMPONENT" ]]; then
+              echo "::error::AndroidJUnitRunner instrumentation component was not registered."
+              adb shell pm list instrumentation
+              exit 1
+            fi
+            echo "Using instrumentation component: $TEST_COMPONENT"
+
+            run_instrumentation() {
+              local test_class="$1"
+              local output="$RUNNER_TEMP/$(basename "$test_class").txt"
+              set +e
+              adb shell am instrument -w -r -e class "$test_class" "$TEST_COMPONENT" | tee "$output"
+              local status=${PIPESTATUS[0]}
+              set -e
+              if (( status != 0 )) || ! grep -q 'OK (' "$output"; then
+                echo "::error::Instrumentation test failed: $test_class"
+                exit 1
+              fi
+            }
+
+            run_instrumentation "com.adebojel.dynamicislandultra.ai.WicaraAndroidIntegrationTest"
+            run_instrumentation "com.adebojel.dynamicislandultra.ai.WicaraComposeUiTest"

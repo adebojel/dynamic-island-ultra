@@ -326,3 +326,8 @@ Wicara uses the Q8_0 GGUF model bundled into the APK/AAB at build time. GitHub A
 - This is a very small experimental model, not a reliable reasoning engine; verify important facts and never treat it as an authoritative source.
 
 See docs/WICARA_MODEL.md, docs/MODEL_BENCHMARK_PROTOCOL.md, THIRD_PARTY_LICENSES.md and docs/PHASE2_QA_CHECKLIST.md.
+
+
+## Android emulator integration and UI QA
+
+The separate Wicara ARM64 emulator workflow builds the instrumentation APKs, starts an Android ARM64 API 30 virtual device, disables Wi-Fi/mobile data, validates the packaged model and its private provisioning, performs local model inference and unload/reload checks, and verifies the assistant activation UI. The emulator suite is build/runtime evidence, not a substitute for physical Android 8/API 26, OEM, thermal, battery, TalkBack or accessibility testing. See \`docs/PHASE2_QA_CHECKLIST.md\` and \`docs/MODEL_BENCHMARK_PROTOCOL.md\`.

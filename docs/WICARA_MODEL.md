@@ -32,3 +32,8 @@ This is a very small experimental language model, not a reliable reasoning engin
 ## Physical validation
 
 CI verifies source/build integration, packaging, model metadata, size/hash and unit tests. CI cannot measure real-device tokens/second, RAM/PSS, temperature, thermal throttling, battery drain or OEM stability. Use docs/MODEL_BENCHMARK_PROTOCOL.md and record raw evidence on physical devices.
+
+
+## Automated emulator coverage
+
+The repository adds AndroidJUnitRunner/Compose instrumentation coverage for the exact packaged model. A separate workflow builds the debug app and test APK, boots an ARM64 Android API 30 emulator, disables Wi-Fi/mobile data, validates private model provisioning, exercises llama.cpp load/generate/unload/reload and checks the assistant's Compose activation controls. Results are published as a separate GitHub Actions workflow. Emulator evidence is not physical-phone or OEM validation.

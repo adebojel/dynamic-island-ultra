@@ -369,8 +369,9 @@ Implemented in source and CI pipeline:
 - Native mutex, Kotlin mutex and cancellation callback serialize model load, inference and unload.
 - Deterministic command routing is prioritized over generative inference; model context/output/thread budgets are limited.
 - Unit tests cover prompt template, model size limit, GGUF header, SHA-256 and assistant routing.
+- A separate ARM64 Android API 30 emulator workflow builds instrumentation APKs, disables network access and exercises packaged model provisioning, native inference, unload/reload and the Compose activation UI.
 
 Still requiring physical evidence:
-- Runtime correctness and output quality on ARM64 devices.
+- Runtime correctness, latency and output quality on actual ARM64 phones (emulator inference is not a device benchmark).
 - Actual load time, PSS/RAM, battery drain, temperature, CPU load, tokens/second and thermal throttling.
 - Android 8/API 26, ARMv7, OEM overlay/lifecycle, TalkBack and signed update installation.
