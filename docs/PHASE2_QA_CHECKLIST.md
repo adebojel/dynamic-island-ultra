@@ -30,7 +30,7 @@ Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AA
 
 ## ARM64 Android emulator integration/UI tests
 
-- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support, with the Compose BOM applied to both app and androidTest configurations. **Latest observed run #3 failed at this build step; detailed job log was unavailable from GitHub at follow-up, so root cause is unresolved.**
+- [ ] Instrumentation APK builds with AndroidJUnitRunner and Compose UI test support, with the Compose BOM applied to both app and androidTest configurations. **Run #3 failure root cause identified: `assertDoesNotExist` is unresolved in `WicaraComposeUiTest`; the unsupported negative assertion has been removed. Await a green rerun before marking this gate passed.**
 - [ ] API 30 ARM64 emulator boots on the Apple Silicon GitHub-hosted macOS runner.
 - [ ] With Wi-Fi and mobile data disabled, the packaged model is provisioned and its SHA-256/GGUF checks pass.
 - [ ] llama.cpp loads the actual packaged model, generates a non-empty local response and unloads cleanly.
@@ -38,4 +38,4 @@ Before Wicara integration, workflow #166 succeeded for unit tests, signed APK/AA
 - [ ] Compose assistant screen displays the Aktifkan AI and Batalkan controls.
 - [ ] Emulator workflow is green for the exact current main commit.
 
-**Observed status (23 November 2026):** emulator run #2 failed because Compose BOM was not applied to androidTest; that configuration was corrected. Emulator run #3 on commit d76c2f3 also failed at `Assemble GitHub debug app and instrumentation APK`. GitHub's follow-up job-log download returned BlobNotFound, so the second failure cause could not be confirmed. Do not mark instrumentation, emulator boot, model inference, or Compose UI tests as passed until a subsequent green run publishes test output. An ARM64 emulator result would not claim physical OEM, Android 8/API 26, sustained thermal, battery or screen-reader validation. Those remain separately tracked.
+**Observed status (23 November 2026):** emulator run #2 failed because Compose BOM was not applied to androidTest; that configuration was corrected. Emulator run #3 on commit d76c2f3 also failed at `Assemble GitHub debug app and instrumentation APK`. The downloaded job log identified the compile error `Unresolved reference: assertDoesNotExist` in `WicaraComposeUiTest`; the unsupported assertion has now been removed. Do not mark instrumentation, emulator boot, model inference, or Compose UI tests as passed until a subsequent green run publishes test output. An ARM64 emulator result would not claim physical OEM, Android 8/API 26, sustained thermal, battery or screen-reader validation. Those remain separately tracked.

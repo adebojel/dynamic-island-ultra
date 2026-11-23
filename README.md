@@ -193,14 +193,14 @@ Review these documents whenever permissions, SDKs, data processing, subscription
 
 ## Validation status
 
-The latest verified signed release is [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13) (**versionCode 134**, published 22 November 2026). [Android CI run #134](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45019191147) completed successfully. Both distribution-flavor test suites passed; signed GitHub APK and Play AAB builds passed; CI verified the installer-permission split, stable APK signature, AAB certificate match, SHA-256 generation, artifact upload and Release publication. Version v0.0.13 adds an optional 8-second visible auto-dim for the floating bubble; it remains touchable, restores on interaction, and pauses while the category panel is open.
+The latest verified signed release is [v0.0.21](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.21). [Android CI run #174](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45177859952) completed successfully for commit `d76c2f37f3e9e3055952e14a6d08552036846475`; the release contains signed APK/AAB, SHA-256 files and valid release metadata. Both distribution-flavor test suites passed; signed GitHub APK and Play AAB builds passed; CI verified the installer-permission split, stable APK signature, AAB certificate match, SHA-256 generation, artifact upload and Release publication. Version v0.0.13 adds an optional 8-second visible auto-dim for the floating bubble; it remains touchable, restores on interaction, and pauses while the category panel is open.
 
 Release assets:
-- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.apk)
-- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.aab)
-- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.apk.sha256)
-- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/app-release.aab.sha256)
-- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.13/release-info.json)
+- [Signed GitHub APK for direct Android installation](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.21/app-release.apk)
+- [Signed Play AAB for Google Play Console](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.21/app-release.aab)
+- [GitHub APK SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.21/app-release.apk.sha256)
+- [Play AAB SHA-256 file](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.21/app-release.aab.sha256)
+- [Release metadata](https://github.com/adebojel/dynamic-island-ultra/releases/download/v0.0.21/release-info.json)
 
 GitHub's release API reports APK digest `sha256:ae4f965d5a116c751b07e610ad65f91789b2b5dc307224896afd981e27c5df4c` (19,108,214 bytes) and AAB digest `sha256:9cbf78f6cbd419290575a364b720a1e27d225cbb8a0857fff1dd12ee24bb987e` (18,646,482 bytes). The signing certificate SHA-256 remains `7b2c2fe9ccc24320133e78402c7171d7a835e0d7b425f9119f8d8f1d871a8a0e`; CI verified the APK and AAB use the matching stable certificate.
 
@@ -212,7 +212,7 @@ The signed artifacts use the stable release key. The certificate match confirms 
 
 
 
-**Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment of the latest policy updates succeeded in [Pages run #14](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45013720877); public reachability and page contents still need to be checked from a normal browser/device. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
+**Current QA caveat:** emulator instrumentation run #3 exposed the unsupported Compose `assertDoesNotExist` assertion; the test has been corrected but the rerun is still required. **Not yet verified:** installation and real-world operation on a physical Android device, update-over-existing-install behaviour, production AdMob ad fill, Play Console review, Play Billing purchase flows, and independent HTTP access to every deployed website page. GitHub Pages deployment of the latest policy updates succeeded in [Pages run #14](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45013720877); public reachability and page contents still need to be checked from a normal browser/device. Firebase Hosting root deployment remains pending because `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT` are not configured; the root-host `app-ads.txt` URL is therefore not live. Do not claim AdMob app-ads.txt verification until AdMob Console confirms it.
 
 CI tests and APK assembly do not replace physical-device testing. The next device gate is to smoke-test overlay lifecycle, notification access, DuckDuckGo search/navigation and media playback, package-installer handoff, data retention across a signed update, and Android 8/9/10 plus current Android OEM variants.
 

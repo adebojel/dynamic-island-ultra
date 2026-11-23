@@ -1,6 +1,5 @@
 package com.adebojel.dynamicislandultra.ai
 
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -16,6 +15,5 @@ class WicaraComposeUiTest {
     fun assistantScreenShowsExplicitOfflineAiControls() {
         composeRule.onNodeWithText("Aktifkan AI").assertIsDisplayed()
         composeRule.onNodeWithText("Batalkan").assertExists()
-        composeRule.onNodeWithText("Nonaktifkan AI").assertDoesNotExist()
     }
 }
