@@ -104,7 +104,7 @@ class ScreenRecorderActivity : ComponentActivity() {
             status = "Permintaan perekaman dikirim. Gunakan notifikasi untuk menghentikan rekaman."
             Toast.makeText(this, "Screen Recorder dimulai.", Toast.LENGTH_SHORT).show()
         }.onFailure {
-            status = "Perekaman tidak dapat dimulai: \${it.message ?: "kesalahan sistem"}"
+            status = "Perekaman tidak dapat dimulai: ${it.message ?: "kesalahan sistem"}"
         }
         captureData = null
     }
