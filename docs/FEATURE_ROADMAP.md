@@ -375,3 +375,18 @@ Still requiring physical evidence:
 - Runtime correctness, latency and output quality on actual ARM64 phones (emulator inference is not a device benchmark).
 - Actual load time, PSS/RAM, battery drain, temperature, CPU load, tokens/second and thermal throttling.
 - Android 8/API 26, ARMv7, OEM overlay/lifecycle, TalkBack and signed update installation.
+
+
+## Browser downloads and crash recovery — implementation update
+
+- Added an in-app DownloadManager history for downloads created by this app, including status/progress, title/source search, open, share, and confirmed cancel/delete.
+- Added bounded standard-mode browser session persistence: up to eight HTTPS tab URLs and active tab index are restored after process recreation.
+- Private browsing does not persist URLs or tabs; entering private mode clears the saved standard session.
+- Automated tests cover URL filtering, tab-count bounds and active-index clamping.
+- Android WebView/OEM lifecycle validation remains part of the final QA pass.
+
+## Documentation reconciliation
+
+- ZIP creation and bounded ZIP extraction are implemented in FileManagerOperations; older Phase 1 backlog entries are historical snapshots, not current missing features.
+- Browser bookmark search/rename/delete is implemented; only the in-app download history and crash recovery gaps described in earlier snapshots are superseded by this update.
+- Firebase project setup/hosting and Google Play Console configuration remain deliberately deferred to the user's separate final-stage session.

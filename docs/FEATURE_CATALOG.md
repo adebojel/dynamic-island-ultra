@@ -267,3 +267,13 @@ The built-in assistant and local tools work without internet, imported model fil
 - Rename rejects blank names and caps labels at 100 characters.
 - Delete requires an explicit confirmation.
 - Bookmark actions are unavailable during private browsing; bookmarks remain in app-private local storage.
+
+
+## Browser download library and session recovery
+
+- In-app list of this app's DownloadManager jobs with title/source search and status/progress display.
+- Completed files can be opened or shared using Android-granted content URIs.
+- Active, paused and failed downloads can be cancelled and removed with explicit confirmation.
+- Standard-mode HTTPS tab URLs and active tab index are persisted locally and restored, with a hard cap of eight tabs.
+- Private browsing does not persist URLs or tabs; entering private mode clears the saved standard session.
+- DownloadManager continues to own transfer execution; the app does not implement a second downloader or request broad storage access.

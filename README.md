@@ -46,7 +46,7 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 | Built-in offline assistant | Deterministic commands, calculator/system actions and diagnostics plus optional bundled Wicara local generation on ARM64; no model import, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
-| DuckDuckGo browser | HTTPS navigation, Desktop/Mobile mode, local bookmarks, capped local history and DownloadManager-backed HTTPS downloads |
+| DuckDuckGo browser | HTTPS navigation, Desktop/Mobile mode, searchable/renameable/deletable local bookmarks, capped local history, restorable standard-mode tabs and an in-app DownloadManager history with search/open/share/delete controls |
 | GitHub update center (GitHub flavor only) | Checks the latest project release, downloads the signed APK and SHA-256 file, verifies the hash, then opens Android's installer |
 | Media session | Metadata/artwork, play/pause, previous/next and seek when the player publishes a supported session |
 | QR/barcode scanner | Google Play services Code Scanner; app does not request camera permission; scanner module may download on first use |

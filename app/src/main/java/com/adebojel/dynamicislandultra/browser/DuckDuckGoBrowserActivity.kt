@@ -56,6 +56,20 @@ internal object BrowserUrlPolicy {
 
 private data class BrowserTab(val id: Int, val webView: WebView, var title: String = "Tab baru")
 
+
+internal object BrowserSessionPolicy {
+    fun restoreableUrls(rawUrls: List<String>, maxTabs: Int = 8): List<String> =
+        rawUrls.asSequence()
+            .map { it.trim() }
+            .filter { it.startsWith("https://", ignoreCase = true) }
+            .take(maxTabs.coerceAtLeast(1))
+            .toList()
+
+    fun safeActiveIndex(index: Int, count: Int): Int =
+        if (count <= 0) 0 else index.coerceIn(0, count - 1)
+}
+
+
 /**
  * DuckDuckGo browser with bounded multi-tab support and whole-session private mode.
  */
@@ -193,7 +207,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         root.addView(webHost, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
 
-        createTab(true)
+        restoreSession()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val current = browser
@@ -396,13 +410,212 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         }
     }
 
-    private fun openDownloads() {
+    private data class DownloadRow(
+        val id: Long,
+        val title: String,
+        val source: String,
+        val status: Int,
+        val downloaded: Long,
+        val total: Long
+    )
+
+    private fun openDownloads(query: String = "") {
         if (privateMode) {
             Toast.makeText(this, "Unduhan dinonaktifkan dalam mode privat.", Toast.LENGTH_SHORT).show()
             return
         }
-        runCatching { startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)) }
-            .onFailure { Toast.makeText(this, "Daftar unduhan Android tidak tersedia.", Toast.LENGTH_SHORT).show() }
+        val manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        val rows = mutableListOf<DownloadRow>()
+        val filter = DownloadManager.STATUS_PENDING or DownloadManager.STATUS_RUNNING or
+            DownloadManager.STATUS_PAUSED or DownloadManager.STATUS_SUCCESSFUL or DownloadManager.STATUS_FAILED
+        runCatching {
+            manager.query(DownloadManager.Query().setFilterByStatus(filter)).use { cursor ->
+                val idCol = cursor.getColumnIndex(DownloadManager.COLUMN_ID)
+                val titleCol = cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                val uriCol = cursor.getColumnIndex(DownloadManager.COLUMN_URI)
+                val statusCol = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                val downloadedCol = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                val totalCol = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
+                while (cursor.moveToNext()) {
+                    if (idCol < 0 || statusCol < 0) continue
+                    rows += DownloadRow(
+                        id = cursor.getLong(idCol),
+                        title = if (titleCol >= 0) cursor.getString(titleCol).orEmpty().ifBlank { "Unduhan" } else "Unduhan",
+                        source = if (uriCol >= 0) cursor.getString(uriCol).orEmpty() else "",
+                        status = cursor.getInt(statusCol),
+                        downloaded = if (downloadedCol >= 0) cursor.getLong(downloadedCol) else 0L,
+                        total = if (totalCol >= 0) cursor.getLong(totalCol) else -1L
+                    )
+                }
+            }
+        }.onFailure {
+            Toast.makeText(this, "Riwayat unduhan tidak dapat dibaca: ${it.message ?: "kesalahan sistem"}", Toast.LENGTH_LONG).show()
+            return
+        }
+        val filtered = rows.filter {
+            query.isBlank() || it.title.contains(query.trim(), true) || it.source.contains(query.trim(), true)
+        }.sortedByDescending { it.id }
+        if (filtered.isEmpty()) {
+            Toast.makeText(this, if (query.isBlank()) "Belum ada unduhan dari aplikasi ini." else "Unduhan tidak ditemukan.", Toast.LENGTH_SHORT).show()
+            if (query.isNotBlank()) showDownloadSearch()
+            return
+        }
+        val labels = filtered.map { row ->
+            val progressLabel = if (row.total > 0) " • ${(row.downloaded * 100 / row.total).coerceIn(0, 100)}%" else ""
+            "${row.title.take(64)}\n${downloadStatusLabel(row.status)}$progressLabel"
+        }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Unduhan (${filtered.size})")
+            .setItems(labels) { _, which -> showDownloadActions(manager, filtered[which]) }
+            .setNeutralButton("Cari") { _, _ -> showDownloadSearch() }
+            .setPositiveButton("Selesai", null)
+            .show()
+    }
+
+    private fun downloadStatusLabel(status: Int): String = when (status) {
+        DownloadManager.STATUS_PENDING -> "Menunggu"
+        DownloadManager.STATUS_RUNNING -> "Sedang diunduh"
+        DownloadManager.STATUS_PAUSED -> "Dijeda"
+        DownloadManager.STATUS_SUCCESSFUL -> "Selesai"
+        DownloadManager.STATUS_FAILED -> "Gagal"
+        else -> "Status tidak diketahui"
+    }
+
+    private fun showDownloadSearch() {
+        val input = EditText(this).apply {
+            hint = "Nama file atau alamat sumber"
+            setSingleLine(true)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Cari unduhan")
+            .setView(input)
+            .setPositiveButton("Cari") { _, _ -> openDownloads(input.text.toString()) }
+            .setNeutralButton("Semua") { _, _ -> openDownloads() }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showDownloadActions(manager: DownloadManager, row: DownloadRow) {
+        val completed = row.status == DownloadManager.STATUS_SUCCESSFUL
+        val actions = if (completed) arrayOf("Buka file", "Bagikan file", "Hapus unduhan")
+            else arrayOf("Batalkan dan hapus", "Lihat sumber")
+        AlertDialog.Builder(this)
+            .setTitle(row.title)
+            .setItems(actions) { _, which ->
+                if (completed) {
+                    when (which) {
+                        0 -> openDownloadedFile(manager, row.id)
+                        1 -> shareDownloadedFile(manager, row.id)
+                        2 -> confirmRemoveDownload(manager, row.id)
+                    }
+                } else {
+                    when (which) {
+                        0 -> confirmRemoveDownload(manager, row.id)
+                        1 -> runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(row.source))) }
+                            .onFailure { Toast.makeText(this, "Sumber tidak dapat dibuka.", Toast.LENGTH_SHORT).show() }
+                    }
+                }
+            }
+            .setNegativeButton("Tutup", null)
+            .show()
+    }
+
+    private fun openDownloadedFile(manager: DownloadManager, id: Long) {
+        val uri = manager.getUriForDownloadedFile(id)
+        if (uri == null) {
+            Toast.makeText(this, "File belum tersedia atau unduhan gagal.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val mime = manager.getMimeTypeForDownloadedFile(id) ?: "*/*"
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, mime)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            })
+        }.onFailure {
+            Toast.makeText(this, "Tidak ada aplikasi untuk membuka file ini.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun shareDownloadedFile(manager: DownloadManager, id: Long) {
+        val uri = manager.getUriForDownloadedFile(id)
+        if (uri == null) {
+            Toast.makeText(this, "File belum tersedia untuk dibagikan.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val mime = manager.getMimeTypeForDownloadedFile(id) ?: "*/*"
+        runCatching {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = mime
+                putExtra(Intent.EXTRA_STREAM, uri)
+                clipData = android.content.ClipData.newUri(contentResolver, "Unduhan", uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(send, "Bagikan unduhan"))
+        }.onFailure {
+            Toast.makeText(this, "File tidak dapat dibagikan.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun confirmRemoveDownload(manager: DownloadManager, id: Long) {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus unduhan?")
+            .setMessage("Unduhan ini akan dibatalkan bila masih berjalan dan dihapus dari penyimpanan aplikasi.")
+            .setNegativeButton("Batal", null)
+            .setPositiveButton("Hapus") { _, _ ->
+                manager.remove(id)
+                Toast.makeText(this, "Unduhan dihapus.", Toast.LENGTH_SHORT).show()
+                openDownloads()
+            }
+            .show()
+    }
+
+    private fun restoreSession() {
+        if (privateMode) {
+            createTab(true)
+            return
+        }
+        val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        val saved = runCatching {
+            val json = JSONArray(prefs.getString(KEY_SESSION, "[]"))
+            (0 until json.length()).mapNotNull { index ->
+                json.optString(index).takeIf { it.isNotBlank() }
+            }
+        }.getOrDefault(emptyList())
+        val urls = BrowserSessionPolicy.restoreableUrls(saved, MAX_TABS)
+        if (urls.isEmpty()) {
+            createTab(true)
+            return
+        }
+        urls.forEach { url ->
+            createTab(false)
+            tabs.lastOrNull()?.webView?.loadUrl(url)
+        }
+        val activeIndex = BrowserSessionPolicy.safeActiveIndex(
+            prefs.getInt(KEY_SESSION_ACTIVE, 0), tabs.size
+        )
+        tabs.getOrNull(activeIndex)?.let { switchTab(it.id) }
+    }
+
+    private fun saveSession() {
+        val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        if (privateMode) {
+            prefs.edit().remove(KEY_SESSION).remove(KEY_SESSION_ACTIVE).apply()
+            return
+        }
+        val urls = tabs.mapNotNull { tab ->
+            tab.webView.url?.takeIf { it.startsWith("https://", true) }
+        }.take(MAX_TABS)
+        val activeIndex = tabs.indexOfFirst { it.id == activeTabId }.coerceAtLeast(0)
+        prefs.edit()
+            .putString(KEY_SESSION, JSONArray(urls).toString())
+            .putInt(KEY_SESSION_ACTIVE, activeIndex.coerceAtMost((urls.size - 1).coerceAtLeast(0)))
+            .apply()
+    }
+
+    override fun onPause() {
+        saveSession()
+        super.onPause()
     }
 
     private fun saveCurrentBookmark() {
@@ -601,6 +814,7 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        saveSession()
         tabs.toList().forEach { destroyWebView(it.webView) }
         tabs.clear()
         browser = null
@@ -612,6 +826,8 @@ class DuckDuckGoBrowserActivity : ComponentActivity() {
         private const val KEY_DESKTOP_MODE = "desktop_mode"
         private const val KEY_BOOKMARKS = "bookmarks"
         private const val KEY_HISTORY = "history"
+        private const val KEY_SESSION = "browser_session_urls"
+        private const val KEY_SESSION_ACTIVE = "browser_session_active"
         private const val MAX_HISTORY_ITEMS = 100
         private const val MAX_TABS = 8
         private const val DUCKDUCKGO_HOME = "https://duckduckgo.com/"
