@@ -310,3 +310,13 @@ Implemented in source:
 - Android CI policy permits CAMERA only for this constrained flashlight implementation and rejects camera capture APIs.
 
 Physical-device tests are still required for camera-permission denial, competing camera/torch clients, brightness/rotation OEM behaviour and Android 8 compatibility.
+
+
+## Floating Window Manager finishing patch
+
+Implemented:
+- Added Mini Notes, Mini Calculator and Mini Timer to the four configurable Quick Favorite slots.
+- Added drag bounds clamping for current display width/height.
+- Added nearest-left/right edge snap on drag release.
+- ACTION_CANCEL restores the previous position.
+Remaining: per-window opacity/priority, multi-document notes, mini browser/PDF/media windows, full multi-window restore after service restart, keyboard/IME and OEM overlay testing.

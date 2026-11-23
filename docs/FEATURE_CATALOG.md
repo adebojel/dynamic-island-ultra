@@ -213,3 +213,10 @@ The built-in assistant and local tools work without internet, imported model fil
 - Flashlight checks for a flash-capable camera and uses `CameraManager.setTorchMode`. The runtime CAMERA permission is requested only after the user taps the flashlight control. Camera hardware/flash is marked optional; no preview or camera capture session is started.
 - System brightness and auto-rotation use `Settings.System`; both require the user to grant Android's special Modify System Settings access. Controls remain disabled until that grant is detected.
 - Current system values are refreshed when the activity resumes. Device/OEM failures are surfaced rather than reported as success.
+
+
+### Floating Window Manager — Quick Favorites and snapping
+
+- Mini Notes, Mini Calculator and Mini Timer are available in the four-slot Quick Favorites allowlist.
+- Dragging a mini window clamps it within the screen and snaps it to the nearest horizontal edge on release.
+- A cancelled drag restores the window to its starting position.

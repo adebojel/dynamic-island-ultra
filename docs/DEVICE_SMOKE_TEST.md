@@ -338,3 +338,12 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Deny special access and confirm brightness/rotation controls stay disabled.
 - [ ] Confirm the app never starts a camera preview or image capture session.
 - [ ] Test small-screen scrolling and portrait/landscape on Android 8/API 26 and a current OEM device.
+
+
+## Floating Window Manager Quick Favorite and snap checks
+
+- [ ] Assign Mini Notes, Mini Calculator and Mini Timer to Quick Favorite slots independently; confirm labels and destinations.
+- [ ] Drag each window to the left half and release; confirm it snaps to the left edge without clipping.
+- [ ] Drag each window to the right half and release; confirm it snaps to the right edge without clipping.
+- [ ] Drag toward the bottom/top and confirm the window remains within the visible display bounds.
+- [ ] Trigger ACTION_CANCEL during a drag and confirm the window returns to its original position.

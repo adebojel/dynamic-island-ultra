@@ -24,7 +24,10 @@ object BubbleFavoriteConfig {
         BubbleFavoriteOption("sensors", "Sensor kit", "SENSOR"),
         BubbleFavoriteOption("workspace", "Floating workspace", "PIP"),
         BubbleFavoriteOption("settings", "Island settings", "SET"),
-        BubbleFavoriteOption("tools", "Smart Toolbox", "TOOLS")
+        BubbleFavoriteOption("tools", "Smart Toolbox", "TOOLS"),
+        BubbleFavoriteOption("mini_notes", "Mini floating notes", "MNOTE"),
+        BubbleFavoriteOption("mini_calculator", "Mini floating calculator", "MCALC"),
+        BubbleFavoriteOption("mini_timer", "Mini floating timer", "MTIME")
     )
 
     private val defaults = listOf("assistant", "notes", "calculator", "apps")

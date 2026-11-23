@@ -245,18 +245,43 @@ internal class AppMiniWindowManager(
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    entry.params.x = max(0, startX + (event.rawX - downX).toInt())
-                    entry.params.y = max(0, startY + (event.rawY - downY).toInt())
+                    entry.params.x = startX + (event.rawX - downX).toInt()
+                    entry.params.y = startY + (event.rawY - downY).toInt()
+                    clampToScreen(entry)
                     update(entry)
                     true
                 }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> true
+                MotionEvent.ACTION_UP -> {
+                    val screenWidth = context.resources.displayMetrics.widthPixels
+                    val maxX = (screenWidth - entry.params.width).coerceAtLeast(0)
+                    val windowCenter = entry.params.x + entry.params.width / 2
+                    entry.params.x = if (windowCenter < screenWidth / 2) 0 else maxX
+                    clampToScreen(entry)
+                    update(entry)
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    entry.params.x = startX
+                    entry.params.y = startY
+                    clampToScreen(entry)
+                    update(entry)
+                    true
+                }
                 else -> false
             }
         }
     }
 
+    private fun clampToScreen(entry: Entry) {
+        val metrics = context.resources.displayMetrics
+        val maxX = (metrics.widthPixels - entry.params.width).coerceAtLeast(0)
+        val maxY = (metrics.heightPixels - entry.params.height).coerceAtLeast(0)
+        entry.params.x = entry.params.x.coerceIn(0, maxX)
+        entry.params.y = entry.params.y.coerceIn(0, maxY)
+    }
+
     private fun update(entry: Entry) {
+        clampToScreen(entry)
         runCatching { windowManager.updateViewLayout(entry.root, entry.params) }
     }
 

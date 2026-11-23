@@ -436,6 +436,17 @@ class FloatingIslandService : Service() {
     }
 
     private fun launchFavoriteAction(key: String, label: String) {
+        val miniKind = when (key) {
+            "mini_notes" -> MiniWindowKind.NOTES
+            "mini_calculator" -> MiniWindowKind.CALCULATOR
+            "mini_timer" -> MiniWindowKind.TIMER
+            else -> null
+        }
+        if (miniKind != null) {
+            if (::miniWindows.isInitialized) miniWindows.open(miniKind)
+            else Toast.makeText(this, "Floating Window Manager belum siap.", Toast.LENGTH_SHORT).show()
+            return
+        }
         val intent = when (key) {
             "assistant" -> Intent(this, OfflineAssistantActivity::class.java)
             "notes" -> Intent(this, OfflineNotesActivity::class.java)

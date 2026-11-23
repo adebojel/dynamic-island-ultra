@@ -297,3 +297,8 @@ The bubble panel can open up to four app-owned overlay mini windows: Notes, a fo
 ### Hardware and display controls
 
 Global System Controls also provides a media-stream volume slider, a flashlight toggle (camera permission is requested only when the user activates it), and system brightness/auto-rotation after the user grants Android's special Modify System Settings access. Camera hardware is optional and the app does not open a camera preview or capture images. No protected setting or runtime permission is silently enabled.
+
+
+### Floating Window Manager Quick Favorites
+
+Mini Notes, Mini Calculator and Mini Timer can also be assigned to any of the four Quick Favorite slots. Mini windows snap to the nearest horizontal screen edge after dragging and their position is clamped within the display bounds. The manager remains limited to four app-owned windows.
