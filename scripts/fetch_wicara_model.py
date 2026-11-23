@@ -65,15 +65,54 @@ def main() -> None:
     if len(matches) != 1:
         raise RuntimeError("Exact requested Wicara Q8_0 artifact is missing or ambiguous.")
     lfs = matches[0].get("lfs") or {}
-    oid = str(lfs.get("oid") or "")
-    declared_size = int(lfs.get("size") or 0)
-    if not oid.startswith("sha256:"):
-        raise RuntimeError("Upstream model does not expose an LFS SHA-256 digest.")
-    expected_sha = oid.removeprefix("sha256:").lower()
+    declared_size = int(matches[0].get("size") or lfs.get("size") or 0)
+
+    # Hub Xet-backed files may not expose legacy lfs.oid in the repo-info response.
+    # The Hub's HEAD metadata endpoint exposes the content SHA-256 as X-Linked-Etag.
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            return None
+
+    metadata_url = f"https://huggingface.co/{REPOSITORY}/resolve/{revision}/{FILENAME}"
+    metadata_request = urllib.request.Request(
+        metadata_url,
+        headers={"User-Agent": "DynamicIslandUltra-CI/1.0"},
+        method="HEAD"
+    )
+    metadata_opener = urllib.request.build_opener(NoRedirect)
+    try:
+        metadata_response = metadata_opener.open(metadata_request, timeout=60)
+    except urllib.error.HTTPError as response:
+        if response.code not in (301, 302, 303, 307, 308):
+            raise
+        metadata_response = response
+
+    linked_etag = (
+        metadata_response.headers.get("X-Linked-Etag")
+        or metadata_response.headers.get("ETag")
+        or ""
+    ).strip()
+    expected_sha = linked_etag.removeprefix("W/").strip('"').lower()
     if not re.fullmatch(r"[0-9a-f]{64}", expected_sha):
-        raise RuntimeError("Upstream LFS SHA-256 digest is malformed.")
+        raise RuntimeError(
+            "Hugging Face HEAD metadata did not provide a 64-character file SHA-256 "
+            "in X-Linked-Etag/ETag; refusing to substitute the Xet file ID."
+        )
+
+    if declared_size <= 0:
+        declared_size = int(
+            metadata_response.headers.get("X-Linked-Size")
+            or metadata_response.headers.get("Content-Length")
+            or 0
+        )
     if not 0 < declared_size <= MAX_BYTES:
-        raise RuntimeError(f"Model size {declared_size} exceeds {MAX_BYTES} bytes.")
+        raise RuntimeError(
+            f"Upstream model size {declared_size} is missing or exceeds {MAX_BYTES} bytes."
+        )
+    print(
+        f"Verified upstream file metadata: size={declared_size} bytes; "
+        f"SHA-256={expected_sha}; revision={revision}"
+    )
 
     url = f"https://huggingface.co/{REPOSITORY}/resolve/{revision}/{FILENAME}?download=true"
     temporary = MODEL_PATH.with_suffix(".gguf.part")
