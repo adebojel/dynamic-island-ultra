@@ -347,3 +347,13 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Drag each window to the right half and release; confirm it snaps to the right edge without clipping.
 - [ ] Drag toward the bottom/top and confirm the window remains within the visible display bounds.
 - [ ] Trigger ACTION_CANCEL during a drag and confirm the window returns to its original position.
+
+
+## File Manager ZIP extraction checks
+
+- [ ] Select a ZIP file and choose Ekstrak ZIP; confirm Android asks for a destination folder.
+- [ ] Extract a valid nested archive and verify file contents and relative folders.
+- [ ] Test archives containing ../ paths, absolute paths and drive-prefixed paths; confirm they are rejected.
+- [ ] Test duplicate paths and destination files that already exist; confirm no overwrite occurs.
+- [ ] Test archive entry, depth, per-file and total output limits; confirm errors are reported and partial output cleanup is attempted.
+- [ ] Test a read-only/cloud SAF provider and confirm failure does not crash the File Manager.

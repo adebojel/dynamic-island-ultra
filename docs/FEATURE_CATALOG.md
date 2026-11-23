@@ -220,3 +220,12 @@ The built-in assistant and local tools work without internet, imported model fil
 - Mini Notes, Mini Calculator and Mini Timer are available in the four-slot Quick Favorites allowlist.
 - Dragging a mini window clamps it within the screen and snaps it to the nearest horizontal edge on release.
 - A cancelled drag restores the window to its starting position.
+
+
+### File Manager — bounded ZIP extraction
+
+- Extract a selected `.zip` file to a destination folder chosen through Android's Storage Access Framework.
+- Rejects absolute paths, traversal segments (`..`), drive prefixes, control characters and duplicate archive paths.
+- Bounds extraction to 5,000 entries, 32 path levels, 256 MiB per file and 512 MiB total output.
+- Refuses to overwrite existing destination files; on failure, best-effort deletes files/folders created by that extraction attempt.
+- Extraction is local and provider-scoped; SAF providers may still reject writes or deletes.

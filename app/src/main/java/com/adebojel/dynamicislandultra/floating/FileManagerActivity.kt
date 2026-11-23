@@ -47,6 +47,7 @@ class FileManagerActivity : ComponentActivity() {
     private var pendingTransfer: DocumentFile? = null
     private var pendingMove = false
     private var pendingZip: DocumentFile? = null
+    private var pendingZipExtract: DocumentFile? = null
 
     private val folderPicker = registerForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
@@ -87,6 +88,22 @@ class FileManagerActivity : ComponentActivity() {
         if (uri != null && source != null) performZip(source, uri)
     }
 
+    private val extractDestinationPicker = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        val source = pendingZipExtract
+        pendingZipExtract = null
+        if (uri != null && source != null) {
+            runCatching {
+                contentResolver.takePersistableUriPermission(uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                val destination = DocumentFile.fromTreeUri(this, uri)
+                    ?: error("Folder tujuan tidak dapat dibuka.")
+                performExtractZip(source, destination)
+            }.onFailure {
+                Toast.makeText(this, "Ekstraksi gagal: ${it.message ?: "folder tujuan tidak tersedia"}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val savedUri = getSharedPreferences(PREFS, MODE_PRIVATE)
@@ -110,7 +127,8 @@ class FileManagerActivity : ComponentActivity() {
                     onOpenFile = ::openFile,
                     onShareFile = ::shareFile,
                     onTransferFile = ::requestTransfer,
-                    onZipItem = ::requestZip
+                    onZipItem = ::requestZip,
+                    onExtractZip = ::requestExtractZip
                 )
             }
         }
@@ -158,6 +176,26 @@ class FileManagerActivity : ComponentActivity() {
         }
     }
 
+    private fun requestExtractZip(source: DocumentFile) {
+        pendingZipExtract = source
+        extractDestinationPicker.launch(selectedRoot?.uri)
+    }
+
+    private fun performExtractZip(source: DocumentFile, destination: DocumentFile) {
+        lifecycleScope.launch {
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    FileManagerOperations.extractZip(contentResolver, source, destination)
+                }
+            }
+            result.onSuccess {
+                Toast.makeText(this@FileManagerActivity, "Ekstraksi selesai ($it entri).", Toast.LENGTH_LONG).show()
+            }.onFailure {
+                Toast.makeText(this@FileManagerActivity, "Ekstraksi gagal: ${it.message ?: "arsip tidak valid"}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun openFile(file: DocumentFile) {
         val mime = file.type ?: contentResolver.getType(file.uri) ?: "*/*"
         val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -197,7 +235,8 @@ private fun FileManagerScreen(
     onOpenFile: (DocumentFile) -> Unit,
     onShareFile: (DocumentFile) -> Unit,
     onTransferFile: (DocumentFile, Boolean) -> Unit,
-    onZipItem: (DocumentFile) -> Unit
+    onZipItem: (DocumentFile) -> Unit,
+    onExtractZip: (DocumentFile) -> Unit
 ) {
     val stack: SnapshotStateList<DocumentFile> = remember(root?.uri) {
         androidx.compose.runtime.mutableStateListOf<DocumentFile>().apply {
@@ -352,6 +391,9 @@ private fun FileManagerScreen(
                             TextButton(onClick = { onTransferFile(target, true); selected = null }) { Text("Pindahkan") }
                         }
                         TextButton(onClick = { onZipItem(target); selected = null }) { Text("ZIP") }
+                        if (!target.isDirectory && target.name?.endsWith(".zip", ignoreCase = true) == true) {
+                            TextButton(onClick = { onExtractZip(target); selected = null }) { Text("Ekstrak ZIP") }
+                        }
                     }
                     TextButton(onClick = {
                         renameTarget = target

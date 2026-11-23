@@ -266,7 +266,7 @@ These tools do not require network access or additional Android permissions. Tim
 
 ## File Manager — scoped local storage
 
-The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Copy/move, archive management and document editing are still separate backlog items.
+The File Manager uses Android's Storage Access Framework. The user selects a folder through the system folder picker, and the app persists access only to that selected tree. It supports folder navigation, name search, folder-first sorting (name or newest modification), folder creation, file opening through compatible installed apps, sharing, rename and deletion with confirmation. It does not request `MANAGE_EXTERNAL_STORAGE` or silently scan the device. Provider capabilities can vary; a provider may reject an operation, and the app must not claim success when the provider refuses it. Copy/move, ZIP export and bounded ZIP extraction are available through user-selected SAF folders; PDF editing and full document editing remain separate backlog items.
 
 
 ### Browser library and downloads

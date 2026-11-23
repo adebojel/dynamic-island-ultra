@@ -320,3 +320,15 @@ Implemented:
 - Added nearest-left/right edge snap on drag release.
 - ACTION_CANCEL restores the previous position.
 Remaining: per-window opacity/priority, multi-document notes, mini browser/PDF/media windows, full multi-window restore after service restart, keyboard/IME and OEM overlay testing.
+
+
+## Phase 1 ZIP extraction update
+
+Implemented in source:
+- Extract a selected ZIP into a destination tree explicitly selected by the user.
+- ZIP-slip safeguards reject absolute paths, traversal, drive prefixes, control characters and duplicate paths.
+- Bounds: 5,000 entries, 32 levels, 256 MiB per file, 512 MiB total output.
+- No overwrite of existing files; best-effort cleanup removes partial extraction output on error.
+- Unit tests cover malicious path rejection and extraction bounds.
+
+Still outstanding: PDF merge/split/compress/annotate, complete document editing and SAF provider/OEM regression tests.

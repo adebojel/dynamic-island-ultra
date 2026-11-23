@@ -15,5 +15,15 @@ class FileManagerOperationsTest {
     @Test fun zipBoundsAreExplicit() {
         assertEquals(5_000, FileManagerOperations.MAX_ZIP_ENTRIES)
         assertEquals(32, FileManagerOperations.MAX_ZIP_DEPTH)
+        assertTrue(FileManagerOperations.MAX_EXTRACTED_BYTES > 0)
+        assertTrue(FileManagerOperations.MAX_EXTRACTED_FILE_BYTES <= FileManagerOperations.MAX_EXTRACTED_BYTES)
+    }
+
+    @Test fun rejectsZipSlipAndAbsolutePaths() {
+        assertEquals(null, FileManagerOperations.normalizeZipEntryPath("../outside.txt"))
+        assertEquals(null, FileManagerOperations.normalizeZipEntryPath("/absolute.txt"))
+        assertEquals(null, FileManagerOperations.normalizeZipEntryPath("C:/outside.txt"))
+        assertEquals(null, FileManagerOperations.normalizeZipEntryPath("folder/../../outside.txt"))
+        assertEquals(listOf("folder", "safe.txt"), FileManagerOperations.normalizeZipEntryPath("folder/safe.txt"))
     }
 }
