@@ -301,12 +301,8 @@ jobs:
               "versionCode": int(os.environ["VERSION_CODE"]),
               "minSdk": 26,
               "apkFlavor": "github",
-              "bundleFlavor": "play",
-              "playFlavorExcludesRequestInstallPackages": True,
               "apk": "app-release.apk",
               "sha256Asset": "app-release.apk.sha256",
-              "bundle": "app-release.aab",
-              "bundleSha256Asset": "app-release.aab.sha256",
               "commit": os.environ["GITHUB_SHA"],
               "model": json.loads(os.environ["MODEL_METADATA"])
           }
@@ -343,26 +339,22 @@ jobs:
 
             - Android minimum: 8.0 Oreo / API 26.
             - Internet permission is available to app features. The bundled assistant and local tools remain offline by design.
-            - Wicara GGUF is bundled in the APK/AAB; release-info.json records the verified upstream revision, size and SHA-256.
+            - Wicara GGUF is bundled in the APK; release-info.json records the verified upstream revision, size and SHA-256.
             - llama.cpp is pinned and built for ARM64 CPU inference; ARMv7 keeps non-AI features with an explicit unsupported message.
             - Wicara prompt inference stays on-device; there is no cloud AI, API key or manual model import.
             - The built-in assistant and local tools remain offline.
             - GitHub APK variant includes the SHA-256-verified GitHub self-updater for sideloaded distribution.
-            - Play AAB variant excludes REQUEST_INSTALL_PACKAGES and sends users to Google Play for updates.
-            - Signed APK and Android App Bundle (AAB), both SHA-256 checksums, and release-info.json are attached. Upload only the Play-flavor AAB to Play Console.
+            - The APK, its SHA-256 checksum, and release-info.json are the three release assets. Google Play distribution is deferred to a later phase.
             - DuckDuckGo is the default browser/search engine, with desktop/mobile modes.
             - App-wide network permissions are enabled; the offline assistant remains local-only.
             - Google Mobile Ads Next-Gen and UMP are integrated. Debug builds use Google's official test units; signed release builds use the publisher's production IDs.
             - Banner and Native Advanced are confined to Bonus & Premium. Rewarded formats require direct user action and grant a 24-hour cosmetic Premium unlock.
             - Google Play Billing queries subscription product diu_premium; localized price and offers are read from Google Play.
             - The GitHub APK updater hands installation to Android's package installer after SHA-256 validation and user consent.
-            - The Play flavor receives updates through Google Play and does not declare REQUEST_INSTALL_PACKAGES.
             - The GitHub APK is self-signed with the project's stable release key, not Google Play certified.
           files: |
             dist/app-release.apk
             dist/app-release.apk.sha256
-            dist/app-release.aab
-            dist/app-release.aab.sha256
             dist/release-info.json
           overwrite_files: true
           make_latest: true
