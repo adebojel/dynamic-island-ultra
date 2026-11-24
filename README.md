@@ -23,6 +23,10 @@ Dynamic Island Ultra is an Android floating island and assistive launcher with l
 
 <img src="assets/floating-hub-offline-toolbox.svg" alt="Floating hub categories and tools" width="100%"/>
 
+## Reference feature coverage
+
+The supplied Dynamic Island, floating-app, Smart Tools and notification screenshots are mapped against verified code in [Reference Feature Matrix](docs/REFERENCE_FEATURE_MATRIX.md). The matrix distinguishes current implementations from gaps including Bluetooth accessory battery cards, turn-by-turn navigation overlays, conditional notification replies, 14-language localization and a verified 40+ tool catalog. Unsupported features are not represented as complete.
+
 ## Wicara ARM64 emulator CI status
 
 The Wicara ARM64 emulator workflow is separate from the Android release workflow. Run #10 (commit `8c06423`) built the instrumented APKs and bundled model successfully, but its emulator job failed before tests started because the hosted runner's ADB device connection never appeared. This was an emulator-host startup failure, not a Wicara assertion failure. The workflow now starts ADB explicitly before emulator launch and uses the software graphics backend. The corrected workflow must complete successfully before emulator integration/UI coverage is reported as passing.
