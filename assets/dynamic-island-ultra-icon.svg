@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">Dynamic Island Ultra app icon</title>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071323"/><stop offset=".55" stop-color="#10152d"/><stop offset="1" stop-color="#25123d"/></linearGradient>
+  <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#45f4ff"/><stop offset=".48" stop-color="#7b7bff"/><stop offset="1" stop-color="#ff55d8"/></linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#243954" stop-opacity=".96"/><stop offset="1" stop-color="#080d1b" stop-opacity=".98"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="512" height="512" rx="116" fill="url(#bg)"/>
+<circle cx="256" cy="254" r="174" fill="#39dfff" opacity=".08"/>
+<rect x="60" y="164" width="392" height="184" rx="92" fill="url(#edge)" filter="url(#glow)"/>
+<rect x="72" y="176" width="368" height="160" rx="80" fill="url(#glass)" stroke="#d7faff" stroke-opacity=".62" stroke-width="3"/>
+<path d="M142 190h228c29 0 51 14 64 37H78c13-23 35-37 64-37Z" fill="#fff" opacity=".10"/>
+<g fill="none" stroke-linecap="round" stroke-width="18">
+<path d="M148 249v14" stroke="#ff63dd"/><path d="M184 226v60" stroke="#b47aff"/><path d="M220 211v90" stroke="#7e9cff"/><path d="M256 235v42" stroke="#4ceeff"/><path d="M292 218v76" stroke="#4ceeff"/><path d="M328 242v28" stroke="#70dfff"/><path d="M364 230v52" stroke="#ff70d7"/>
+</g>
+<circle cx="388" cy="207" r="12" fill="#50f5ff"/><circle cx="388" cy="207" r="5" fill="#fff"/>
+<circle cx="116" cy="126" r="7" fill="#55efff"/><circle cx="394" cy="390" r="8" fill="#f45bd7"/>
+<path d="M112 388c45 31 86 46 144 46s99-15 144-46" fill="none" stroke="url(#edge)" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+</svg>
