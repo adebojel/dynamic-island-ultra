@@ -6,6 +6,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.audiofx.Visualizer
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.core.content.ContextCompat
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -32,6 +40,15 @@ class MediaControlsActivity : ComponentActivity() {
     )
     private var audioRouteSummary by mutableStateOf("")
     private lateinit var equalizer: SystemAudioEqualizer
+    private var visualizer: Visualizer? = null
+    private var visualizerBars by mutableStateOf(List(28) { 0.08f })
+    private var visualizerStatus by mutableStateOf("Visualizer belum dijalankan.")
+    private val visualizerPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) startVisualizer()
+        else visualizerStatus = "Izin mikrofon ditolak; visualizer tidak dapat membaca output audio."
+    }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -83,6 +100,19 @@ class MediaControlsActivity : ComponentActivity() {
                     Text("Kontrol memerlukan MediaSession yang didukung dan Notification Access.",
                         color = Color(0xFF93A3BE), fontSize = 11.sp)
                     HorizontalDivider(color = Color(0xFF263650))
+                    MusicVisualizerPanel(
+                        bars = visualizerBars,
+                        status = visualizerStatus,
+                        onStart = {
+                            if (ContextCompat.checkSelfPermission(this@MediaControlsActivity, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                                startVisualizer()
+                            } else {
+                                visualizerPermission.launch(android.Manifest.permission.RECORD_AUDIO)
+                            }
+                        },
+                        onStop = { stopVisualizer() }
+                    )
+                    HorizontalDivider(color = Color(0xFF263650))
                     EqualizerPanel(
                         snapshot = eqSnapshot,
                         onEnabled = { eqSnapshot = equalizer.setEnabled(it) },
@@ -117,7 +147,59 @@ class MediaControlsActivity : ComponentActivity() {
     override fun onStop() {
         runCatching { unregisterReceiver(receiver) }
         equalizer.release()
+        stopVisualizer()
         super.onStop()
+    }
+
+    private fun startVisualizer() {
+        stopVisualizer()
+        val range = runCatching { Visualizer.getCaptureSizeRange() }.getOrNull()
+        if (range == null || range.size < 2) {
+            visualizerStatus = "Visualizer tidak didukung oleh perangkat ini."
+            return
+        }
+        runCatching {
+            val effect = Visualizer(0)
+            effect.captureSize = minOf(range[1], 1024)
+            effect.setDataCaptureListener(object : Visualizer.OnDataCaptureListener {
+                override fun onWaveFormDataCapture(
+                    visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int
+                ) = Unit
+
+                override fun onFftDataCapture(
+                    visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int
+                ) {
+                    val data = fft ?: return
+                    val count = 28
+                    val bins = (0 until count).map { index ->
+                        val bin = (2 + index * ((data.size / 2 - 3).coerceAtLeast(1)) / count)
+                            .coerceIn(2, (data.size - 2).coerceAtLeast(2))
+                        val real = data[bin].toInt()
+                        val imaginary = data.getOrNull(bin + 1)?.toInt() ?: 0
+                        (kotlin.math.sqrt((real * real + imaginary * imaginary).toFloat()) / 180f)
+                            .coerceIn(0.06f, 1f)
+                    }
+                    runOnUiThread { visualizerBars = bins }
+                }
+            }, Visualizer.getMaxCaptureRate() / 2, false, true)
+            effect.enabled = true
+            visualizer = effect
+            visualizerStatus = "Visualisasi FFT aktif • output mix Android • tidak merekam atau menyimpan audio."
+        }.onFailure {
+            visualizerStatus = "Visualizer tidak tersedia: " + (it.message ?: "akses output dibatasi Android")
+            stopVisualizer()
+        }
+    }
+
+    private fun stopVisualizer() {
+        val active = visualizer
+        visualizer = null
+        if (active != null) runCatching {
+            active.enabled = false
+            active.setDataCaptureListener(null, 0, false, false)
+            active.release()
+        }
+        visualizerBars = List(28) { 0.06f }
     }
 
     @Suppress("DEPRECATION")
@@ -226,6 +308,39 @@ private fun AudioRoutingPanel(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onOpenBluetooth) { Text("Pengaturan Bluetooth") }
             OutlinedButton(onClick = onRefresh) { Text("Perbarui output") }
+        }
+    }
+}
+
+
+@Composable
+private fun MusicVisualizerPanel(
+    bars: List<Float>,
+    status: String,
+    onStart: () -> Unit,
+    onStop: () -> Unit
+) {
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("LIVE MUSIC VISUALIZER", color = Color(0xFF43E8FF), fontSize = 18.sp)
+        Text("Spektrum FFT real-time dari output audio Android. Akses audio hanya aktif saat panel ini dijalankan.",
+            color = Color(0xFF93A3BE), fontSize = 11.sp)
+        Canvas(Modifier.fillMaxWidth().height(104.dp)) {
+            val gap = 4.dp.toPx()
+            val barWidth = ((size.width - gap * (bars.size - 1)) / bars.size).coerceAtLeast(1f)
+            bars.forEachIndexed { index, level ->
+                val height = (size.height * level.coerceIn(0.06f, 1f)).coerceAtLeast(4.dp.toPx())
+                drawRoundRect(
+                    color = if (index % 3 == 0) Color(0xFFF05CFF) else Color(0xFF43E8FF),
+                    topLeft = Offset(index * (barWidth + gap), size.height - height),
+                    size = Size(barWidth, height),
+                    cornerRadius = CornerRadius(barWidth / 2f, barWidth / 2f)
+                )
+            }
+        }
+        Text(status, color = Color.LightGray, fontSize = 10.sp)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = onStart) { Text("Mulai visualizer") }
+            OutlinedButton(onClick = onStop) { Text("Hentikan") }
         }
     }
 }
