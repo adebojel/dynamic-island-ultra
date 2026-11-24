@@ -172,9 +172,9 @@ Local debug build:
 gradle --no-daemon testGithubDebugUnitTest testPlayDebugUnitTest assembleGithubDebug assemblePlayDebug
 ```
 
-A push to `main` runs unit tests for both distribution flavors. With stable signing secrets configured, CI builds `assembleGithubRelease` for the GitHub APK and `bundlePlayRelease` for the Play AAB. It validates that `REQUEST_INSTALL_PACKAGES` is absent from the shared manifest and present only in the GitHub flavor manifest, verifies the signed artifacts, calculates SHA-256, and publishes canonical `app-release.apk`, `app-release.aab`, checksum files, and `release-info.json`. Debug variants use Google's official test ad units only; release variants use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
+A push to `main` runs unit tests for both existing source flavors. For the current direct-install testing phase, the GitHub Release publishes exactly three project-managed assets: `app-release.apk`, `app-release.apk.sha256`, and `release-info.json`. The APK is signed, its installer permission is verified, the bundled Wicara model and JNI libraries are checked, and its SHA-256 is calculated before publication. Google Play AAB publication is deferred to a later phase; the Play source flavor and its unit tests are retained but no AAB is attached to the current test release. Debug variants use Google's official test ad units only; release variants use the publisher's production ad units. Without stable signing secrets CI uploads a debug-preview artifact but does not overwrite the update channel.
 
-APK size is capped at 400 MiB. SHA-256 is provided for every APK artifact.
+APK size is capped at 400 MiB. The current GitHub test release contains one installable APK, its SHA-256 checksum, and release metadata; GitHub also automatically displays source ZIP/TAR archives.
 
 ## Official website and policies
 
