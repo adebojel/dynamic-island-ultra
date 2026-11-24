@@ -29,6 +29,7 @@ The built-in assistant and local tools work without internet, imported model fil
 ## Smart Toolbox (floating bubble integration)
 
 - Local unit converter for length, mass, volume and temperature, including metric and common imperial units.
+- Sensor-backed digital compass using accelerometer and magnetometer; shows bearing and cardinal direction only when both sensors provide usable readings.
 - Counter with increment, decrement and reset.
 - Stopwatch based on Android's monotonic elapsed-realtime clock, with recorded lap splits.
 - Countdown timer up to 24 hours and a 25-minute Pomodoro preset.
