@@ -303,3 +303,18 @@ The built-in assistant and local tools work without internet, imported model fil
 - Provides a shortcut to Android Bluetooth settings and explains the user-controlled workaround: disable a headset's Phone calls profile while keeping Media audio enabled, if the headset exposes these toggles.
 - This is guidance, not an automatic call router. Cellular and Telecom-managed third-party calls remain under Android/Telecom/OEM control; the app does not claim to force cellular or WhatsApp call routing.
 - System audio focus may still pause or duck music during an incoming or active call.
+
+
+## Reference-driven experience update
+
+Implemented on the main branch:
+- Floating hub app dock: displays up to six installed launchable applications with their launcher icons; user taps to open the selected app.
+- Installed Apps exposes a best-effort native Android freeform launch request using ActivityOptions launch bounds. This is not an app-embedding mechanism and may be ignored unless the OS/OEM supports freeform or desktop windows.
+- Media Controls includes an opt-in FFT music visualizer backed by Android's Visualizer audio effect. Runtime RECORD_AUDIO permission is requested only when the user explicitly starts the visualizer. The effect is released when the activity stops; no audio is recorded or stored.
+- Existing MediaSession transport remains responsible for previous/play-pause/next/seek and metadata. It requires Android notification-listener consent and a compatible active media session.
+- Added a standalone RGB glass icon SVG source at assets/dynamic-island-ultra-icon.svg.
+
+Validation boundaries:
+- A successful build/unit test can validate compilation and deterministic app logic, not whether a particular OEM permits global output-mix visualizer capture or third-party freeform windows.
+- Android remains the authority for runtime permissions, freeform windowing, background execution and reboot policy. The app does not attempt to evade Play Protect or bypass OS restrictions.
+- Physical-device validation is still required for freeform support, audio visualizer output, TalkBack, battery management and reboot behaviour.
