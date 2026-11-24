@@ -344,3 +344,20 @@ See docs/WICARA_MODEL.md, docs/MODEL_BENCHMARK_PROTOCOL.md, THIRD_PARTY_LICENSES
 ## Android emulator integration and UI QA
 
 The separate Wicara ARM64 emulator workflow builds the instrumentation APKs (the Compose BOM is applied to both main and test configurations), then starts an Android ARM64 API 30 virtual device, disables Wi-Fi/mobile data, validates the packaged model and its private provisioning, performs local model inference and unload/reload checks, and verifies the assistant activation UI. Current emulator instrumentation is still blocked by a subsequent APK-assembly failure; do not treat emulator execution or model inference as passed until its workflow is green. The emulator suite is build/runtime evidence, not a substitute for physical Android 8/API 26, OEM, thermal, battery, TalkBack or accessibility testing. See \`docs/PHASE2_QA_CHECKLIST.md\` and \`docs/MODEL_BENCHMARK_PROTOCOL.md\`.
+
+
+## Reference-driven floating experience update
+
+The current main-line build adds the following user-facing surfaces inspired by the supplied reference screenshots:
+
+- **Live App Dock:** the floating control center now shows up to six launchable apps with their actual launcher icons. Tapping an icon closes the overlay panel and opens the selected app.
+- **Native freeform launch request:** Installed Apps exposes a FLOAT action that asks Android to launch an app inside a bounded freeform window. This is best-effort: Android/OEM firmware may ignore launch bounds or require desktop/freeform mode to be enabled. The app does not inject, mirror, or embed another app's private UI.
+- **Live Music Visualizer:** Media Controls includes an FFT spectrum visualizer. It requests microphone/audio-capture permission only after the user taps Start, releases the Visualizer effect when the screen stops, and does not record or save audio. Android audio-effect availability and output-mix capture are device/OS dependent; an unavailable effect is reported instead of simulated as real audio data.
+- **Existing media transport:** previous, play/pause, next, seek, metadata and artwork continue to use the active Android MediaSession when the notification listener has been granted access.
+- **App icon source:** [RGB glass launcher icon SVG](assets/dynamic-island-ultra-icon.svg). Android adaptive launcher resources remain the install-time icon.
+
+### Platform boundaries (not bypassed)
+
+Ordinary Android applications cannot silently grant permissions, become privileged system apps, guarantee immunity to force-stop/OEM task killers, force all third-party applications into freeform windows, or override Google Play policy enforcement. Dynamic Island Ultra uses user-consented Android settings and foreground-service APIs; reboot restoration is conditional on Android/OEM background policy and the user's enabled state. No root, hidden API, permission bypass, or Play Protect evasion is implemented.
+
+The GitHub release workflow increments the patch version and versionCode monotonically so updates remain install-compatible. It will continue from the current 0.0.25 release rather than resetting to 0.0.0, which would risk downgrade/install failures. Firebase and Play Console project configuration remain deferred.
