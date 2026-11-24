@@ -34,17 +34,20 @@ private val ToolCyan = Color(0xFF43E8FF)
 class SmartToolsActivity : ComponentActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private val accelerometer by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
+    private val magnetometer by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) }
     private var acceleration by mutableStateOf<FloatArray?>(null)
+    private var magneticField by mutableStateOf<FloatArray?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        setContent { SmartToolsScreen(acceleration) }
+        setContent { SmartToolsScreen(acceleration, magneticField) }
     }
 
     override fun onResume() {
         super.onResume()
         accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
+        magnetometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI) }
     }
 
     override fun onPause() {
@@ -53,8 +56,9 @@ class SmartToolsActivity : ComponentActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            acceleration = event.values.copyOf()
+        when (event?.sensor?.type) {
+            Sensor.TYPE_ACCELEROMETER -> acceleration = event.values.copyOf()
+            Sensor.TYPE_MAGNETIC_FIELD -> magneticField = event.values.copyOf()
         }
     }
 
@@ -62,7 +66,7 @@ class SmartToolsActivity : ComponentActivity(), SensorEventListener {
 }
 
 @Composable
-private fun SmartToolsScreen(acceleration: FloatArray?) {
+private fun SmartToolsScreen(acceleration: FloatArray?, magneticField: FloatArray?) {
     var selected by remember { mutableStateOf("converter") }
     MaterialTheme(colorScheme = darkColorScheme(primary = ToolCyan, background = ToolNight, surface = Color(0xFF142039))) {
         Column(
@@ -72,7 +76,7 @@ private fun SmartToolsScreen(acceleration: FloatArray?) {
             Text("SMART TOOLBOX", color = ToolCyan, fontSize = 20.sp)
             Text("Alat lokal tanpa akun, cloud, atau permintaan izin tambahan.", color = Color.LightGray, fontSize = 12.sp)
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("converter" to "Konversi", "counter" to "Penghitung", "stopwatch" to "Stopwatch", "timer" to "Timer", "level" to "Spirit Level").forEach { (key, label) ->
+                listOf("converter" to "Konversi", "counter" to "Penghitung", "stopwatch" to "Stopwatch", "timer" to "Timer", "level" to "Spirit Level", "compass" to "Kompas").forEach { (key, label) ->
                     if (selected == key) Button(onClick = { selected = key }) { Text(label) }
                     else OutlinedButton(onClick = { selected = key }) { Text(label) }
                 }
@@ -83,12 +87,52 @@ private fun SmartToolsScreen(acceleration: FloatArray?) {
                 "stopwatch" -> StopwatchPanel()
                 "timer" -> TimerPanel()
                 "level" -> LevelPanel(acceleration)
+                "compass" -> CompassPanel(acceleration, magneticField)
             }
             Text(
                 "Catatan: stopwatch dan timer berjalan sebagai alat sesi dalam aplikasi. Keduanya bukan alarm sistem dan tidak menjamin notifikasi setelah aplikasi ditutup paksa.",
                 color = Color.LightGray,
                 fontSize = 10.sp
             )
+        }
+    }
+}
+
+
+@Composable
+private fun CompassPanel(acceleration: FloatArray?, magneticField: FloatArray?) {
+    Text("KOMPAS DIGITAL", color = Color.White, fontSize = 16.sp)
+    val heading = remember(acceleration, magneticField) {
+        if (acceleration == null || magneticField == null) null else {
+            val rotation = FloatArray(9)
+            val orientation = FloatArray(3)
+            if (SensorManager.getRotationMatrix(rotation, null, acceleration, magneticField)) {
+                SensorManager.getOrientation(rotation, orientation)
+                ((Math.toDegrees(orientation[0].toDouble()).toFloat() % 360f) + 360f) % 360f
+            } else null
+        }
+    }
+    val cardinal = heading?.let { bearing ->
+        when (((bearing + 22.5f) / 45f).toInt() % 8) {
+            0 -> "UTARA"
+            1 -> "TIMUR LAUT"
+            2 -> "TIMUR"
+            3 -> "TENGGARA"
+            4 -> "SELATAN"
+            5 -> "BARAT DAYA"
+            6 -> "BARAT"
+            else -> "BARAT LAUT"
+        }
+    }
+    Surface(color = Color(0xFF172A45), shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            if (heading == null) {
+                Text("Kompas memerlukan accelerometer dan magnetometer yang tersedia pada perangkat.", color = Color.LightGray)
+            } else {
+                Text(cardinal ?: "—", color = ToolCyan, fontSize = 24.sp)
+                Text("%.1f°".format(heading), color = Color.White, fontSize = 42.sp)
+                Text("Arah dihitung dari sensor perangkat; akurasi dipengaruhi kalibrasi magnetometer dan gangguan magnet di sekitar.", color = Color.LightGray, fontSize = 11.sp)
+            }
         }
     }
 }
