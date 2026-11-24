@@ -52,7 +52,7 @@ Workflow: [Wicara ARM64 Emulator Integration and UI QA](https://github.com/adebo
 | App collection | Lists launcher-visible apps and launches selected apps |
 | Local notes | Saves notes in app-private storage |
 | Local calculator | Parses arithmetic expressions locally |
-| Smart Toolbox | Local unit conversion, counter, stopwatch with lap recording, countdown/Pomodoro timer and accelerometer-based two-axis spirit level with user calibration |
+| Smart Toolbox | Local unit conversion, counter, stopwatch with lap recording, countdown/Pomodoro timer, accelerometer-based two-axis spirit level with user calibration, and a sensor-backed digital compass when accelerometer and magnetometer are available |
 | Built-in offline assistant | Deterministic commands, calculator/system actions and diagnostics plus optional bundled Wicara local generation on ARM64; no model import, API key or cloud AI |
 | App health checks | Reads overlay, notification, WebView, battery, storage and version readiness locally |
 | PiP workspace | Android-managed PiP for this app's own workspace activity |
