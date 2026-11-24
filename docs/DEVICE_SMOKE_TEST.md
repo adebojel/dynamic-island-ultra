@@ -405,3 +405,14 @@ Do not mark a section PASS until it has been exercised on a real device.
 - [ ] Record PSS, CPU, battery, temperature, model load time and tokens/second using docs/MODEL_BENCHMARK_PROTOCOL.md.
 
 Expected: Wicara runs locally, is bundled, bounded and best-effort. No cloud fallback occurs. Its output is not an authoritative factual or reasoning source.
+
+## Reference-driven Floating Dock, Freeform and Music Visualizer
+
+- [ ] Enable overlay permission and start the island; expand the floating hub and verify up to six installed-app icons appear in Live App Dock.
+- [ ] Tap each displayed app icon; verify the panel closes and Android opens the selected package.
+- [ ] Open Installed Apps and use FLOAT on a test app. Verify whether the device supports native freeform/desktop windows; if unsupported, confirm the app still launches normally or reports that launch failed. Do not treat an ordinary full-screen launch as a successful floating window.
+- [ ] Open Media Controls while music is playing; verify title, artist, artwork, seek, previous, play/pause and next against the source player's MediaSession.
+- [ ] Tap Start visualizer and approve RECORD_AUDIO only at that point. Verify bars respond to music when Android exposes output-mix Visualizer capture.
+- [ ] Stop/leave Media Controls; verify the visualizer effect is released and no microphone/audio capture indicator remains.
+- [ ] Deny RECORD_AUDIO and retry; verify the visualizer shows a permission-denied state and media controls remain usable.
+- [ ] Repeat on Android 8/API 26 and the target Motorola device. Global Visualizer capture and freeform window support are OEM-dependent and must be recorded as supported/unsupported, not assumed.
