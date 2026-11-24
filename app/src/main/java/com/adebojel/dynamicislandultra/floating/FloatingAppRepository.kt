@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.app.ActivityOptions
+import android.graphics.Rect
 
 data class LaunchableApp(
     val label: String,
@@ -29,6 +31,28 @@ class FloatingAppRepository(private val context: Context) {
                 )
             }.getOrNull()
         }.distinctBy { it.packageName }.sortedBy { it.label.lowercase() }
+    }
+
+    /**
+     * Requests Android's native freeform launch bounds. The OS/OEM may ignore them
+     * when desktop/freeform multi-window is unavailable; this never embeds another app.
+     */
+    fun launchInFreeform(packageName: String): Boolean {
+        val launch = context.packageManager.getLaunchIntentForPackage(packageName) ?: return false
+        val metrics = context.resources.displayMetrics
+        val left = (metrics.widthPixels * 0.08f).toInt()
+        val top = (metrics.heightPixels * 0.12f).toInt()
+        val right = (metrics.widthPixels * 0.88f).toInt()
+        val bottom = (metrics.heightPixels * 0.72f).toInt()
+        val bounds = Rect(left, top, right.coerceAtLeast(left + 1), bottom.coerceAtLeast(top + 1))
+        return runCatching {
+            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(
+                launch,
+                ActivityOptions.makeBasic().setLaunchBounds(bounds).toBundle()
+            )
+            true
+        }.getOrDefault(false)
     }
 
     fun launch(packageName: String): Boolean {
