@@ -24,6 +24,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -35,6 +36,7 @@ import com.adebojel.dynamicislandultra.system.UtilityIntents
 import com.adebojel.dynamicislandultra.ai.OfflineAssistantActivity
 import com.adebojel.dynamicislandultra.ads.PremiumAccess
 import com.adebojel.dynamicislandultra.floating.InstalledAppsActivity
+import com.adebojel.dynamicislandultra.floating.FloatingAppRepository
 import com.adebojel.dynamicislandultra.floating.OfflineNotesActivity
 import com.adebojel.dynamicislandultra.floating.OfflineCalculatorActivity
 import com.adebojel.dynamicislandultra.floating.FloatingWorkspaceActivity
@@ -296,6 +298,7 @@ class FloatingIslandService : Service() {
             orientation = LinearLayout.VERTICAL
         }
         addFavoriteActions(content)
+        addLiveAppDock(content)
         addSection(content, "01  QUICK CONNECTIVITY", listOf(
             "Wi-Fi panel" to "wifi",
             "Internet connectivity" to "internet",
@@ -395,6 +398,62 @@ class FloatingIslandService : Service() {
         expanded = true
     }
 
+
+
+    /** A lightweight, user-invoked launcher dock for installed apps; Android owns app windows. */
+    private fun addLiveAppDock(root: LinearLayout) {
+        root.addView(label("LIVE APP DOCK  •  QUICK ACCESS", 9f, true).apply {
+            setTextColor(Color.rgb(88, 220, 255))
+            setPadding(0, 14, 0, 7)
+        })
+        val apps = runCatching { FloatingAppRepository(this).loadLaunchableApps().take(6) }
+            .getOrDefault(emptyList())
+        if (apps.isEmpty()) {
+            root.addView(label("Tidak ada aplikasi launcher yang dapat ditampilkan.", 10f, false))
+            return
+        }
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        apps.forEach { app ->
+            val item = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(4, 7, 4, 7)
+                background = rounded(Color.rgb(24, 35, 57), Color.rgb(55, 83, 122), 14f, 1)
+                contentDescription = "Buka aplikasi " + app.label
+                setOnClickListener {
+                    closePanel()
+                    if (!FloatingAppRepository(this@FloatingIslandService).launch(app.packageName)) {
+                        Toast.makeText(this@FloatingIslandService, "Aplikasi tidak dapat dibuka.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            val icon = ImageView(this).apply {
+                setImageDrawable(app.icon)
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+            item.addView(icon, LinearLayout.LayoutParams(dp(34), dp(34)))
+            item.addView(TextView(this).apply {
+                text = app.label.take(10)
+                textSize = 8f
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+                maxLines = 1
+            })
+            row.addView(item, LinearLayout.LayoutParams(0, dp(68), 1f).apply {
+                marginEnd = dp(5)
+            })
+        }
+        root.addView(row)
+        root.addView(label("Aplikasi dibuka sesuai mode jendela yang diizinkan Android/perangkat.", 9f, false).apply {
+            setTextColor(Color.rgb(153, 172, 206))
+            setPadding(0, 4, 0, 0)
+        })
+    }
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     private fun addFavoriteActions(root: LinearLayout) {
         root.addView(label("QUICK FAVORITES", 9f, true).apply {
