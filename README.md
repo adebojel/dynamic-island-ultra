@@ -361,3 +361,5 @@ The current main-line build adds the following user-facing surfaces inspired by 
 Ordinary Android applications cannot silently grant permissions, become privileged system apps, guarantee immunity to force-stop/OEM task killers, force all third-party applications into freeform windows, or override Google Play policy enforcement. Dynamic Island Ultra uses user-consented Android settings and foreground-service APIs; reboot restoration is conditional on Android/OEM background policy and the user's enabled state. No root, hidden API, permission bypass, or Play Protect evasion is implemented.
 
 The GitHub release workflow increments the patch version and versionCode monotonically so updates remain install-compatible. It will continue from the current 0.0.25 release rather than resetting to 0.0.0, which would risk downgrade/install failures. Firebase and Play Console project configuration remain deferred.
+
+Reference research matrix: [docs/REFERENCE_RESEARCH.md](docs/REFERENCE_RESEARCH.md) — feature mapping for Dynamic Island, Floating Apps, Assistive Touch and utility-tool references, including Android platform boundaries.
