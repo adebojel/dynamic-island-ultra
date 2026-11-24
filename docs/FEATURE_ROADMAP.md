@@ -15,7 +15,7 @@
 - Stable signing key is read from private GitHub Actions secrets; no key material belongs in source control.
 - INTERNET and ACCESS_NETWORK_STATE permissions are present for application networking, AdMob/UMP consent and Google Play Billing.
 
-## Latest release verification
+## Reference-driven expansion\n\nThe supplied feature screenshots are mapped to verified implementation and explicit gaps in [Reference Feature Matrix](REFERENCE_FEATURE_MATRIX.md). New utility additions must be real sensor/API-backed functions with tests and permission review; the repository must not advertise 14 languages or 40+ tools until those capabilities are implemented and validated.\n\n## Latest release verification
 
 - Version v0.0.11 adds accessible accordion navigation for the eight bubble categories and closes the floating panel before a category action launches.
 
