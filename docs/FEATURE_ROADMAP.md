@@ -17,6 +17,13 @@
 
 ## Reference-driven expansion\n\nThe supplied feature screenshots are mapped to verified implementation and explicit gaps in [Reference Feature Matrix](REFERENCE_FEATURE_MATRIX.md). New utility additions must be real sensor/API-backed functions with tests and permission review; the repository must not advertise 14 languages or 40+ tools until those capabilities are implemented and validated.\n\n## Latest release verification
 
+- Latest signed GitHub APK: [v0.0.27](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.27), built from the compass utility update.
+- [Android CI run #189](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45339474274) completed successfully: both flavor unit-test suites, signed APK/AAB assembly, installer permission separation, bundled model/JNI/package-budget checks, stable signature checks, SHA-256 metadata and GitHub Release publication passed.
+- The latest APK asset is approximately 95.7 MB; release assets include the APK, SHA-256 sidecar and release metadata.
+- [Wicara ARM64 emulator integration run #16](https://github.com/adebojel/dynamic-island-ultra/actions/runs/45339474295) is still running; do not mark runtime instrumentation as passed until that job completes.
+
+
+
 - Version v0.0.11 adds accessible accordion navigation for the eight bubble categories and closes the floating panel before a category action launches.
 
 - Latest signed release at the time of the original Phase 1 snapshot: [v0.0.13](https://github.com/adebojel/dynamic-island-ultra/releases/tag/v0.0.13), Android versionCode 134.
